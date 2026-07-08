@@ -1,4 +1,4 @@
-
+"use client";
 import WalletIcon from "./walletIcon.svg";
 import DownloadGameIcon from "./downloadIcon.svg";
 import AvatarIcon from "./avatarIcon.svg";
@@ -156,6 +156,12 @@ import TruckIcon from './truck.svg';
 import InfoIconNew from './info-circle.svg';
 import EditIconNew from './edit.svg';
 import ExportIcon from './export-icon.svg';
+import ProgressIcon from './Icon_1.svg';
+import ReleaseIcon from './Icon_2.svg';
+import PublishedIcon from './published.svg';
+import HeadPhoneIcon from './Icon_22.svg';
+import ActivityTrendIcon from './recent-activity-icon.svg';
+import ThumbnailAudioIcon from "./thumbnail-audio.png"
 export {
   WalletIcon,
   DownloadGameIcon,
@@ -310,7 +316,13 @@ export {
   ClcokIcon,
   HomeIconNew,
   TruckIcon,
-  InfoIconNew, 
+  InfoIconNew,
   EditIconNew,
   ExportIcon,
+  ProgressIcon,
+  ReleaseIcon,
+  PublishedIcon,
+  HeadPhoneIcon,
+  ActivityTrendIcon,
+  ThumbnailAudioIcon,
 };

@@ -62,6 +62,84 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     };
   }
 
+  if (url === "/dashboard/overview") {
+    return buildSuccess({
+      ownerName: "Johan",
+      summaryStats: [
+        {
+          id: "total-streams",
+          title: "Total Streams",
+          value: "14.9M",
+          trend: { direction: "up", label: "+18% vs last month" },
+        },
+        {
+          id: "in-progress",
+          title: "In Progress",
+          value: "1",
+          trend: { direction: "up", label: "+2% vs last month" },
+        },
+        {
+          id: "total-published",
+          title: "Total Published",
+          value: "2",
+          trend: { direction: "up", label: "+4% vs last month" },
+        },
+        {
+          id: "active-releases",
+          title: "Active Releases",
+          value: "18",
+          trend: { direction: "down", label: "-2 pending review" },
+        },
+      ],
+      streamingPerformance: [
+        { month: "Jan", streams: 620000 },
+        { month: "Feb", streams: 780000 },
+        { month: "Mar", streams: 910000 },
+        { month: "Apr", streams: 860000 },
+        { month: "May", streams: 1020000 },
+        { month: "Jun", streams: 980000 },
+        { month: "Jul", streams: 1180000 },
+        { month: "Aug", streams: 1340000 },
+        { month: "Sep", streams: 1210000 },
+        { month: "Oct", streams: 1480000 },
+        { month: "Nov", streams: 1720000 },
+        { month: "Dec", streams: 2080000 },
+      ],
+      platformShares: [
+        { id: "spotify", platform: "Spotify", streams: 8400000, colorToken: "primary" },
+        { id: "apple-music", platform: "Apple Music", streams: 3200000, colorToken: "danger" },
+        { id: "youtube-music", platform: "YouTube Music", streams: 2800000, colorToken: "danger" },
+        { id: "amazon-music", platform: "Amazon Music", streams: 1000000, colorToken: "info" },
+        { id: "tidal", platform: "Tidal", streams: 420000, colorToken: "info" },
+      ],
+      totalPlatformStreams: 15900000,
+      topTracks: [
+        { id: "1", rank: 1, title: "Neon Mirage", releaseTitle: "Afterglow", streams: 4200000, duration: "3:48", trend: { direction: "up", label: "+12%" } },
+        { id: "2", rank: 2, title: "Broken Signal", releaseTitle: "Frequency", streams: 3800000, duration: "4:12", trend: { direction: "up", label: "+8%" } },
+        { id: "3", rank: 3, title: "Midnight Protocol", releaseTitle: "Afterglow", streams: 2900000, duration: "3:22", trend: { direction: "down", label: "-3%" } },
+        { id: "4", rank: 4, title: "Echo Chamber", releaseTitle: "Frequency", streams: 2400000, duration: "5:01", trend: { direction: "up", label: "+21%" } },
+        { id: "5", rank: 5, title: "Static Dreams", releaseTitle: "Lost Frequencies", streams: 1900000, duration: "3:55", trend: { direction: "up", label: "+5%" } },
+      ],
+      albumSpotlight: {
+        id: "afterglow",
+        title: "Afterglow",
+        trackCount: 12,
+        countryCount: 48,
+      },
+      recentActivity: [
+        { id: "1", kind: "milestone", message: "Neon Mirage crossed 4M streams", occurredAgo: "2h ago" },
+        { id: "2", kind: "audience", message: "847 new followers today", occurredAgo: "5h ago" },
+        { id: "3", kind: "playlist", message: "Broken Signal added to 3 editorial playlists", occurredAgo: "1d ago" },
+        { id: "4", kind: "royalty", message: "November royalty payout: $7,560", occurredAgo: "2d ago" },
+        { id: "5", kind: "collaboration", message: "Collaboration request from ZARA LYRA", occurredAgo: "3d ago" },
+      ],
+      upcomingReleases: [
+        { id: "1", title: "Ghost Frequency", releaseType: "Single", releaseDate: "2024-12-20", status: "Scheduled" },
+        { id: "2", title: "Afterglow (Deluxe)", releaseType: "Album", releaseDate: "2025-01-15", status: "In Review" },
+      ],
+    });
+  }
+
   if (url === "/admin/dashboard/states") {
     return buildSuccess({
       pending_director_applications: 0,

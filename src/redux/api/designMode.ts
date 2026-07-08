@@ -140,6 +140,66 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     });
   }
 
+  if (url === "/analytics/overview") {
+    return buildSuccess({
+      summaryStats: [
+        {
+          id: "total-streams",
+          title: "Total Streams",
+          value: "14.9M",
+          trend: { direction: "up", label: "+18% vs last month" },
+        },
+        {
+          id: "avg-daily-streams",
+          title: "Avg. Daily Streams",
+          value: "40.8k",
+          trend: { direction: "up", label: "+5% vs prior period" },
+        },
+        {
+          id: "save-rate",
+          title: "Save Rate",
+          value: "8.4%",
+          trend: { direction: "up", label: "+1.2% improvement" },
+        },
+        {
+          id: "skip-rate",
+          title: "Skip Rate",
+          value: "22.1%",
+          trend: { direction: "up", label: "-3.2% improvement" },
+        },
+      ],
+      streamTrend: [
+        { month: "Jan", streams: 620000 },
+        { month: "Feb", streams: 780000 },
+        { month: "Mar", streams: 910000 },
+        { month: "Apr", streams: 860000 },
+        { month: "May", streams: 1020000 },
+        { month: "Jun", streams: 980000 },
+        { month: "Jul", streams: 1180000 },
+        { month: "Aug", streams: 1340000 },
+        { month: "Sep", streams: 1210000 },
+        { month: "Oct", streams: 1480000 },
+        { month: "Nov", streams: 1720000 },
+        { month: "Dec", streams: 2080000 },
+      ],
+      topCountries: [
+        { id: "us", country: "United States", streams: 5100000 },
+        { id: "uk", country: "United Kingdom", streams: 2700000 },
+        { id: "de", country: "Germany", streams: 1800000 },
+        { id: "br", country: "Brazil", streams: 1300000 },
+        { id: "in", country: "India", streams: 1000000 },
+        { id: "others", country: "Others", streams: 3000000 },
+      ],
+      trackPerformance: [
+        { id: "1", rank: 1, title: "Neon Mirage", releaseTitle: "Afterglow", streams: 4200000, duration: "3:48", trend: { direction: "up", label: "+12%" } },
+        { id: "2", rank: 2, title: "Broken Signal", releaseTitle: "Frequency", streams: 3800000, duration: "4:12", trend: { direction: "up", label: "+8%" } },
+        { id: "3", rank: 3, title: "Midnight Protocol", releaseTitle: "Afterglow", streams: 2900000, duration: "3:22", trend: { direction: "down", label: "-3%" } },
+        { id: "4", rank: 4, title: "Echo Chamber", releaseTitle: "Frequency", streams: 2400000, duration: "5:01", trend: { direction: "up", label: "+21%" } },
+        { id: "5", rank: 5, title: "Static Dreams", releaseTitle: "Lost Frequencies", streams: 1900000, duration: "3:55", trend: { direction: "up", label: "+5%" } },
+      ],
+    });
+  }
+
   if (url === "/admin/dashboard/states") {
     return buildSuccess({
       pending_director_applications: 0,

@@ -5,21 +5,28 @@ import { formatCompactNumber } from "@/src/components/design/dashboard/dashboard
 
 type TopTracksCardProps = {
   tracks: ITopTrack[];
+  title?: string;
   onViewAll?: () => void;
 };
 
-export default function TopTracksCard({ tracks, onViewAll }: TopTracksCardProps) {
+export default function TopTracksCard({
+  tracks,
+  title = "Top Tracks",
+  onViewAll,
+}: TopTracksCardProps) {
   return (
     <section className="min-w-0 rounded-[24px] border border-[#E7EBF7] bg-white p-5 shadow-[0_18px_45px_rgba(46,58,131,0.06)] sm:p-6">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-lg font-semibold text-[#101828]">Top Tracks</h3>
-        <button
-          type="button"
-          onClick={onViewAll}
-          className="text-sm font-semibold text-[#16A34A] transition hover:text-[#128038]"
-        >
-          View all
-        </button>
+        <h3 className="text-lg font-semibold text-[#101828]">{title}</h3>
+        {onViewAll && (
+          <button
+            type="button"
+            onClick={onViewAll}
+            className="text-sm font-semibold text-[#16A34A] transition hover:text-[#128038]"
+          >
+            View all
+          </button>
+        )}
       </div>
 
       <div className="mt-4 flex flex-col">

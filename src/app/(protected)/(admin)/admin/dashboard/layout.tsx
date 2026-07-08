@@ -13,6 +13,7 @@ export default function AdminDashboardLayout({
       implementedPaths={[
         "/admin/dashboard/user-management",
         "/admin/dashboard/dispatchers",
+        "/admin/dashboard/analytics",
         "/admin/dashboard/support",
         "/admin/dashboard/performance",
         "/admin/dashboard/settings",

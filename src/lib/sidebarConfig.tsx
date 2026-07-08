@@ -2,27 +2,36 @@
 
 import React from "react";
 import {
-  Activity,
-  Briefcase,
-  LayoutDashboard,
-  Receipt,
+  LayoutGrid,
+  Upload,
+  ListChecks,
+  RotateCcw,
+  List,
+  FileText,
+  Clock,
+  AlertCircle,
+  TrendingUp,
+  BookOpen,
+  Bell,
   Settings,
-  ShieldEllipsis,
-  UserCog,
-  Users,
+  ShieldCheck,
 } from "lucide-react";
-import { CarriesIcon, CommunicationsIcon, DashboardIconForDispacher, DocumentsIcon, DriversIcon, InvoicesIcon, LoadsIcon, ReportsIcon, StatementsIcon, SupportIcon } from "../icons";
-import { getCarrierRouteConfig } from "./carrierRoutes";
 import type { DashboardRole } from "./dashboardRoles";
 
 export type { DashboardRole } from "./dashboardRoles";
+
+export type NavSubItem = {
+  name: string;
+  path: string;
+  icon: React.ReactNode;
+};
 
 export type NavItem = {
   section: string;
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: { name: string; path: string; icon: React.ReactNode }[];
+  subItems?: NavSubItem[];
 };
 
 export type QuickLink = {
@@ -43,231 +52,102 @@ export type SidebarConfig = {
   quickLinks: QuickLink[];
 };
 
-export const dispatcherSidebarConfig: SidebarConfig = {
-  subtitle: '',
-  navItems: [
-    {
-      section: 'Main Menu',
-      icon: <DashboardIconForDispacher />,
-      name: 'Dashboard',
-      path: '/dispatcher/dashboard',
-    },
-    {
-      section: 'Main Menu',
-      icon: <ReportsIcon />,
-      name: 'Reports',
-      path: '/dispatcher/dashboard/reports',
-    },
-    {
-      section: 'Management',
-      icon: <CarriesIcon />,
-      name: 'Carriers',
-      path: getCarrierRouteConfig('dispatcher').listPath,
-    },
-    {
-      section: 'Management',
-      icon: <DriversIcon />,
-      name: 'Drivers',
-      path: '/dispatcher/dashboard/drivers',
-    },
-    {
-      section: 'Operations',
-      icon: <LoadsIcon />,
-      name: 'Loads',
-      path: '/dispatcher/dashboard/loads',
-    },
-    {
-      section: 'Operations',
-      icon: <CommunicationsIcon />,
-      name: 'Communications',
-      path: '/dispatcher/dashboard/communications',
-    },
-    {
-      section: 'Operations',
-      icon: <DocumentsIcon />,
-      name: 'Documents',
-      path: '/dispatcher/dashboard/documents',
-    },
-    {
-      section: 'Finance',
-      icon: <InvoicesIcon />,
-      name: 'Invoices',
-      path: '/dispatcher/dashboard/invoices',
-    },
-    {
-      section: 'Finance',
-      icon: <StatementsIcon />,
-      name: 'Statements',
-      path: '/dispatcher/dashboard/statements',
-    },
+const buildNavItems = (root: string, includeAdmin: boolean): NavItem[] => [
+  {
+    section: "",
+    icon: <LayoutGrid size={18} />,
+    name: "Dashboard",
+    path: root,
+  },
+  {
+    section: "Releases",
+    icon: <Upload size={18} />,
+    name: "Create New Release",
+    path: `${root}/releases/create`,
+  },
+  {
+    section: "Releases",
+    icon: <ListChecks size={18} />,
+    name: "Manage Release",
+    subItems: [
+      {
+        name: "Your Releases",
+        path: `${root}/releases/your-releases`,
+        icon: <RotateCcw size={16} />,
+      },
+      {
+        name: "All Releases",
+        path: `${root}/releases`,
+        icon: <List size={16} />,
+      },
+      {
+        name: "Drafts",
+        path: `${root}/releases/drafts`,
+        icon: <FileText size={16} />,
+      },
+      {
+        name: "Moderation",
+        path: `${root}/releases/moderation`,
+        icon: <Clock size={16} />,
+      },
+      {
+        name: "Changes",
+        path: `${root}/releases/changes`,
+        icon: <AlertCircle size={16} />,
+      },
+    ],
+  },
+  {
+    section: "General",
+    icon: <TrendingUp size={18} />,
+    name: "Analytics",
+    path: `${root}/analytics`,
+  },
+  {
+    section: "General",
+    icon: <BookOpen size={18} />,
+    name: "Guide",
+    path: `${root}/guide`,
+  },
+  {
+    section: "General",
+    icon: <Bell size={18} />,
+    name: "Notifications",
+    path: `${root}/notifications`,
+  },
+  {
+    section: "General",
+    icon: <Settings size={18} />,
+    name: "Settings",
+    path: `${root}/settings`,
+  },
+  ...(includeAdmin
+    ? [
+      {
+        section: "Admin",
+        icon: <ShieldCheck size={18} />,
+        name: "Admin Panel",
+        path: `${root}/admin-panel`,
+      },
+    ]
+    : []),
+];
 
-    {
-      section: 'Settings',
-      icon: <Settings size={18} />,
-      name: 'Settings',
-      path: '/dispatcher/dashboard/settings',
-    },
-    {
-      section: 'Settings',
-      icon: <SupportIcon />,
-      name: 'Supports',
-      path: '/dispatcher/dashboard/supports',
-    },
-  ],
+export const dispatcherSidebarConfig: SidebarConfig = {
+  subtitle: "",
+  navItems: buildNavItems("/dispatcher/dashboard", false),
   quickLinks: [],
 };
 
 export const adminSidebarConfig: SidebarConfig = {
   subtitle: "",
-  navItems: [
-    {
-      section: "Overview",
-      icon: <LayoutDashboard size={18} />,
-      name: "Dashboard",
-      path: "/admin/dashboard",
-    },
-    {
-      section: "Management",
-      icon: <Users size={18} />,
-      name: "User Management",
-      path: "/admin/dashboard/user-management",
-    },
-    {
-      section: "Management",
-      icon: <UserCog size={18} />,
-      name: "Dispatchers",
-      path: "/admin/dashboard/dispatchers",
-    },
-    {
-      section: "Management",
-      icon: <Activity />,
-      name: "Performance ",
-      path: "/admin/dashboard/performance",
-    },
-    {
-      section: 'Management',
-      icon: <CarriesIcon />,
-      name: 'Carriers',
-      path: getCarrierRouteConfig('admin').listPath,
-    },
-    {
-      section: "Operations",
-      icon: <DocumentsIcon />,
-      name: "Documents",
-      path: "/admin/dashboard/documents",
-    },
-    {
-      section: "Operations",
-      icon: <SupportIcon />,
-      name: "Support",
-      path: "/admin/dashboard/support",
-    },
-    {
-      section: "Finance",
-      icon: <InvoicesIcon />,
-      name: "Invoices",
-      path: "/admin/dashboard/invoices",
-    },
-    {
-      section: "Finance",
-      icon: <StatementsIcon />,
-      name: "Statements",
-      path: "/admin/dashboard/statements",
-    },
-    {
-      section: "Finance",
-      icon: <Receipt size={18} />,
-      name: "Pricing & Plan",
-      path: "/admin/dashboard/pricing-plan",
-    },
-    {
-      section: "Settings",
-      icon: <Settings size={18} />,
-      name: "Settings",
-      path: "/admin/dashboard/settings",
-    },
-  ],
+  navItems: buildNavItems("/admin/dashboard", true),
   quickLinks: [],
 };
 
 export const superAdminSidebarConfig: SidebarConfig = {
   subtitle: "",
-  navItems: [
-    {
-      section: "Overview",
-      icon: <LayoutDashboard size={18} />,
-      name: "Dashboard",
-      path: "/super-admin/dashboard",
-    },
-    {
-      section: "Management",
-      icon: <ShieldEllipsis size={18} />,
-      name: "User Management",
-      path: "/super-admin/dashboard/user-management",
-    },
-    {
-      section: "Management",
-      icon: <Briefcase size={18} />,
-      name: "Organizations",
-      path: "/super-admin/dashboard/organizations",
-    },
-
-    {
-      section: "Management",
-      icon: <UserCog size={18} />,
-      name: "Dispatcher",
-      path: "/super-admin/dashboard/dispatcher-management",
-    },
-    {
-      section: "Management",
-      icon: <Activity />,
-      name: "Performance",
-      path: "/super-admin/dashboard/performance",
-    },
-    {
-      section: 'Operations',
-      icon: <DocumentsIcon />,
-      name: 'Documents',
-      path: '/super-admin/dashboard/documents',
-    },
-    {
-      section: 'Management',
-      icon: <CarriesIcon />,
-      name: 'Carriers',
-      path: getCarrierRouteConfig('super-admin').listPath,
-    },
-    {
-      section: 'Operations',
-      icon: <SupportIcon />,
-      name: 'Support',
-      path: '/super-admin/dashboard/support',
-    },
-
-    {
-      section: "Finance",
-      icon: <InvoicesIcon />,
-      name: "Invoices",
-      path: "/super-admin/dashboard/invoices",
-    },
-    {
-      section: "Finance",
-      icon: <StatementsIcon />,
-      name: "Statements",
-      path: "/super-admin/dashboard/statements",
-    },
-    {
-      section: "Finance",
-      icon: <Receipt size={18} />,
-      name: "Pricing & Plan",
-      path: "/super-admin/dashboard/pricing-plan",
-    },
-    {
-      section: "Settings",
-      icon: <Settings size={18} />,
-      name: "Settings",
-      path: "/super-admin/dashboard/settings",
-    },
-  ],
+  navItems: buildNavItems("/super-admin/dashboard", true),
   quickLinks: [],
 };
 

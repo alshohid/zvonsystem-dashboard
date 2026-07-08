@@ -10,8 +10,8 @@ type TopTracksCardProps = {
 
 export default function TopTracksCard({ tracks, onViewAll }: TopTracksCardProps) {
   return (
-    <section className="rounded-[24px] border border-[#E7EBF7] bg-white p-5 shadow-[0_18px_45px_rgba(46,58,131,0.06)] sm:p-6">
-      <div className="flex items-center justify-between">
+    <section className="min-w-0 rounded-[24px] border border-[#E7EBF7] bg-white p-5 shadow-[0_18px_45px_rgba(46,58,131,0.06)] sm:p-6">
+      <div className="flex items-center justify-between gap-3">
         <h3 className="text-lg font-semibold text-[#101828]">Top Tracks</h3>
         <button
           type="button"
@@ -31,7 +31,7 @@ export default function TopTracksCard({ tracks, onViewAll }: TopTracksCardProps)
           return (
             <div
               key={track.id}
-              className="flex items-center justify-between gap-4 border-b border-[#F1F3F9] py-3.5 last:border-b-0"
+              className="flex flex-col gap-2 border-b border-[#F1F3F9] py-3.5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <span className="w-4 shrink-0 text-sm font-medium text-[#98A2B3]">
@@ -43,7 +43,7 @@ export default function TopTracksCard({ tracks, onViewAll }: TopTracksCardProps)
                 </div>
               </div>
 
-              <div className="flex shrink-0 items-center gap-4 text-sm">
+              <div className="flex shrink-0 items-center justify-between gap-4 pl-7 text-sm sm:justify-normal sm:pl-0">
                 <span
                   className="inline-flex items-center gap-1 font-medium"
                   style={{ color: trendColor }}

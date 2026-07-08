@@ -273,7 +273,7 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
             "text-[#667085] hover:bg-[#F5F7F5] hover:text-[#101828]",
           ].join(" ")}
         >
-          <span className="inline-flex text-red-500 hover:text-white  h-5 w-5 shrink-0 items-center justify-center">
+          <span className="inline-flex text-red-500 h-5 w-5 shrink-0 items-center justify-center">
             <LogOut size={18} />
           </span>
           {showExpandedContent && (

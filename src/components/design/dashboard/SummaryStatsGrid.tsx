@@ -24,7 +24,7 @@ type SummaryStatsGridProps = {
 
 export default function SummaryStatsGrid({ stats }: SummaryStatsGridProps) {
   return (
-    <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 md:gap-8 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => {
         const Icon = STAT_ICON_BY_ID[stat.id];
         const TrendIcon = stat.trend.direction === "up" ? TrendingUp : TrendingDown;
@@ -40,7 +40,7 @@ export default function SummaryStatsGrid({ stats }: SummaryStatsGridProps) {
               <p className="text-xs font-extralight uppercase tracking-[0.12em] text-[#98A2B3]">
                 {stat.title}
               </p>
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-[#16A34A]">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-[#16A34A]">
                 <Icon width={16} height={16} />
               </div>
             </div>

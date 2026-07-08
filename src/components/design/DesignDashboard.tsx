@@ -46,7 +46,7 @@ export default function DesignDashboard() {
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <TopTracksCard tracks={overview.topTracks} />
 
-        <div className="flex flex-col gap-6">
+        <div className="flex min-w-0 flex-col gap-6">
           <LatestAlbumCard album={overview.albumSpotlight} />
           <RecentActivityCard items={overview.recentActivity} />
         </div>

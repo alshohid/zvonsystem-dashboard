@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { Globe2, Music2, Pause, Play } from "lucide-react";
 import type { IAlbumSpotlight } from "@/src/types/dashboardOverviewTypes";
-import { ThumbnailAudioIcon } from "@/src/icons";
 
 type LatestAlbumCardProps = {
   album: IAlbumSpotlight;
@@ -30,7 +29,7 @@ export default function LatestAlbumCard({ album }: LatestAlbumCardProps) {
   };
 
   return (
-    <section className="relative h-64 overflow-hidden rounded-[24px] border border-[#E7EBF7] shadow-[0_18px_45px_rgba(46,58,131,0.06)]">
+    <section className="relative h-64 min-w-0 overflow-hidden rounded-[24px] border border-[#E7EBF7] shadow-[0_18px_45px_rgba(46,58,131,0.06)]">
       <Image
         src={album.coverImageUrl ?? "/images/album-thumbnail.png"}
         alt={album.title}

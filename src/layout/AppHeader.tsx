@@ -62,14 +62,6 @@ const AppHeader = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#E3E8F7] text-[#2E3A83] transition hover:bg-[#F5F7FF]"
-            aria-label="Messages"
-          >
-            <MessageIcon />
-          </button>
-
           <NotificationDropdown />
 
           <div className="flex items-center gap-3 rounded-full border border-[#E7EBF7] bg-[#FBFCFF] px-2 py-1.5">

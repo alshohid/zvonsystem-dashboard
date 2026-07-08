@@ -1,11 +1,5 @@
-import RoleSectionPage from "@/src/components/design/RoleSectionPage";
+import GuideContainer from "@/src/components/admin/guide/GuideContainer";
 
 export default function AdminGuidePage() {
-  return (
-    <RoleSectionPage
-      eyebrow="Admin"
-      title="Guide"
-      description="Documentation and how-to guides for this workspace will live here."
-    />
-  );
+  return <GuideContainer />;
 }

@@ -14,6 +14,7 @@ export default function AdminDashboardLayout({
         "/admin/dashboard/user-management",
         "/admin/dashboard/dispatchers",
         "/admin/dashboard/analytics",
+        "/admin/dashboard/guide",
         "/admin/dashboard/support",
         "/admin/dashboard/performance",
         "/admin/dashboard/settings",

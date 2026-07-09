@@ -1,11 +1,5 @@
-import RoleSectionPage from "@/src/components/design/RoleSectionPage";
+import CreateReleaseContainer from '@/src/components/admin/releases/CreateReleaseContainer';
 
 export default function AdminCreateReleasePage() {
-  return (
-    <RoleSectionPage
-      eyebrow="Admin"
-      title="Create New Release"
-      description="Kick off a new release from here once the release-creation workflow is wired up."
-    />
-  );
+  return <CreateReleaseContainer releasesListPath="/admin/dashboard/releases" />;
 }

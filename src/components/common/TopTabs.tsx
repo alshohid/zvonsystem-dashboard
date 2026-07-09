@@ -14,6 +14,8 @@ type TopTabsProps<T extends string> = {
   className?: string;
   activeColorClassName?: string;
   inactiveColorClassName?: string;
+  /** 'segmented' (default) renders the pill switcher. 'stepper' renders a numbered progress stepper. */
+  variant?: 'segmented' | 'stepper';
 };
 
 export default function TopTabs<T extends string>({
@@ -24,7 +26,75 @@ export default function TopTabs<T extends string>({
   // Updated defaults to match your new design
   activeColorClassName = 'bg-[#2E3A83] text-white',
   inactiveColorClassName = 'text-[#3C4353] hover:bg-white',
+  variant = 'segmented',
 }: TopTabsProps<T>) {
+  if (variant === 'stepper') {
+    const activeIndex = tabs.findIndex(t => t.key === activeKey);
+
+    return (
+      <div className={`w-full ${className}`}>
+        <div className="flex w-full items-center">
+          {tabs.map((t, index) => {
+            const isActive = index === activeIndex;
+            const isCompleted = activeIndex >= 0 && index < activeIndex;
+            const isLast = index === tabs.length - 1;
+
+            return (
+              <div key={t.key} className="flex flex-1 items-center last:flex-none">
+                <button
+                  type="button"
+                  onClick={() => onChange(t.key)}
+                  className="flex min-w-0 items-center gap-1.5 sm:gap-2"
+                  title={t.label}
+                >
+                  <span
+                    className={[
+                      'flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold transition-colors sm:h-6 sm:w-6 sm:text-xs',
+                      isActive
+                        ? 'border-2 border-[#101828] text-[#101828]'
+                        : isCompleted
+                          ? 'bg-[#22C55E] text-white'
+                          : 'border border-[#D0D5DD] text-[#98A2B3]',
+                    ].join(' ')}
+                  >
+                    {isCompleted ? '✓' : index + 1}
+                  </span>
+                  <span
+                    className={[
+                      'hidden truncate text-[13px] sm:inline sm:text-sm',
+                      isActive
+                        ? 'font-semibold text-[#101828]'
+                        : isCompleted
+                          ? 'font-medium text-[#101828]'
+                          : 'text-[#98A2B3]',
+                    ].join(' ')}
+                  >
+                    {t.label}
+                  </span>
+                </button>
+
+                {!isLast && (
+                  <span
+                    className={[
+                      'mx-1.5 h-px flex-1 sm:mx-3',
+                      isCompleted ? 'bg-[#22C55E]' : 'bg-[#E5E7EB]',
+                    ].join(' ')}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {activeIndex >= 0 && (
+          <p className="mt-2 truncate text-xs font-medium text-[#101828] sm:hidden">
+            Step {activeIndex + 1} of {tabs.length}: {tabs[activeIndex].label}
+          </p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
       className={`flex w-full rounded-2xl border border-[#E6EAF2] bg-[#F7F8FC] p-1 ${className}`}
@@ -50,58 +120,3 @@ export default function TopTabs<T extends string>({
     </div>
   );
 }
-
-
-
-// "use client";
-
-// export type TabItem<T extends string = string> = {
-//     key: T;
-//     label: string;
-// };
-
-// type TopTabsProps<T extends string> = {
-//     tabs: TabItem<T>[];
-//     activeKey: T;
-//     onChange: (key: T) => void;
-
-//     className?: string;
-//     activeColorClassName?: string;
-//     inactiveColorClassName?: string;
-// };
-
-// export default function TopTabs<T extends string>({
-//     tabs,
-//     activeKey,
-//     onChange,
-//     className = "",
-//     activeColorClassName = "text-[#708161]",
-//     inactiveColorClassName = "text-gray-500 hover:text-gray-700",
-// }: TopTabsProps<T>) {
-//     return (
-//         <div className={`w-full border-b border-gray-200 ${className}`}>
-//             <div className="flex items-center gap-6 px-3 sm:px-4">
-//                 {tabs.map((t) => {
-//                     const active = activeKey === t.key;
-
-//                     return (
-//                         <button
-//                             key={t.key}
-//                             type="button"
-//                             onClick={() => onChange(t.key)}
-//                             className={[
-//                                 "relative py-3 text-[1rem] font-medium transition",
-//                                 active ? activeColorClassName : inactiveColorClassName,
-//                             ].join(" ")}
-//                         >
-//                             {t.label}
-//                             {active && (
-//                                 <span className="absolute left-0 right-0 -bottom-[1px] h-[2px] bg-[#708161]" />
-//                             )}
-//                         </button>
-//                     );
-//                 })}
-//             </div>
-//         </div>
-//     );
-// }

@@ -15,6 +15,7 @@ export default function AdminDashboardLayout({
         "/admin/dashboard/dispatchers",
         "/admin/dashboard/analytics",
         "/admin/dashboard/guide",
+        "/admin/dashboard/releases/create",
         "/admin/dashboard/support",
         "/admin/dashboard/performance",
         "/admin/dashboard/notifications",

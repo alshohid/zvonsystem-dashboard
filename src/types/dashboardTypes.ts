@@ -1,5 +1,3 @@
-import { ICharity } from "./adminCharityTypes";
-
 export interface IBaseResponse {
   success: boolean;
   message: string;
@@ -35,16 +33,7 @@ export interface IAdminDashboardStatesData {
   total_completed_donations: number;
   total_completed_subscriptions: number;
 }
-export interface INoticeData {
-  id: string;
-  first_name: string;
-  surname: string;
-  form: string;
-  to: string;
-  image?: string;
-  created_at: string;
-  charity?: ICharity;
-}
+
 export interface IUser {
   id: string;
   name: string;
@@ -79,10 +68,6 @@ export interface IAdminNoticeGraphSeries {
 }
 export interface IAdminNoticeGraphResponse extends IBaseResponse {
   data: IAdminNoticeGraphData;
-}
-
-export interface ICondolenceDetailsResponse extends IBaseResponse {
-  data: INoticeData;
 }
 
 export interface IRecentCondolenceNotice {

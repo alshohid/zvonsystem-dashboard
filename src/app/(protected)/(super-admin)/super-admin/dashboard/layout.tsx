@@ -1,6 +1,5 @@
 import React from "react";
 import RoleDashboardShell from "@/src/sharedComponents/layouts/RoleDashboardShell";
-import { getCarrierRouteConfig } from "@/src/lib/carrierRoutes";
 
 export default function SuperAdminDashboardLayout({
   children,
@@ -21,7 +20,6 @@ export default function SuperAdminDashboardLayout({
         "/super-admin/dashboard/statements",
         "/super-admin/dashboard/dispatcher-management",
         "/super-admin/dashboard/pricing-plan",
-        getCarrierRouteConfig('super-admin').listPath
       ]}
     >
       {children}

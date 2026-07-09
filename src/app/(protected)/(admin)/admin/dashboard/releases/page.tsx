@@ -1,11 +1,9 @@
-import RoleSectionPage from "@/src/components/design/RoleSectionPage";
+import AllReleasesContainer from "@/src/components/admin/releases/AllRealseContainer";
 
 export default function AdminAllReleasesPage() {
   return (
-    <RoleSectionPage
-      eyebrow="Admin"
-      title="All Releases"
-      description="A full list of every release across the workspace will live here."
-    />
+    <div>
+      <AllReleasesContainer />
+    </div>
   );
 }

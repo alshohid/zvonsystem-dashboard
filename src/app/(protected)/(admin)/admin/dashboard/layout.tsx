@@ -20,14 +20,11 @@ export default function AdminDashboardLayout({
         "/admin/dashboard/releases/moderation",
         "/admin/dashboard/releases/drafts",
         "/admin/dashboard/releases/changes",
-        "/admin/dashboard/support",
+        "/admin/dashboard/releases",
         "/admin/dashboard/performance",
         "/admin/dashboard/notifications",
         "/admin/dashboard/settings",
-        "/admin/dashboard/documents",
-        "/admin/dashboard/invoices",
-        "/admin/dashboard/statements",
-        "/admin/dashboard/pricing-plan",
+
         getCarrierRouteConfig('admin').listPath
       ]}
     >

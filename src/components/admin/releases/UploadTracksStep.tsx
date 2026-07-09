@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, ChevronDown, Plus, Upload } from 'lucide-react';
 import {
   Collapsible,
@@ -55,6 +55,7 @@ function createTrack(expanded: boolean): Track {
 type UploadTracksStepProps = {
   onNext: () => void;
   onBack: () => void;
+  onTrackCountChange?: (count: number) => void;
 };
 
 function TrackFileUploadField({
@@ -95,8 +96,17 @@ function TrackFileUploadField({
   );
 }
 
-export default function UploadTracksStep({ onNext, onBack }: UploadTracksStepProps) {
+export default function UploadTracksStep({
+  onNext,
+  onBack,
+  onTrackCountChange,
+}: UploadTracksStepProps) {
   const [tracks, setTracks] = useState<Track[]>([createTrack(true)]);
+
+  useEffect(() => {
+    onTrackCountChange?.(tracks.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tracks.length]);
 
   const updateTrack = (id: string, patch: Partial<Track>) => {
     setTracks(prev => prev.map(t => (t.id === id ? { ...t, ...patch } : t)));

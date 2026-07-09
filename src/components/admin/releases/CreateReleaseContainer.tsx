@@ -1,10 +1,13 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TopTabs, { TabItem } from '@/src/components/common/TopTabs';
 import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
+import DistributionStep from './DistributionStep';
 import ReleaseInfoStep from './ReleaseInfoStep';
-import ReleaseStepPlaceholder from './ReleaseStepPlaceholder';
+import type { ReleaseSummaryData } from './releaseFormOptions';
+import ScheduleSubmitStep from './ScheduleSubmitStep';
 import UploadTracksStep from './UploadTracksStep';
 
 type ReleaseStepKey =
@@ -24,6 +27,17 @@ type CreateReleaseContainerProps = {
   releasesListPath?: string;
 };
 
+const DEFAULT_SUMMARY: ReleaseSummaryData = {
+  releaseName: '',
+  subtitle: '',
+  releaseType: 'Album',
+  artistName: '',
+  genre: '',
+  labelName: '',
+  releaseDate: '',
+  trackCount: 1,
+};
+
 export default function CreateReleaseContainer({
   releasesListPath = '/admin/dashboard/releases',
 }: CreateReleaseContainerProps) {
@@ -32,6 +46,7 @@ export default function CreateReleaseContainer({
     'step',
     'release-info',
   );
+  const [summary, setSummary] = useState<ReleaseSummaryData>(DEFAULT_SUMMARY);
 
   const stepIndex = RELEASE_STEPS.findIndex(s => s.key === step);
   const goToStep = (index: number) => {
@@ -62,6 +77,7 @@ export default function CreateReleaseContainer({
           <ReleaseInfoStep
             onNext={() => goToStep(stepIndex + 1)}
             onBack={() => router.push(releasesListPath)}
+            onSummaryChange={patch => setSummary(prev => ({ ...prev, ...patch }))}
           />
         )}
 
@@ -69,23 +85,24 @@ export default function CreateReleaseContainer({
           <UploadTracksStep
             onBack={() => goToStep(stepIndex - 1)}
             onNext={() => goToStep(stepIndex + 1)}
+            onTrackCountChange={trackCount =>
+              setSummary(prev => ({ ...prev, trackCount }))
+            }
           />
         )}
 
         {step === 'distribution' && (
-          <ReleaseStepPlaceholder
-            title="Distribution"
+          <DistributionStep
             onBack={() => goToStep(stepIndex - 1)}
             onNext={() => goToStep(stepIndex + 1)}
           />
         )}
 
         {step === 'schedule-submit' && (
-          <ReleaseStepPlaceholder
-            title="Schedule & Submit"
-            nextLabel="Submit"
+          <ScheduleSubmitStep
+            summary={summary}
             onBack={() => goToStep(stepIndex - 1)}
-            onNext={() => router.push(releasesListPath)}
+            onSubmit={() => router.push(releasesListPath)}
           />
         )}
       </div>

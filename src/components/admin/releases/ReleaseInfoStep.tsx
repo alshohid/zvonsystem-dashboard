@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Upload } from 'lucide-react';
 import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 import TextInputField from '@/src/components/ui/input/TextInputField';
@@ -10,6 +10,7 @@ import {
   GENRE_OPTIONS,
   PERSON_ROLE_OPTIONS,
   RELEASE_TYPE_OPTIONS,
+  type ReleaseSummaryData,
 } from './releaseFormOptions';
 
 type ReleaseType = 'Single' | 'EP' | 'Album';
@@ -19,9 +20,15 @@ type Person = { name: string; role: string };
 type ReleaseInfoStepProps = {
   onNext: () => void;
   onBack?: () => void;
+  onSummaryChange?: (
+    summary: Pick<
+      ReleaseSummaryData,
+      'releaseName' | 'subtitle' | 'releaseType' | 'artistName' | 'genre' | 'labelName' | 'releaseDate'
+    >,
+  ) => void;
 };
 
-export default function ReleaseInfoStep({ onNext, onBack }: ReleaseInfoStepProps) {
+export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: ReleaseInfoStepProps) {
   const [releaseName, setReleaseName] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [releaseType, setReleaseType] = useState<ReleaseType>('Album');
@@ -37,6 +44,19 @@ export default function ReleaseInfoStep({ onNext, onBack }: ReleaseInfoStepProps
   const [previouslyReleased, setPreviouslyReleased] = useState(false);
 
   const coverInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    onSummaryChange?.({
+      releaseName,
+      subtitle,
+      releaseType,
+      artistName: persons[0]?.name ?? '',
+      genre: GENRE_OPTIONS.find(g => g.value === genre)?.label ?? '',
+      labelName,
+      releaseDate,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [releaseName, subtitle, releaseType, persons, genre, labelName, releaseDate]);
 
   const hasSecondArtist = persons.length > 1;
   const toggleSecondArtist = (checked: boolean) => {

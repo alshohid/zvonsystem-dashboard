@@ -8,8 +8,8 @@ import ReduxProvider from "@/src/redux/ReduxProvider";
 
 
 export const metadata: Metadata = {
-  title: "ReedsExpress Dashboard",
-  description: "ReedsExpress design mode dashboard",
+  title: "ZvonSystems Dashboard",
+  description: "ZvonSystems design mode dashboard",
 };
 
 export default function RootLayout({

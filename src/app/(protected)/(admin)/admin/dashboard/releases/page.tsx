@@ -1,9 +1,10 @@
 import AllReleasesContainer from "@/src/components/admin/releases/AllRealseContainer";
+import { Suspense } from "react";
 
 export default function AdminAllReleasesPage() {
   return (
-    <div>
+    <Suspense fallback={<div>Loading...</div>}>
       <AllReleasesContainer />
-    </div>
+    </Suspense>
   );
 }

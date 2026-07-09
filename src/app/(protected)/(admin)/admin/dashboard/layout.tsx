@@ -1,6 +1,6 @@
 import React from "react";
 import RoleDashboardShell from "@/src/sharedComponents/layouts/RoleDashboardShell";
-import { getCarrierRouteConfig } from "@/src/lib/carrierRoutes";
+
 
 export default function AdminDashboardLayout({
   children,
@@ -25,7 +25,6 @@ export default function AdminDashboardLayout({
         "/admin/dashboard/notifications",
         "/admin/dashboard/settings",
 
-        getCarrierRouteConfig('admin').listPath
       ]}
     >
       {children}

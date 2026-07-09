@@ -78,7 +78,7 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
       ? "w-[17.5rem]"
       : "w-[5.5rem]";
 
-  const isActive = (path?: string) => {
+  const isPathMatch = (path?: string) => {
     if (!path) {
       return false;
     }
@@ -90,6 +90,20 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
 
     return pathname === path || (!isDashboardRoot && pathname.startsWith(`${path}/`));
   };
+
+  // Nested routes (e.g. "/releases" and "/releases/create") can both match the
+  // current pathname as a prefix. Only the most specific (longest) match should
+  // ever be treated as active, so exactly one item lights up at a time.
+  const activePath = config.navItems
+    .flatMap((item) => [item.path, ...(item.subItems?.map((sub) => sub.path) ?? [])])
+    .filter((path): path is string => !!path && isPathMatch(path))
+    .reduce<string | undefined>(
+      (longest, candidate) =>
+        !longest || candidate.length > longest.length ? candidate : longest,
+      undefined,
+    );
+
+  const isActive = (path?: string) => !!path && path === activePath;
 
   // Auto-expand a submenu group when the active route lives inside it.
   useEffect(() => {

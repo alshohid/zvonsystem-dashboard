@@ -14,8 +14,8 @@ type TopTabsProps<T extends string> = {
   className?: string;
   activeColorClassName?: string;
   inactiveColorClassName?: string;
-  /** 'segmented' (default) renders the pill switcher. 'stepper' renders a numbered progress stepper. */
-  variant?: 'segmented' | 'stepper';
+  /** 'segmented' (default) renders the pill switcher. 'stepper' renders a numbered progress stepper. 'pills' renders individually-bordered filter buttons. */
+  variant?: 'segmented' | 'stepper' | 'pills';
 };
 
 export default function TopTabs<T extends string>({
@@ -91,6 +91,32 @@ export default function TopTabs<T extends string>({
             Step {activeIndex + 1} of {tabs.length}: {tabs[activeIndex].label}
           </p>
         )}
+      </div>
+    );
+  }
+
+  if (variant === 'pills') {
+    return (
+      <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+        {tabs.map(t => {
+          const active = activeKey === t.key;
+
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => onChange(t.key)}
+              className={[
+                'rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors',
+                active
+                  ? 'border-[#22C55E] text-[#22C55E]'
+                  : 'border-[#E5E7EB] text-[#667085] hover:border-[#D0D5DD] hover:text-[#344054]',
+              ].join(' ')}
+            >
+              {t.label}
+            </button>
+          );
+        })}
       </div>
     );
   }

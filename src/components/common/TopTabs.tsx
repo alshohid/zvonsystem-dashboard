@@ -24,7 +24,7 @@ export default function TopTabs<T extends string>({
   onChange,
   className = '',
   // Updated defaults to match your new design
-  activeColorClassName = 'bg-[#2E3A83] text-white',
+  activeColorClassName = 'bg-primary text-white',
   inactiveColorClassName = 'text-[#3C4353] hover:bg-white',
   variant = 'segmented',
 }: TopTabsProps<T>) {
@@ -51,10 +51,10 @@ export default function TopTabs<T extends string>({
                     className={[
                       'flex h-5 w-5 shrink-0 items-center justify-center rounded-md text-[11px] font-semibold transition-colors sm:h-6 sm:w-6 sm:text-xs',
                       isActive
-                        ? 'border-2 border-[#101828] text-[#101828]'
+                        ? 'border-2 border-primary text-[#101828]'
                         : isCompleted
-                          ? 'bg-[#22C55E] text-white'
-                          : 'border border-[#D0D5DD] text-[#98A2B3]',
+                          ? 'bg-primary text-white'
+                          : 'border border-[#3cd117] text-[#98A2B3]',
                     ].join(' ')}
                   >
                     {isCompleted ? '✓' : index + 1}
@@ -77,7 +77,7 @@ export default function TopTabs<T extends string>({
                   <span
                     className={[
                       'mx-1.5 h-px flex-1 sm:mx-3',
-                      isCompleted ? 'bg-[#22C55E]' : 'bg-[#E5E7EB]',
+                      isCompleted ? 'bg-primary' : 'bg-[#E5E7EB]',
                     ].join(' ')}
                   />
                 )}

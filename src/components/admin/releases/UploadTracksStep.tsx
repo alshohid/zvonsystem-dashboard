@@ -440,7 +440,7 @@ export default function UploadTracksStep({
         <button
           type="button"
           onClick={onNext}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-white hover:bg-[#16A34A]"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A]"
         >
           Next <ArrowRight size={16} />
         </button>

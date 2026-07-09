@@ -128,7 +128,7 @@ export default function ScheduleSubmitStep({
           type="button"
           disabled={!agreed}
           onClick={() => setConfirmOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-white hover:bg-[#16A34A] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A] disabled:cursor-not-allowed disabled:opacity-50"
         >
           Next <ArrowRight size={16} />
         </button>
@@ -168,7 +168,7 @@ export default function ScheduleSubmitStep({
             <button
               type="button"
               onClick={handleConfirm}
-              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-white hover:bg-[#16A34A]"
+              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A]"
             >
               Confirm
             </button>

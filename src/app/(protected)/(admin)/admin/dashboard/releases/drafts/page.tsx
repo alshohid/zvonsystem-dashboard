@@ -1,11 +1,5 @@
-import RoleSectionPage from "@/src/components/design/RoleSectionPage";
+import DraftReleasesContainer from '@/src/components/admin/releases/DraftReleasesContainer';
 
 export default function AdminDraftReleasesPage() {
-  return (
-    <RoleSectionPage
-      eyebrow="Admin"
-      title="Drafts"
-      description="Unpublished, in-progress release drafts will be listed here."
-    />
-  );
+  return <DraftReleasesContainer />;
 }

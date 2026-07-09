@@ -5,6 +5,7 @@ import TopTabs, { TabItem } from '@/src/components/common/TopTabs';
 import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
 import ReleaseInfoStep from './ReleaseInfoStep';
 import ReleaseStepPlaceholder from './ReleaseStepPlaceholder';
+import UploadTracksStep from './UploadTracksStep';
 
 type ReleaseStepKey =
   | 'release-info'
@@ -65,8 +66,7 @@ export default function CreateReleaseContainer({
         )}
 
         {step === 'upload-tracks' && (
-          <ReleaseStepPlaceholder
-            title="Upload Tracks"
+          <UploadTracksStep
             onBack={() => goToStep(stepIndex - 1)}
             onNext={() => goToStep(stepIndex + 1)}
           />

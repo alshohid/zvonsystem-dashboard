@@ -57,3 +57,12 @@ export const RELEASE_TYPE_OPTIONS: SelectOption[] = [
   { value: "EP", label: "EP" },
   { value: "Album", label: "Album" },
 ];
+
+export const TRACK_VERSION_OPTIONS: SelectOption[] = [
+  { value: "Original", label: "Original" },
+  { value: "Explicit Content", label: "Explicit Content" },
+  { value: "Live", label: "Live" },
+  { value: "Cover", label: "Cover" },
+  { value: "Remix", label: "Remix" },
+  { value: "Instrumental", label: "Instrumental" },
+];

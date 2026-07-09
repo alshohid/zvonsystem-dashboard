@@ -1,11 +1,7 @@
-import RoleSectionPage from "@/src/components/design/RoleSectionPage";
+import ModerationContainer from "@/src/components/admin/releases/ModerationContainer";
 
 export default function AdminModerationPage() {
   return (
-    <RoleSectionPage
-      eyebrow="Admin"
-      title="Moderation"
-      description="Releases pending review or moderation will show up here."
-    />
+    <ModerationContainer />
   );
 }

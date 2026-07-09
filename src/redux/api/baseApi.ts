@@ -141,6 +141,7 @@ export const baseApi = createApi({
     "DashboardOverview",
     "AnalyticsOverview",
     "GuideOverview",
+    "NotificationsOverview",
   ],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginParams>({

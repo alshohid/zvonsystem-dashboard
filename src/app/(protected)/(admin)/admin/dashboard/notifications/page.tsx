@@ -1,11 +1,5 @@
-import RoleSectionPage from "@/src/components/design/RoleSectionPage";
+import NotificationsContainer from "@/src/components/admin/notification/NotificationsContainer";
 
 export default function AdminNotificationsPage() {
-  return (
-    <RoleSectionPage
-      eyebrow="Admin"
-      title="Notifications"
-      description="Recent notifications and alerts will be listed here."
-    />
-  );
+  return <NotificationsContainer />;
 }

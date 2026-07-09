@@ -243,6 +243,61 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     });
   }
 
+  if (url === "/notifications/overview") {
+    return buildSuccess({
+      notifications: [
+        {
+          id: "1",
+          kind: "milestone",
+          title: "Neon Mirage hit 4M streams",
+          message: "Your track crossed a milestone on Spotify.",
+          occurredAgo: "2h ago",
+          isRead: false,
+        },
+        {
+          id: "2",
+          kind: "follower",
+          title: "New follower milestone",
+          message: "You now have 241,000 followers across platforms.",
+          occurredAgo: "5h ago",
+          isRead: false,
+        },
+        {
+          id: "3",
+          kind: "playlist",
+          title: "Playlist placement",
+          message: "Broken Signal was added to 3 Spotify editorial playlists.",
+          occurredAgo: "1d ago",
+          isRead: false,
+        },
+        {
+          id: "4",
+          kind: "royalty",
+          title: "Royalty payout processed",
+          message: "November earnings of $7,560 have been deposited.",
+          occurredAgo: "2d ago",
+          isRead: true,
+        },
+        {
+          id: "5",
+          kind: "changes",
+          title: "Changes required",
+          message: "Broken Signal (Acoustic) has cover art issues.",
+          occurredAgo: "5d ago",
+          isRead: true,
+        },
+        {
+          id: "6",
+          kind: "collaboration",
+          title: "Collaboration request",
+          message: "ZARA LYRA wants to collaborate on an upcoming project.",
+          occurredAgo: "1w ago",
+          isRead: true,
+        },
+      ],
+    });
+  }
+
   if (url === "/admin/dashboard/states") {
     return buildSuccess({
       pending_director_applications: 0,

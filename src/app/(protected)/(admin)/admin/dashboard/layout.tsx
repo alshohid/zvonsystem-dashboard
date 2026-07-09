@@ -17,6 +17,7 @@ export default function AdminDashboardLayout({
         "/admin/dashboard/guide",
         "/admin/dashboard/support",
         "/admin/dashboard/performance",
+        "/admin/dashboard/notifications",
         "/admin/dashboard/settings",
         "/admin/dashboard/documents",
         "/admin/dashboard/invoices",

@@ -25,22 +25,37 @@ export default function FaqAccordion({ faqs }: FaqAccordionProps) {
               className="flex w-full items-center justify-between gap-4 py-5 text-left"
             >
               <span
-                className={`text-sm sm:text-base ${
+                className={`text-sm transition-colors duration-300 sm:text-base ${
                   isOpen ? "font-semibold text-[#101828]" : "font-medium text-[#344054]"
                 }`}
               >
                 {faq.question}
               </span>
-              {isOpen ? (
-                <Minus size={18} className="shrink-0 text-[#101828]" />
-              ) : (
-                <Plus size={18} className="shrink-0 text-[#667085]" />
-              )}
+              <span className="relative h-[18px] w-[18px] shrink-0">
+                <Plus
+                  size={18}
+                  className={`absolute inset-0 text-[#667085] transition-all duration-300 ease-in-out ${
+                    isOpen ? "rotate-90 opacity-0" : "rotate-0 opacity-100"
+                  }`}
+                />
+                <Minus
+                  size={18}
+                  className={`absolute inset-0 text-[#101828] transition-all duration-300 ease-in-out ${
+                    isOpen ? "rotate-0 opacity-100" : "-rotate-90 opacity-0"
+                  }`}
+                />
+              </span>
             </button>
 
-            {isOpen && (
-              <p className="pb-5 text-sm leading-6 text-[#667085] sm:pr-10">{faq.answer}</p>
-            )}
+            <div
+              className={`grid transition-all duration-300 ease-in-out ${
+                isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <p className="pb-5 text-sm leading-6 text-[#667085] sm:pr-10">{faq.answer}</p>
+              </div>
+            </div>
           </div>
         );
       })}

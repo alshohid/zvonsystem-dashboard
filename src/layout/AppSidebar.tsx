@@ -19,7 +19,7 @@ interface AppSidebarProps {
 }
 
 const ACTIVE_ITEM_CLASSES =
-  "bg-[#E7FCE4] text-[#1F7A0E] border border-transparent border-l-[3px] border-l-[#4CFC0F] rounded-xl";
+  "bg-[#E7FCE4] text-[#1D1F2C] font-semibold border border-transparent border-l-[3px] border-l-[#4CFC0F] rounded-xl";
 
 const INACTIVE_ITEM_CLASSES =
   "border border-transparent text-gray-600 hover:bg-gray-50 rounded-xl";

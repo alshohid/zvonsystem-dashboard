@@ -30,7 +30,6 @@ export default function Login() {
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirect");
   const [showPassword, setShowPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [serverError, setServerError] = useState("");
   const { logIn, isLoading, isAuthenticated, role } = useAuth();
 
@@ -67,31 +66,31 @@ export default function Login() {
   };
 
   return (
-    <div className="box-border h-[100dvh] overflow-hidden  px-3 py-3 sm:px-4 sm:py-4">
-      <div className="mx-auto flex h-full w-full flex-col overflow-hidden rounded-[30px] p-3 sm:p-4 lg:p-5">
-        <div className="grid h-full min-h-0 flex-1 gap-4 lg:grid-cols-[6fr_6fr]">
-          <section className="flex min-h-0 items-center justify-center rounded-[26px] px-6 py-8 sm:px-8 lg:order-2 lg:px-10">
+    <div className="box-border min-h-[100dvh] w-full overflow-y-auto px-3 py-6 sm:px-4 sm:py-8 lg:h-[100dvh] lg:overflow-hidden lg:py-3">
+      <div className="mx-auto flex w-full flex-col overflow-hidden rounded-[22px] p-3 sm:p-4 lg:h-full lg:rounded-[30px] lg:p-5">
+        <div className="grid grid-cols-1 gap-4 lg:h-full lg:min-h-0 lg:flex-1 lg:grid-cols-[6fr_6fr]">
+          <section className="flex items-center justify-center rounded-[26px] px-4 py-8 sm:px-8 lg:order-2 lg:min-h-0 lg:px-10">
             <div className="w-full max-w-[338px]">
-              <div className="mb-10 flex justify-center">
+              <div className="mb-6 flex justify-center sm:mb-8 lg:mb-10">
                 <Image
                   src="/images/website_logo.png"
                   alt="Zvon"
                   width={220}
                   height={50}
-                  className="w-auto h-auto"
+                  className="h-auto w-[150px] sm:w-[180px] lg:w-[220px]"
                 />
               </div>
 
               <div className="text-center">
-                <h1 className="text-[34px] font-semibold tracking-[-0.03em] text-[#111111]">
+                <h1 className="text-[24px] font-semibold tracking-[-0.03em] text-[#111111] sm:text-[28px] lg:text-[34px]">
                   Login
                 </h1>
-                <p className="mt-3 text-sm leading-6 text-[#7C859C]">
+                <p className="mt-2 text-sm leading-6 text-[#7C859C] sm:mt-3">
                   Log in your account
                 </p>
               </div>
 
-              <form className="mt-10 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+              <form className="mt-6 space-y-4 sm:mt-8 sm:space-y-5 lg:mt-10" onSubmit={handleSubmit(onSubmit)}>
                 <div className="space-y-2">
                   <label
                     htmlFor="login-email"

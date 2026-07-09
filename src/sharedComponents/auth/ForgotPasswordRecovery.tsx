@@ -38,7 +38,7 @@ const inputClassName =
   "h-[50px] w-full rounded-[12px] border border-[#D9E0EF] bg-white px-4 text-sm text-[#101828] outline-none transition placeholder:text-[#A0A8BC] hover:border-[#C5CEE4] focus:border-[#2E3A83] focus:ring-4 focus:ring-[#2E3A83]/8";
 
 const primaryButtonClassName =
-  "inline-flex h-[52px] w-full items-center justify-center rounded-[14px] bg-[#2E3A83] px-5 text-sm font-semibold text-white transition hover:bg-[#24306C] disabled:cursor-not-allowed disabled:bg-[#AAB2D4] disabled:hover:bg-[#AAB2D4]";
+  "inline-flex h-[52px] w-full items-center justify-center rounded-[14px] bg-primary px-5 text-sm font-semibold text-black transition hover:bg-primary/80  disabled:cursor-not-allowed disabled:bg-[#AAB2D4] disabled:hover:bg-[#AAB2D4]";
 
 const getStepFromQuery = (value: string | null, email: string): Step => {
   if ((value === "otp" || value === "reset") && email) {
@@ -60,23 +60,9 @@ function AuthRecoveryLayout({ children }: { children: ReactNode }) {
   return (
     <div className="box-border h-[100dvh] overflow-hidden bg-[#EEF2F8] px-3 py-3 sm:px-4 sm:py-4">
       <div className="mx-auto flex h-full w-full flex-col overflow-hidden rounded-[30px] p-3 sm:p-4 lg:p-5">
-        <div className="grid h-full min-h-0 flex-1 gap-4 lg:grid-cols-[5fr_7fr]">
+        <div className="grid grid-cols-1 h-full min-h-0 flex-1 gap-4 ">
           <section className="flex min-h-0 items-center justify-center rounded-[26px] px-6 py-8 sm:px-8 lg:px-10">
             <div className="w-full max-w-[338px]">{children}</div>
-          </section>
-
-          <section className="hidden min-h-0 overflow-hidden rounded-[26px] lg:block">
-            <div className="relative h-full overflow-hidden rounded-[26px] border border-[#DDE4F2] bg-[#DFF4FF] shadow-[0_30px_70px_rgba(46,58,131,0.12)]">
-              <Image
-                src={AUTH_HERO_PATH}
-                alt="Password recovery truck visual"
-                fill
-                priority
-                unoptimized
-                className="object-cover"
-              />
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0)_46%,rgba(16,24,40,0.12)_100%)]" />
-            </div>
           </section>
         </div>
       </div>
@@ -88,12 +74,12 @@ function AuthLogo() {
   return (
     <div className="mb-10 flex justify-center">
       <Image
-        src="/images/auth/website_logo.png"
+        src="/images/website_logo.png"
         alt="FleetOS"
-        width={110}
-        height={50}
+        width={200}
+        height={100}
         priority
-        className="h-auto w-[88px] object-contain"
+        className="h-auto w-full"
       />
     </div>
   );

@@ -21,14 +21,6 @@ const ForgotPasswordFallback = () => {
             </div>
           </section>
 
-          <section className="hidden min-h-0 overflow-hidden rounded-[26px] lg:block">
-            <div
-              className="h-full rounded-[26px] border border-[#DDE4F2] bg-cover bg-center shadow-[0_30px_70px_rgba(46,58,131,0.12)]"
-              style={{
-                backgroundImage: "url('/images/auth/activate-workspace-hero.jpg')",
-              }}
-            />
-          </section>
         </div>
       </div>
     </div>

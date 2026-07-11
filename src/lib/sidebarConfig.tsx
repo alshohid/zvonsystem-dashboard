@@ -52,7 +52,22 @@ export type SidebarConfig = {
   quickLinks: QuickLink[];
 };
 
-const buildNavItems = (root: string, includeAdmin: boolean): NavItem[] => [
+const buildSuperAdminOnlyNavItems = (root: string, isSuperAdmin: boolean): NavItem[] => [
+  {
+    section: "Admin",
+    icon: <ShieldCheck size={18} />,
+    name: "Admin Panel",
+    path: `${root}/admin-panel`,
+  },
+  {
+    section: "Admin",
+    icon: <ShieldCheck size={18} />,
+    name: "Pricing Management",
+    path: `${root}/pricing-management`,
+  },
+];
+
+const buildNavItems = (root: string, isSuperAdmin: boolean): NavItem[] => [
   {
     section: "",
     icon: <LayoutGrid size={18} />,
@@ -121,16 +136,7 @@ const buildNavItems = (root: string, includeAdmin: boolean): NavItem[] => [
     name: "Settings",
     path: `${root}/settings`,
   },
-  ...(includeAdmin
-    ? [
-      {
-        section: "Admin",
-        icon: <ShieldCheck size={18} />,
-        name: "Admin Panel",
-        path: `${root}/admin-panel`,
-      },
-    ]
-    : []),
+  // ...(isSuperAdmin ? buildSuperAdminOnlyNavItems(root) : []),
 ];
 
 export const dispatcherSidebarConfig: SidebarConfig = {
@@ -141,13 +147,13 @@ export const dispatcherSidebarConfig: SidebarConfig = {
 
 export const adminSidebarConfig: SidebarConfig = {
   subtitle: "",
-  navItems: buildNavItems("/admin/dashboard", true),
+  navItems: buildNavItems("/admin/dashboard", false),
   quickLinks: [],
 };
 
 export const superAdminSidebarConfig: SidebarConfig = {
   subtitle: "",
-  navItems: buildNavItems("/super-admin/dashboard", true),
+  navItems: buildSuperAdminOnlyNavItems("/super-admin/dashboard", true),
   quickLinks: [],
 };
 

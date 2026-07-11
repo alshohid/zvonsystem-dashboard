@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTabsQueryState } from "@/src/lib/helper/useTabsQueryState";
 import {
   MOCK_PENDING_RELEASES,
   MOCK_REVIEWED_TODAY,
@@ -16,7 +17,7 @@ import UsersPanel from "./UsersPanel";
 type DashboardTabKey = "pending" | "reviewed" | "users";
 
 export default function SuperAdminDashboardContainer() {
-  const [activeTab, setActiveTab] = useState<DashboardTabKey>("pending");
+  const [activeTab, setActiveTab] = useTabsQueryState<DashboardTabKey>("tab", "pending");
   const [pendingReleases, setPendingReleases] = useState(MOCK_PENDING_RELEASES);
   const [selectedId, setSelectedId] = useState(MOCK_PENDING_RELEASES[0]?.id ?? "");
 

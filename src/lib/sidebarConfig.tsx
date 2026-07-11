@@ -57,7 +57,7 @@ const buildSuperAdminOnlyNavItems = (root: string, isSuperAdmin: boolean): NavIt
     section: "Admin",
     icon: <ShieldCheck size={18} />,
     name: "Admin Panel",
-    path: `${root}/admin-panel`,
+    path: `${root}`,
   },
   {
     section: "Admin",

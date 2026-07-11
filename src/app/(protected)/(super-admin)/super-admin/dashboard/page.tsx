@@ -1,5 +1,5 @@
-import DesignDashboard from "@/src/components/design/DesignDashboard";
+import SuperAdminDashboardContainer from "@/src/components/superAdmin/dashboard/SuperAdminDashboardContainer";
 
 export default function SuperAdminDashboardPage() {
-  return <DesignDashboard />;
+  return <SuperAdminDashboardContainer />;
 }

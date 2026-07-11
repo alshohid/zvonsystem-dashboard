@@ -73,11 +73,11 @@ export default function PendingApprovalDetail({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <button
           type="button"
           onClick={onApprove}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-[#101828] transition-opacity hover:opacity-90"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-[#101828] transition-opacity hover:opacity-90 sm:flex-1"
         >
           <Check className="h-4 w-4" />
           Approve Release
@@ -86,7 +86,7 @@ export default function PendingApprovalDetail({
         <button
           type="button"
           onClick={onReject}
-          className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-error-500 px-6 py-3 text-sm font-semibold text-error-600 transition-colors hover:bg-error-50"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-error-500 py-3 text-sm font-semibold text-error-600 transition-colors hover:bg-error-50 sm:w-auto sm:px-6"
         >
           <X className="h-4 w-4" />
           Reject
@@ -94,7 +94,7 @@ export default function PendingApprovalDetail({
 
         <button
           type="button"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#E5E7EB] text-[#667085] transition-colors hover:bg-gray-50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center self-center rounded-full border border-[#E5E7EB] text-[#667085] transition-colors hover:bg-gray-50 sm:self-auto"
           aria-label="More information"
         >
           <Info className="h-4 w-4" />

@@ -44,6 +44,12 @@ export interface ITopTrack {
   trend: ITrend;
 }
 
+export interface IAlbumTrack {
+  id: string;
+  title: string;
+  audioUrl: string;
+}
+
 export interface IAlbumSpotlight {
   id: string;
   title: string;
@@ -51,6 +57,7 @@ export interface IAlbumSpotlight {
   countryCount: number;
   coverImageUrl?: string;
   previewAudioUrl?: string;
+  tracks?: IAlbumTrack[];
 }
 
 export type ActivityKind =

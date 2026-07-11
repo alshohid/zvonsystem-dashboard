@@ -125,6 +125,14 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
         title: "Afterglow",
         trackCount: 12,
         countryCount: 48,
+        coverImageUrl: "/images/card_1.jpg",
+        previewAudioUrl: "/audio/track-1.wav",
+        tracks: [
+          { id: "1", title: "Neon Mirage", audioUrl: "/audio/track-1.wav" },
+          { id: "2", title: "Broken Signal", audioUrl: "/audio/track-2.wav" },
+          { id: "3", title: "Midnight Protocol", audioUrl: "/audio/track-3.wav" },
+          { id: "4", title: "Echo Chamber", audioUrl: "/audio/track-4.wav" },
+        ],
       },
       recentActivity: [
         { id: "1", kind: "milestone", message: "Neon Mirage crossed 4M streams", occurredAgo: "2h ago" },

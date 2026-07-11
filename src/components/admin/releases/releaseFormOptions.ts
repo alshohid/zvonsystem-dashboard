@@ -1,5 +1,21 @@
 export type SelectOption = { value: string; label: string };
 
+const MIN_RELEASE_LEAD_DAYS = 14;
+
+const toDateInputValue = (date: Date) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate(),
+  ).padStart(2, "0")}`;
+
+export const getMinReleaseDate = (from: Date = new Date()) => {
+  const date = new Date(from);
+  date.setDate(date.getDate() + MIN_RELEASE_LEAD_DAYS);
+  return toDateInputValue(date);
+};
+
+// A previously-released date can be any day up to and including today.
+export const getTodayDate = () => toDateInputValue(new Date());
+
 export type ReleaseSummaryData = {
   releaseName: string;
   subtitle: string;

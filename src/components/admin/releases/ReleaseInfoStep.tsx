@@ -9,6 +9,8 @@ import ReleaseSelectField from './ReleaseSelectField';
 import { FIELD_INPUT_CLASSNAME, GreenCheckbox, GreenRadioOption } from './formControls';
 import {
   GENRE_OPTIONS,
+  getMinReleaseDate,
+  getTodayDate,
   PERSON_ROLE_OPTIONS,
   RELEASE_TYPE_OPTIONS,
   type ReleaseSummaryData,
@@ -43,6 +45,10 @@ export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: Rel
   const [labelName, setLabelName] = useState('');
   const [releaseDate, setReleaseDate] = useState('');
   const [previouslyReleased, setPreviouslyReleased] = useState(false);
+  const [previousReleaseDate, setPreviousReleaseDate] = useState('');
+
+  const minReleaseDate = getMinReleaseDate();
+  const todayDate = getTodayDate();
 
   useEffect(() => {
     onSummaryChange?.({
@@ -239,16 +245,40 @@ export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: Rel
           label="Dates"
           type="date"
           value={releaseDate}
-          onChange={e => setReleaseDate(e.target.value)}
-          helperText="The selected date must match the selected release type."
+          min={minReleaseDate}
+          onChange={e => {
+            const nextDate = e.target.value;
+            if (nextDate && nextDate < minReleaseDate) return;
+            setReleaseDate(nextDate);
+          }}
+          helperText={`The selected date must match the selected release type. Earliest available date: ${minReleaseDate} (at least 2 weeks from today).`}
           inputClassName={FIELD_INPUT_CLASSNAME}
         />
 
         <GreenCheckbox
           label="My release was previously released"
           checked={previouslyReleased}
-          onChange={setPreviouslyReleased}
+          onChange={checked => {
+            setPreviouslyReleased(checked);
+            if (!checked) setPreviousReleaseDate('');
+          }}
         />
+
+        {previouslyReleased && (
+          <TextInputField
+            label="Original Release Date"
+            type="date"
+            value={previousReleaseDate}
+            max={todayDate}
+            onChange={e => {
+              const nextDate = e.target.value;
+              if (nextDate && nextDate > todayDate) return;
+              setPreviousReleaseDate(nextDate);
+            }}
+            helperText="When was this release originally made available?"
+            inputClassName={FIELD_INPUT_CLASSNAME}
+          />
+        )}
       </section>
 
       <div className="flex items-center justify-between border-t border-[#E5E7EB] pt-5">

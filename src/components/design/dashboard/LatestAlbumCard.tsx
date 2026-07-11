@@ -79,7 +79,7 @@ export default function LatestAlbumCard({ album }: LatestAlbumCardProps) {
             type="button"
             onClick={handlePrevious}
             aria-label="Previous track"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 active:scale-90 active:bg-primary"
           >
             <ChevronLeft size={16} />
           </button>
@@ -87,14 +87,14 @@ export default function LatestAlbumCard({ album }: LatestAlbumCardProps) {
             type="button"
             onClick={handleNext}
             aria-label="Next track"
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:brightness-95"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 active:scale-90 active:bg-primary"
           >
             <ChevronRight size={16} />
           </button>
         </div>
       )}
 
-      <div className="relative flex h-full flex-col justify-end p-5 pr-20 sm:p-6 sm:pr-24">
+      <div className="pointer-events-none relative flex h-full flex-col justify-end p-5 pr-20 sm:p-6 sm:pr-24">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
           Latest Album
         </p>

@@ -4,10 +4,36 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Pause, Play, Upload } from 'lucide-react';
 import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 
-const WAVEFORM_BAR_COUNT = 64;
+// Peaks are analyzed once at a fixed high resolution, then downsampled to
+// however many thin bars actually fit the container at render time — so
+// bars stay thin and dense instead of stretching to fill any given width.
+const WAVEFORM_ANALYSIS_RESOLUTION = 300;
+const BAR_WIDTH_PX = 2;
+const BAR_GAP_PX = 2;
+const MIN_BAR_COUNT = 16;
+
 // Decoding the full PCM data client-side gets slow/memory-heavy well before
 // the 1GB upload cap, so waveform analysis is skipped past this size.
 const MAX_DECODE_FILE_SIZE = 150 * 1024 * 1024;
+
+function downsamplePeaks(source: number[], targetCount: number): number[] {
+  if (targetCount >= source.length) return source;
+
+  const blockSize = source.length / targetCount;
+  const result: number[] = [];
+
+  for (let i = 0; i < targetCount; i++) {
+    const start = Math.floor(i * blockSize);
+    const end = Math.floor((i + 1) * blockSize);
+    let max = 0;
+    for (let j = start; j < end; j++) {
+      if (source[j] > max) max = source[j];
+    }
+    result.push(max);
+  }
+
+  return result;
+}
 
 async function extractWaveformPeaks(file: File, barCount: number): Promise<number[]> {
   type WindowWithWebkitAudio = typeof window & { webkitAudioContext?: typeof AudioContext };
@@ -22,18 +48,26 @@ async function extractWaveformPeaks(file: File, barCount: number): Promise<numbe
     const blockSize = Math.max(1, Math.floor(rawData.length / barCount));
     const peaks: number[] = [];
 
+    // RMS (energy) per block, not raw max sample — loud/mastered tracks hit
+    // close to full scale in almost every block, which makes a max-based
+    // waveform look like a flat, uniform-height stripe instead of varying.
     for (let i = 0; i < barCount; i++) {
       const start = i * blockSize;
-      let max = 0;
+      let sumSquares = 0;
       for (let j = 0; j < blockSize; j++) {
-        const value = Math.abs(rawData[start + j] ?? 0);
-        if (value > max) max = value;
+        const value = rawData[start + j] ?? 0;
+        sumSquares += value * value;
       }
-      peaks.push(max);
+      peaks.push(Math.sqrt(sumSquares / blockSize));
     }
 
     const maxPeak = Math.max(...peaks, 0.0001);
-    return peaks.map(peak => Math.max(peak / maxPeak, 0.06));
+    return peaks.map(peak => {
+      const normalized = peak / maxPeak;
+      // Boost contrast — RMS values cluster together too, so a sqrt curve
+      // spreads them back out into a visually varied waveform shape.
+      return Math.max(Math.sqrt(normalized), 0.06);
+    });
   } finally {
     audioContext.close();
   }
@@ -47,12 +81,38 @@ type TrackFileUploadFieldProps = {
 export default function TrackFileUploadField({ file, onFileChange }: TrackFileUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const waveformRef = useRef<HTMLDivElement | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [peaks, setPeaks] = useState<number[] | null>(null);
   const [waveformError, setWaveformError] = useState(false);
+  const [containerWidth, setContainerWidth] = useState(0);
 
+  useEffect(() => {
+    const node = waveformRef.current;
+    if (!node) return;
+
+    const observer = new ResizeObserver(entries => {
+      setContainerWidth(entries[0]?.contentRect.width ?? 0);
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const displayBarCount = Math.max(
+    MIN_BAR_COUNT,
+    Math.min(
+      WAVEFORM_ANALYSIS_RESOLUTION,
+      Math.floor(containerWidth / (BAR_WIDTH_PX + BAR_GAP_PX)),
+    ),
+  );
+
+  const displayPeaks = useMemo(
+    () => (peaks ? downsamplePeaks(peaks, displayBarCount) : null),
+    [peaks, displayBarCount],
+  );
 
   const [trackedFile, setTrackedFile] = useState(file);
   if (file !== trackedFile) {
@@ -85,7 +145,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
 
     let cancelled = false;
 
-    extractWaveformPeaks(file, WAVEFORM_BAR_COUNT)
+    extractWaveformPeaks(file, WAVEFORM_ANALYSIS_RESOLUTION)
       .then(result => {
         if (!cancelled) setPeaks(result);
       })
@@ -149,7 +209,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
       </div>
 
       {file && (
-        <div className="flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-3">
+        <div className="flex w-full max-w-md items-center gap-3 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-3">
           <button
             type="button"
             onClick={handleTogglePlay}
@@ -165,6 +225,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
           </button>
 
           <div
+            ref={waveformRef}
             role="slider"
             aria-label="Seek track"
             aria-valuemin={0}
@@ -182,17 +243,17 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
               </span>
             )}
             {waveformStatus === 'ready' &&
-              peaks?.map((peak, i) => {
-                const played = i / peaks.length < progress;
+              displayPeaks?.map((peak, i) => {
+                const played = i / displayPeaks.length < progress;
 
                 return (
                   <span
                     key={i}
                     className={[
-                      'min-w-[2px] flex-1 rounded-full transition-colors',
+                      'shrink-0 rounded-full transition-colors',
                       played ? 'bg-primary' : 'bg-[#D0D5DD]',
                     ].join(' ')}
-                    style={{ height: `${Math.max(peak * 100, 8)}%` }}
+                    style={{ width: BAR_WIDTH_PX, height: `${Math.max(peak * 100, 8)}%` }}
                   />
                 );
               })}

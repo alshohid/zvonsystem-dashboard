@@ -33,7 +33,7 @@ type DistributionStepProps = {
 
 export default function DistributionStep({ onNext, onBack }: DistributionStepProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [adPlatformScope, setAdPlatformScope] = useState<AdPlatformScope>('all');
+  const [adPlatformScope, setAdPlatformScope] = useState<AdPlatformScope>('some');
   const [territoryScope, setTerritoryScope] = useState<TerritoryScope>('certain');
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
   const [expandedRegions, setExpandedRegions] = useState<string[]>(['cis']);
@@ -81,31 +81,6 @@ export default function DistributionStep({ onNext, onBack }: DistributionStepPro
           Specify the exact distribution platforms and territories for this release.
         </p>
       </div>
-
-      {/* Platforms */}
-      <section className="space-y-4 border-t border-[#E5E7EB] pt-4">
-        <div>
-          <h3 className="text-[13px] font-semibold uppercase tracking-wide text-[#667085]">
-            Platforms
-          </h3>
-          <p className="mt-1 text-xs text-[#98A2B3]">
-            Select the platforms where you want to distribute your release
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {PLATFORM_OPTIONS.map(platform => (
-            <GreenCheckbox
-              key={platform}
-              label={platform}
-              checked={selectedPlatforms.includes(platform)}
-              onChange={() => togglePlatform(platform)}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Ad Platforms */}
       <section className="space-y-4 border-t border-[#E5E7EB] pt-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-wide text-[#667085]">
           Ad Platforms
@@ -124,6 +99,30 @@ export default function DistributionStep({ onNext, onBack }: DistributionStepPro
           ))}
         </div>
       </section>
+      {/* Platforms */}
+      {adPlatformScope === 'some' ? (
+        <section className="space-y-4 border-t border-[#E5E7EB] pt-4">
+          <div>
+            <h3 className="text-[13px] font-semibold uppercase tracking-wide text-[#667085]">
+              Platforms
+            </h3>
+            <p className="mt-1 text-xs text-[#98A2B3]">
+              Select the platforms where you want to distribute your release
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {PLATFORM_OPTIONS.map(platform => (
+              <GreenCheckbox
+                key={platform}
+                label={platform}
+                checked={selectedPlatforms.includes(platform)}
+                onChange={() => togglePlatform(platform)}
+              />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* Territories */}
       <section className="space-y-4 border-t border-[#E5E7EB] pt-4">

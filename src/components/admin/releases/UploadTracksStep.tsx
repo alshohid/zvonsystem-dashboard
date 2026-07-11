@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, ChevronDown, Plus, Upload, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowRight, ChevronDown, Plus, X } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -10,6 +10,7 @@ import {
 import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 import TextInputField from '@/src/components/ui/input/TextInputField';
 import ReleaseSelectField from './ReleaseSelectField';
+import TrackFileUploadField from './TrackFileUploadField';
 import { FIELD_INPUT_CLASSNAME, GreenCheckbox, GreenRadioOption } from './formControls';
 import { PERSON_ROLE_OPTIONS, TRACK_VERSION_OPTIONS } from './releaseFormOptions';
 
@@ -57,44 +58,6 @@ type UploadTracksStepProps = {
   onBack: () => void;
   onTrackCountChange?: (count: number) => void;
 };
-
-function TrackFileUploadField({
-  file,
-  onFileChange,
-}: {
-  file: File | null;
-  onFileChange: (file: File | null) => void;
-}) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
-  return (
-    <FormFieldInput label="Track File">
-      <div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="audio/wav,audio/flac,.wav,.flac"
-          className="hidden"
-          onChange={e => onFileChange(e.target.files?.[0] ?? null)}
-        />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="inline-flex items-center gap-2 rounded-lg border border-[#D0D5DD] bg-white px-4 py-2 text-[13px] font-medium text-[#22C55E] hover:bg-[#F0FDF4]"
-        >
-          <Upload size={16} strokeWidth={2.25} />
-          Upload a track
-        </button>
-        {file ? (
-          <span className="ml-2 text-[13px] text-[#667085]">{file.name}</span>
-        ) : null}
-      </div>
-      <p className="mt-1.5 text-xs text-[#98A2B3]">
-        Format: .wav, .flac. Max size 1GB
-      </p>
-    </FormFieldInput>
-  );
-}
 
 export default function UploadTracksStep({
   onNext,

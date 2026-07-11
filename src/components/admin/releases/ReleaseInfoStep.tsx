@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Upload } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ArrowRight, Plus, X } from 'lucide-react';
 import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 import TextInputField from '@/src/components/ui/input/TextInputField';
+import ImageUploadField from './ImageUploadField';
 import ReleaseSelectField from './ReleaseSelectField';
 import { FIELD_INPUT_CLASSNAME, GreenCheckbox, GreenRadioOption } from './formControls';
 import {
@@ -43,8 +44,6 @@ export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: Rel
   const [releaseDate, setReleaseDate] = useState('');
   const [previouslyReleased, setPreviouslyReleased] = useState(false);
 
-  const coverInputRef = useRef<HTMLInputElement | null>(null);
-
   useEffect(() => {
     onSummaryChange?.({
       releaseName,
@@ -58,13 +57,12 @@ export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: Rel
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [releaseName, subtitle, releaseType, persons, genre, labelName, releaseDate]);
 
-  const hasSecondArtist = persons.length > 1;
-  const toggleSecondArtist = (checked: boolean) => {
-    setPersons(prev =>
-      checked
-        ? [...prev, { name: '', role: '' }]
-        : prev.slice(0, 1),
-    );
+  const addPerson = () => {
+    setPersons(prev => [...prev, { name: '', role: '' }]);
+  };
+
+  const removePerson = (index: number) => {
+    setPersons(prev => prev.filter((_, i) => i !== index));
   };
 
   const updatePerson = (index: number, patch: Partial<Person>) => {
@@ -121,28 +119,11 @@ export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: Rel
         </FormFieldInput>
 
         <FormFieldInput label="Cover Image">
-          <div>
-            <input
-              ref={coverInputRef}
-              type="file"
-              accept="image/jpeg,image/png"
-              className="hidden"
-              onChange={e => setCoverImage(e.target.files?.[0] ?? null)}
-            />
-            <button
-              type="button"
-              onClick={() => coverInputRef.current?.click()}
-              className="inline-flex items-center gap-2 rounded-lg border border-[#D0D5DD] bg-white px-4 py-2 text-[13px] font-medium text-[#22C55E] hover:bg-[#F0FDF4]"
-            >
-              <Upload size={16} strokeWidth={2.25} />
-              Upload a file
-            </button>
-            {coverImage ? (
-              <span className="ml-2 text-[13px] text-[#667085]">
-                {coverImage.name}
-              </span>
-            ) : null}
-          </div>
+          <ImageUploadField
+            value={coverImage}
+            onChange={setCoverImage}
+            previewAlt="Cover preview"
+          />
           <p className="mt-1.5 text-xs text-[#98A2B3]">
             Format: .jpg, .png. Min: 1400x1400px, Max: 6000x6000px, 72dpi+.
             Max 20MB
@@ -163,29 +144,44 @@ export default function ReleaseInfoStep({ onNext, onBack, onSummaryChange }: Rel
         </div>
 
         {persons.map((person, index) => (
-          <div key={index} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <TextInputField
-              label="Name Of The Person"
-              placeholder="Alias"
-              value={person.name}
-              onChange={e => updatePerson(index, { name: e.target.value })}
-              inputClassName={FIELD_INPUT_CLASSNAME}
-            />
-            <ReleaseSelectField
-              label="Person's Role"
-              value={person.role}
-              onChange={v => updatePerson(index, { role: v })}
-              options={PERSON_ROLE_OPTIONS}
-              placeholder="Select Role"
-            />
+          <div key={index} className="flex items-start gap-3">
+            <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
+              <TextInputField
+                label="Name Of The Person"
+                placeholder="Alias"
+                value={person.name}
+                onChange={e => updatePerson(index, { name: e.target.value })}
+                inputClassName={FIELD_INPUT_CLASSNAME}
+              />
+              <ReleaseSelectField
+                label="Person's Role"
+                value={person.role}
+                onChange={v => updatePerson(index, { role: v })}
+                options={PERSON_ROLE_OPTIONS}
+                placeholder="Select Role"
+              />
+            </div>
+
+            {index > 0 && (
+              <button
+                type="button"
+                onClick={() => removePerson(index)}
+                aria-label="Remove artist"
+                className="mt-6 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#98A2B3] hover:bg-[#FEF2F2] hover:text-[#DC2626]"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
         ))}
 
-        <GreenCheckbox
-          label="Add a second Artist"
-          checked={hasSecondArtist}
-          onChange={toggleSecondArtist}
-        />
+        <button
+          type="button"
+          onClick={addPerson}
+          className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#22C55E] hover:underline"
+        >
+          <Plus size={16} /> Add Artist
+        </button>
       </section>
 
       {/* Genre */}

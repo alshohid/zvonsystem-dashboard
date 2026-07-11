@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, ChevronDown, Plus, Upload } from 'lucide-react';
+import { ArrowRight, ChevronDown, Plus, Upload, X } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -133,17 +133,22 @@ export default function UploadTracksStep({
     );
   };
 
-  const toggleTrackSecondArtist = (trackId: string, checked: boolean) => {
+  const addTrackPerson = (trackId: string) => {
     setTracks(prev =>
       prev.map(t =>
         t.id !== trackId
           ? t
-          : {
-            ...t,
-            persons: checked
-              ? [...t.persons, { name: '', role: '' }]
-              : t.persons.slice(0, 1),
-          },
+          : { ...t, persons: [...t.persons, { name: '', role: '' }] },
+      ),
+    );
+  };
+
+  const removeTrackPerson = (trackId: string, index: number) => {
+    setTracks(prev =>
+      prev.map(t =>
+        t.id !== trackId
+          ? t
+          : { ...t, persons: t.persons.filter((_, i) => i !== index) },
       ),
     );
   };
@@ -198,7 +203,7 @@ export default function UploadTracksStep({
             className="rounded-xl border border-[#E5E7EB]"
           >
             <CollapsibleTrigger className="flex w-full items-center gap-3 px-4 py-3 text-left">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-white">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-black">
                 {index + 1}
               </span>
               <span className="flex-1 text-[13px] font-medium text-[#101828]">
@@ -259,31 +264,46 @@ export default function UploadTracksStep({
                 </div>
 
                 {track.persons.map((person, pIndex) => (
-                  <div key={pIndex} className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <TextInputField
-                      label="Name Of The Person"
-                      placeholder="Alias"
-                      value={person.name}
-                      onChange={e =>
-                        updateTrackPerson(track.id, pIndex, { name: e.target.value })
-                      }
-                      inputClassName={FIELD_INPUT_CLASSNAME}
-                    />
-                    <ReleaseSelectField
-                      label="Person's Role"
-                      value={person.role}
-                      onChange={v => updateTrackPerson(track.id, pIndex, { role: v })}
-                      options={PERSON_ROLE_OPTIONS}
-                      placeholder="Select Role"
-                    />
+                  <div key={pIndex} className="flex items-start gap-3">
+                    <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-2">
+                      <TextInputField
+                        label="Name Of The Person"
+                        placeholder="Alias"
+                        value={person.name}
+                        onChange={e =>
+                          updateTrackPerson(track.id, pIndex, { name: e.target.value })
+                        }
+                        inputClassName={FIELD_INPUT_CLASSNAME}
+                      />
+                      <ReleaseSelectField
+                        label="Person's Role"
+                        value={person.role}
+                        onChange={v => updateTrackPerson(track.id, pIndex, { role: v })}
+                        options={PERSON_ROLE_OPTIONS}
+                        placeholder="Select Role"
+                      />
+                    </div>
+
+                    {pIndex > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => removeTrackPerson(track.id, pIndex)}
+                        aria-label="Remove artist"
+                        className="mt-6 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#98A2B3] hover:bg-[#FEF2F2] hover:text-[#DC2626]"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
                   </div>
                 ))}
 
-                <GreenCheckbox
-                  label="Add a second Artist"
-                  checked={track.persons.length > 1}
-                  onChange={checked => toggleTrackSecondArtist(track.id, checked)}
-                />
+                <button
+                  type="button"
+                  onClick={() => addTrackPerson(track.id)}
+                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#22C55E] hover:underline"
+                >
+                  <Plus size={16} /> Add Artist
+                </button>
               </section>
 
               {/* Authors of Music & Words */}

@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import TopTabs from '@/src/components/common/TopTabs';
+import { useQueryState } from '@/src/lib/helper/useQueryState';
+import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
 import CheckoutFlow from './CheckoutFlow';
 import CurrentPlanCard from './CurrentPlanCard';
 import InvoiceHistoryList from './InvoiceHistoryList';
@@ -17,15 +19,16 @@ type BillingView = 'landing' | 'checkout' | 'success';
 
 export default function BillingContainer() {
   const router = useRouter();
-  const [view, setView] = useState<BillingView>('landing');
-  const [selectedPlanId, setSelectedPlanId] = useState<PlanId | null>(null);
+  const [view, setView] = useTabsQueryState<BillingView>('view', 'landing');
+  const [planParam, setPlanParam] = useQueryState('plan', '');
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly');
 
-  const selectedPlan = MOCK_PLANS.find(plan => plan.id === selectedPlanId);
+  const selectedPlan = MOCK_PLANS.find(plan => plan.id === planParam);
+  const effectiveView: BillingView =
+    view === 'success' ? 'success' : selectedPlan ? 'checkout' : 'landing';
 
   const handleSelectPlan = (id: PlanId) => {
-    setSelectedPlanId(id);
-    setView('checkout');
+    setPlanParam(id);
   };
 
   return (
@@ -37,20 +40,20 @@ export default function BillingContainer() {
         <h1 className="mt-1 text-2xl font-semibold text-[#101828]">Billing &amp; Plans</h1>
       </div>
 
-      {view === 'success' && (
+      {effectiveView === 'success' && (
         <PaymentSuccessScreen onGoToDashboard={() => router.push('/admin/dashboard')} />
       )}
 
-      {view === 'checkout' && selectedPlan && (
+      {effectiveView === 'checkout' && selectedPlan && (
         <CheckoutFlow
           plan={selectedPlan}
           billingPeriod={billingPeriod}
-          onBack={() => setView('landing')}
+          onBack={() => setPlanParam('')}
           onComplete={() => setView('success')}
         />
       )}
 
-      {view === 'landing' && (
+      {effectiveView === 'landing' && (
         <>
           <CurrentPlanCard
             planName="Free Plan"
@@ -59,15 +62,15 @@ export default function BillingContainer() {
             usedLabel="1/3 used"
             onUpgrade={() => handleSelectPlan('pro')}
           />
+          <TopTabs variant="stepper" tabs={CHECKOUT_STEP_TABS} activeKey="plan" onChange={() => { }} />
 
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-[15px] font-semibold text-[#101828]">Plans</h2>
+            <h2 className="text-[1rem] font-semibold text-[#101828]">Plans</h2>
             <PlanBillingToggle value={billingPeriod} onChange={setBillingPeriod} />
           </div>
 
-          <TopTabs variant="stepper" tabs={CHECKOUT_STEP_TABS} activeKey="plan" onChange={() => {}} />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-3">
             {MOCK_PLANS.map(plan => (
               <PricingCard key={plan.id} plan={plan} onSelect={handleSelectPlan} />
             ))}

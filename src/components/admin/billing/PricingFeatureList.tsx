@@ -13,7 +13,7 @@ export default function PricingFeatureList({ features, highlighted }: PricingFea
     <div
       className={[
         'space-y-2.5 rounded-xl p-4',
-        highlighted ? 'bg-[#DEF9CE]' : 'bg-[#F5F7FB]',
+        highlighted ? 'bg-[#C8FEB599]' : 'bg-[#E9E9EA99]',
       ].join(' ')}
     >
       <p className="text-xs font-semibold text-[#101828]">What&apos;s Included:</p>

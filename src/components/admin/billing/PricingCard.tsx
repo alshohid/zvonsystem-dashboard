@@ -23,9 +23,9 @@ export default function PricingCard({ plan, onSelect }: PricingCardProps) {
   return (
     <div
       className={[
-        'flex flex-col gap-4 rounded-2xl border p-5',
+        'flex flex-col gap-2.5 md:gap-4 rounded-2xl border p-2.5 md:p-5',
         plan.highlighted
-          ? 'border-primary bg-[#EFFEE6]'
+          ? 'border-primary bg-[#EDFFE7]'
           : 'border-[#E9EDF5] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]',
       ].join(' ')}
     >
@@ -67,9 +67,9 @@ export default function PricingCard({ plan, onSelect }: PricingCardProps) {
         disabled={plan.ctaDisabled}
         onClick={() => onSelect(plan.id)}
         className={[
-          'mt-auto rounded-xl px-4 py-2.5 text-[13px] font-semibold transition-colors',
+          'mt-auto rounded-md px-4 py-2.5 text-[1rem] font-medium bg-[#E9E9EA] transition-colors',
           plan.ctaDisabled
-            ? 'cursor-not-allowed border border-[#E5E7EB] bg-white text-[#98A2B3]'
+            ? 'cursor-not-allowed border border-[#E5E7EB]  text-[#98A2B3]'
             : plan.highlighted
               ? 'bg-primary text-[#101828] hover:opacity-90'
               : 'border border-[#D0D5DD] text-[#344054] hover:bg-[#F9FAFB]',

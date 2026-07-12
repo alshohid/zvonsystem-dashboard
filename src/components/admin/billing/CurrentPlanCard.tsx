@@ -27,10 +27,10 @@ export default function CurrentPlanCard({
             <Music2 size={18} className="text-[#667085]" />
           </div>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#98A2B3]">
+            <p className="text-xs font-light uppercase tracking-[0.14em] text-[#777980]">
               Current Plan
             </p>
-            <h2 className="text-[15px] font-semibold text-[#101828]">{planName}</h2>
+            <h2 className="text-[1rem] font-semibold text-[#101828]">{planName}</h2>
             <p className="text-xs text-[#98A2B3]">{releasesRemainingLabel}</p>
           </div>
         </div>
@@ -38,14 +38,14 @@ export default function CurrentPlanCard({
         <button
           type="button"
           onClick={onUpgrade}
-          className="rounded-full bg-primary px-5 py-2 text-[13px] font-semibold text-[#101828] hover:opacity-90"
+          className="rounded-full bg-primary px-5 py-2 text-[13px] font-medium text-[#101828] hover:opacity-90"
         >
           Upgrade to Pro
         </button>
       </div>
 
       <div className="mt-4 flex items-center gap-3">
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#EAECF0]">
+        <div className="h-1.5 max-w-2xl w-full flex-1 overflow-hidden rounded-full bg-[#EAECF0]">
           <div
             className="h-full rounded-full bg-primary"
             style={{ width: `${usedPercent}%` }}

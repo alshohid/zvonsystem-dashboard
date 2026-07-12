@@ -13,6 +13,7 @@ type CheckoutStepProps = {
   onCardEntryChange: (patch: Partial<CardEntryValues>) => void;
   totalLabel: string;
   onSubmit: () => void;
+
 };
 
 export default function CheckoutStep({
@@ -23,6 +24,7 @@ export default function CheckoutStep({
   onCardEntryChange,
   totalLabel,
   onSubmit,
+
 }: CheckoutStepProps) {
   return (
     <div className="space-y-6 rounded-2xl border border-[#E9EDF5] bg-white p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">

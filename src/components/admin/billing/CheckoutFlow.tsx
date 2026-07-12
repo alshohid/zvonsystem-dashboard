@@ -9,6 +9,7 @@ import CheckoutStep from './CheckoutStep';
 import DetailsStep from './DetailsStep';
 import { CHECKOUT_STEP_TABS, MOCK_SAVED_CARDS } from './mockBillingData';
 import type { BillingDetailsFormValues, BillingPeriod, CardEntryValues, CheckoutStepKey, Plan } from './types';
+import OrderSummaryCard from './OrderSummaryCard';
 
 const EMPTY_DETAILS: BillingDetailsFormValues = {
   firstName: '',
@@ -76,15 +77,19 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
       )}
 
       {step === 'checkout' && (
-        <CheckoutStep
-          savedCards={MOCK_SAVED_CARDS}
-          selectedCardId={selectedCardId}
-          onSelectCard={setSelectedCardId}
-          cardEntry={cardEntry}
-          onCardEntryChange={patch => setCardEntry(prev => ({ ...prev, ...patch }))}
-          totalLabel={`$${plan.priceMonthly.toFixed(2)}`}
-          onSubmit={onComplete}
-        />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
+          <CheckoutStep
+            savedCards={MOCK_SAVED_CARDS}
+            selectedCardId={selectedCardId}
+            onSelectCard={setSelectedCardId}
+            cardEntry={cardEntry}
+            onCardEntryChange={patch => setCardEntry(prev => ({ ...prev, ...patch }))}
+            totalLabel={`$${plan.priceMonthly.toFixed(2)}`}
+            onSubmit={onComplete}
+
+          />
+          <OrderSummaryCard plan={plan} billingPeriod={billingPeriod} />
+        </div>
       )}
     </div>
   );

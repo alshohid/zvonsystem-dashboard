@@ -20,7 +20,7 @@ export function GreenCheckbox({
         type="checkbox"
         checked={checked}
         onChange={e => onChange(e.target.checked)}
-        className="h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-[#D0D5DD] bg-white checked:border-[#22C55E] checked:bg-[#22C55E]"
+        className="h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-[#D0D5DD] bg-white checked:border-[#22C55E] checked:bg-primary"
         style={{
           backgroundImage: checked
             ? 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 16 16%22 fill=%22white%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 1 1-1.06-1.06L12.72 4.22a.75.75 0 0 1 1.06 0Z%22/%3E%3Cpath d=%22M2.22 9.28a.75.75 0 0 0 0 1.06l2.25 2.25a.75.75 0 1 0 1.06-1.06L3.28 9.28a.75.75 0 0 0-1.06 0Z%22/%3E%3C/svg%3E")'
@@ -41,9 +41,9 @@ export function GreenRadioOption({
   checked,
   onChange,
 }: {
-  name: string;
+  name?: string;
   value: string;
-  label: string;
+  label?: string;
   checked: boolean;
   onChange: (value: string) => void;
 }) {
@@ -59,11 +59,11 @@ export function GreenRadioOption({
       />
       <span
         className={[
-          'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border',
+          'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border',
           checked ? 'border-[#22C55E] bg-[#22C55E]' : 'border-[#D0D5DD] bg-white',
         ].join(' ')}
       >
-        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+        <span className="h-2 w-2 rounded-full bg-white" />
       </span>
       {label}
     </label>

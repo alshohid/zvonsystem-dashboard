@@ -161,8 +161,15 @@ import ReleaseIcon from './Icon_2.svg';
 import PublishedIcon from './published.svg';
 import HeadPhoneIcon from './Icon_22.svg';
 import ActivityTrendIcon from './recent-activity-icon.svg';
-import ThumbnailAudioIcon from "./thumbnail-audio.png"
+import ThumbnailAudioIcon from "./thumbnail-audio.png";
+import VisaIcon from "./visa.svg";
+import MastercardIcon from "./master_card.svg";
+import VisaActualIcon from "./visa_icon.svg"
+
 export {
+  VisaActualIcon,
+  VisaIcon,
+  MastercardIcon,
   WalletIcon,
   DownloadGameIcon,
   CommunityIcon,

@@ -28,7 +28,7 @@ export default function CheckoutStep({
 }: CheckoutStepProps) {
   return (
     <div className="space-y-6 rounded-2xl border border-[#E9EDF5] bg-white p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-      <h2 className="text-[15px] font-semibold text-[#101828]">Payment Information</h2>
+      <h2 className="text-[32px] font-semibold text-[#101828] leading-9">Payment Information</h2>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {savedCards.map(card => (

@@ -24,6 +24,7 @@ export default function AdminDashboardLayout({
         "/admin/dashboard/performance",
         "/admin/dashboard/notifications",
         "/admin/dashboard/settings",
+        "/admin/dashboard/billing",
 
       ]}
     >

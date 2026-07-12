@@ -15,6 +15,7 @@ import {
   Bell,
   Settings,
   ShieldCheck,
+  BrickWallIcon,
 } from "lucide-react";
 import type { DashboardRole } from "./dashboardRoles";
 
@@ -129,6 +130,12 @@ const buildNavItems = (root: string, isSuperAdmin: boolean): NavItem[] => [
     icon: <Bell size={18} />,
     name: "Notifications",
     path: `${root}/notifications`,
+  },
+  {
+    section: "General",
+    name: "Billing",
+    icon: <BrickWallIcon size={18} />,
+    path: `${root}/billing`
   },
   {
     section: "General",

@@ -8,7 +8,7 @@ import {
 import NotificationDropdown from "@/src/components/header/NotificationDropdown";
 import { useSidebar } from "@/src/context/SidebarContext";
 import { buildCrumbs } from "@/src/lib/helper/breadcrumbs";
-import { MessageIcon, RightGoingArrow } from "../icons";
+import { RightGoingArrow } from "../icons";
 
 const AppHeader = () => {
   const pathname = usePathname();
@@ -65,12 +65,12 @@ const AppHeader = () => {
           <NotificationDropdown />
 
           <div className="flex items-center gap-3 rounded-full border border-[#E7EBF7] bg-[#FBFCFF] px-2 py-1.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#DDE4FF] text-sm font-semibold text-[#2E3A83]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EDFFE7] text-sm font-semibold text-[#2E3A83]">
               WR
             </div>
             <div className="hidden pr-2 sm:block">
               <p className="text-sm font-semibold text-[#101828]">Wisely Reed</p>
-              <p className="text-xs text-[#667085]">Admin</p>
+              {/* <p className="text-xs text-[#667085]">Admin</p> */}
             </div>
           </div>
         </div>

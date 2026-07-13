@@ -16,6 +16,8 @@ import {
   Settings,
   ShieldCheck,
   BrickWallIcon,
+  User,
+  DollarSign,
 } from "lucide-react";
 import type { DashboardRole } from "./dashboardRoles";
 
@@ -66,6 +68,19 @@ const buildSuperAdminOnlyNavItems = (root: string, isSuperAdmin: boolean): NavIt
     name: "Pricing Management",
     path: `${root}/pricing-management`,
   },
+  {
+    section: "Admin",
+    icon: <User size={18} />,
+    name: "User Management",
+    path: `${root}/user-management`,
+  },
+  {
+    section: "Admin",
+    icon: <DollarSign size={18} />,
+    name: "Revenue Analytics",
+    path: `${root}/revenue-analytics`,
+  },
+
 ];
 
 const buildNavItems = (root: string, isSuperAdmin: boolean): NavItem[] => [

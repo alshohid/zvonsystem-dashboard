@@ -14,7 +14,7 @@ import PendingApprovalsPanel from "./PendingApprovalsPanel";
 import ReviewedTodayPanel from "./ReviewedTodayPanel";
 import UsersPanel from "./UsersPanel";
 
-type DashboardTabKey = "pending" | "reviewed" | "users";
+type DashboardTabKey = "pending" | "approved" | "rejected";
 
 export default function SuperAdminDashboardContainer() {
   const [activeTab, setActiveTab] = useTabsQueryState<DashboardTabKey>("tab", "pending");
@@ -35,8 +35,8 @@ export default function SuperAdminDashboardContainer() {
 
   const tabs = [
     { key: "pending" as const, label: "Pending Approvals", count: pendingReleases.length },
-    { key: "reviewed" as const, label: "Reviewed Today" },
-    { key: "users" as const, label: "Users" },
+    { key: "approved" as const, label: "Approved" },
+    { key: "rejected" as const, label: "Rejected" },
   ];
 
   return (
@@ -55,9 +55,9 @@ export default function SuperAdminDashboardContainer() {
         />
       )}
 
-      {activeTab === "reviewed" && <ReviewedTodayPanel items={MOCK_REVIEWED_TODAY} />}
+      {activeTab === "approved" && <ReviewedTodayPanel items={MOCK_REVIEWED_TODAY} />}
 
-      {activeTab === "users" && <UsersPanel users={MOCK_USERS} />}
+      {activeTab === "rejected" && <UsersPanel users={MOCK_USERS} />}
     </div>
   );
 }

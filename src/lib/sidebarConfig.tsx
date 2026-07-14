@@ -74,12 +74,12 @@ const buildSuperAdminOnlyNavItems = (root: string, isSuperAdmin: boolean): NavIt
     name: "User Management",
     path: `${root}/user-management`,
   },
-  // {
-  //   section: "Admin",
-  //   icon: <DollarSign size={18} />,
-  //   name: "Revenue Analytics",
-  //   path: `${root}/revenue-analytics`,
-  // },
+  {
+    section: "Admin",
+    icon: <DollarSign size={18} />,
+    name: "Revenue Analytics",
+    path: `${root}/revenue-analytics`,
+  },
 
 ];
 

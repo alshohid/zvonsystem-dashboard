@@ -1,7 +1,10 @@
+import { Suspense } from "react";
+import RevenueAnalyticsContainer from "@/src/components/superAdmin/revenueAnalytics/RevenueAnalyticsContainer";
+
 export default function RevenueAnalyticsPage() {
     return (
-        <div>
-            <h1>Revenue Analytics</h1>
-        </div>
+        <Suspense fallback={<div>Loading...</div>}>
+            <RevenueAnalyticsContainer />
+        </Suspense>
     );
 }

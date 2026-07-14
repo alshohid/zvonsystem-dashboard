@@ -27,8 +27,8 @@ export default function UserGrowthChart({ data }: UserGrowthChartProps) {
           <BarChart data={data} margin={{ top: 12, right: 8, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="userGrowthFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={DASHBOARD_COLORS.streamAccent} stopOpacity={1} />
-                <stop offset="100%" stopColor={DASHBOARD_COLORS.streamAccent} stopOpacity={0.55} />
+                <stop offset="0%" stopColor="#4CFC0F" />
+                <stop offset="100%" stopColor="#00CF0E" />
               </linearGradient>
             </defs>
             <CartesianGrid vertical={false} stroke={DASHBOARD_COLORS.line} strokeDasharray="4 4" />

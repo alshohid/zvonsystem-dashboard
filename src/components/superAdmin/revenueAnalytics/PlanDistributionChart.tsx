@@ -13,7 +13,13 @@ const PLAN_LABEL: Record<PricingPlanId, string> = {
 
 const PLAN_COLOR: Record<PricingPlanId, string> = {
   free: "#D0D5DD",
-  pro: DASHBOARD_COLORS.streamAccent,
+  pro: "url(#planProGradient)",
+  "pay-per-release": "#3B82F6",
+};
+
+const PLAN_LEGEND_SWATCH: Record<PricingPlanId, string> = {
+  free: "#D0D5DD",
+  pro: "linear-gradient(180deg, #4CFC0F 0%, #00CF0E 100%)",
   "pay-per-release": "#3B82F6",
 };
 
@@ -29,6 +35,12 @@ export default function PlanDistributionChart({ data }: PlanDistributionChartPro
       <div className="mt-4 h-[220px]">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
+            <defs>
+              <linearGradient id="planProGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#4CFC0F" />
+                <stop offset="100%" stopColor="#00CF0E" />
+              </linearGradient>
+            </defs>
             <Pie
               data={data}
               dataKey="value"
@@ -63,7 +75,7 @@ export default function PlanDistributionChart({ data }: PlanDistributionChartPro
           <div key={slice.plan} className="flex items-center gap-2 text-sm text-[#475467]">
             <span
               className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: PLAN_COLOR[slice.plan] }}
+              style={{ background: PLAN_LEGEND_SWATCH[slice.plan] }}
             />
             {PLAN_LABEL[slice.plan]}
           </div>

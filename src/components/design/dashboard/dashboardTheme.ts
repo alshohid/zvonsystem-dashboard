@@ -9,7 +9,7 @@ export const DASHBOARD_COLORS = {
   successSoft: "#ECFDF3",
   danger: "#DC2626",
   dangerSoft: "#FFF1F1",
-  streamAccent: "#1DB954",
+  streamAccent: "#4CFC0F",
 } as const;
 
 export const PLATFORM_COLOR_MAP: Record<string, string> = {

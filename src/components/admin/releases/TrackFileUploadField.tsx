@@ -10,6 +10,8 @@ import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 const WAVEFORM_ANALYSIS_RESOLUTION = 300;
 const BAR_WIDTH_PX = 2;
 const BAR_GAP_PX = 2;
+const BAR_WIDTH_PX_LG = 3;
+const BAR_GAP_PX_LG = 3;
 const MIN_BAR_COUNT = 16;
 
 // Decoding the full PCM data client-side gets slow/memory-heavy well before
@@ -89,6 +91,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
   const [waveformError, setWaveformError] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
     const node = waveformRef.current;
@@ -102,12 +105,20 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsLargeScreen(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  const barWidth = isLargeScreen ? BAR_WIDTH_PX_LG : BAR_WIDTH_PX;
+  const barGap = isLargeScreen ? BAR_GAP_PX_LG : BAR_GAP_PX;
+
   const displayBarCount = Math.max(
     MIN_BAR_COUNT,
-    Math.min(
-      WAVEFORM_ANALYSIS_RESOLUTION,
-      Math.floor(containerWidth / (BAR_WIDTH_PX + BAR_GAP_PX)),
-    ),
+    Math.min(WAVEFORM_ANALYSIS_RESOLUTION, Math.floor(containerWidth / (barWidth + barGap))),
   );
 
   const displayPeaks = useMemo(
@@ -205,7 +216,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
       <input
         ref={inputRef}
         type="file"
-        accept="audio/wav,audio/flac,.wav,.flac"
+        accept="audio/wav,audio/flac,.wav,.flac,.mp3"
         className="hidden"
         onChange={e => onFileChange(e.target.files?.[0] ?? null)}
       />
@@ -285,8 +296,9 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
               aria-valuemax={100}
               aria-valuenow={Math.round(progress * 100)}
               onClick={handleSeek}
+              style={{ gap: barGap }}
               className={[
-                'flex h-10 min-w-0 flex-1 items-center gap-[2px] overflow-hidden',
+                'flex h-10 min-w-0 flex-1 items-center overflow-hidden',
                 waveformStatus === 'ready' ? 'cursor-pointer' : '',
               ].join(' ')}
             >
@@ -295,7 +307,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
                   <span
                     key={i}
                     className="shrink-0 animate-pulse rounded-full bg-primary/20"
-                    style={{ width: BAR_WIDTH_PX, height: `${height}%` }}
+                    style={{ width: barWidth, height: `${height}%` }}
                   />
                 ))}
               {waveformStatus === 'unavailable' && (
@@ -312,7 +324,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
                         'shrink-0 rounded-full transition-colors',
                         played ? 'bg-primary' : 'bg-primary/25',
                       ].join(' ')}
-                      style={{ width: BAR_WIDTH_PX, height: `${Math.max(peak * 100, 8)}%` }}
+                      style={{ width: barWidth, height: `${Math.max(peak * 100, 8)}%` }}
                     />
                   );
                 })}

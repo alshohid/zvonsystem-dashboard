@@ -1,7 +1,7 @@
 'use client';
 
 import type { ElementType } from 'react';
-import { Coins, Music2, Zap } from 'lucide-react';
+import { Building2, Coins, Music2, Zap } from 'lucide-react';
 import Badge from '@/src/components/ui/badge/Badge';
 import PricingFeatureList from './PricingFeatureList';
 import type { Plan } from './types';
@@ -10,6 +10,7 @@ const PLAN_ICON: Record<Plan['icon'], ElementType> = {
   music: Music2,
   zap: Zap,
   coin: Coins,
+  building: Building2,
 };
 
 type PricingCardProps = {

@@ -1,6 +1,6 @@
 export type BillingPeriod = 'monthly' | 'annual';
 
-export type PlanId = 'free' | 'pro' | 'pay-per-release';
+export type PlanId = 'free' | 'pro' | 'pay-per-release' | 'label';
 
 export type PlanFeature = {
   label: string;
@@ -10,7 +10,7 @@ export type PlanFeature = {
 export type Plan = {
   id: PlanId;
   name: string;
-  icon: 'music' | 'zap' | 'coin';
+  icon: 'music' | 'zap' | 'coin' | 'building';
   highlighted: boolean;
   tagline: string;
   priceMonthly: number;

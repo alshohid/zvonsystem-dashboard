@@ -70,7 +70,7 @@ export default function BillingContainer() {
           </div>
 
 
-          <div className="grid grid-cols-1 gap-4 md:gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {MOCK_PLANS.map(plan => (
               <PricingCard key={plan.id} plan={plan} onSelect={handleSelectPlan} />
             ))}

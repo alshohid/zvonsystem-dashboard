@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FileAudio2, Pause, Play, RefreshCw, Trash2, UploadCloud } from 'lucide-react';
+import { Music2, Pause, Play, Upload, UploadCloud } from 'lucide-react';
 import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 
 // Peaks are analyzed once at a fixed high resolution, then downsampled to
@@ -15,32 +15,6 @@ const MIN_BAR_COUNT = 16;
 // Decoding the full PCM data client-side gets slow/memory-heavy well before
 // the 1GB upload cap, so waveform analysis is skipped past this size.
 const MAX_DECODE_FILE_SIZE = 150 * 1024 * 1024;
-
-const ACCEPTED_EXTENSIONS = ['.wav', '.flac'];
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  const units = ['KB', 'MB', 'GB'];
-  let value = bytes / 1024;
-  let unitIndex = 0;
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex += 1;
-  }
-  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}`;
-}
-
-function formatDuration(seconds: number): string {
-  if (!Number.isFinite(seconds) || seconds < 0) return '0:00';
-  const mins = Math.floor(seconds / 60);
-  const secs = Math.floor(seconds % 60);
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
-
-function isAcceptedFile(file: File): boolean {
-  const name = file.name.toLowerCase();
-  return ACCEPTED_EXTENSIONS.some(ext => name.endsWith(ext));
-}
 
 function downsamplePeaks(source: number[], targetCount: number): number[] {
   if (targetCount >= source.length) return source;
@@ -111,8 +85,6 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
   const [peaks, setPeaks] = useState<number[] | null>(null);
   const [waveformError, setWaveformError] = useState(false);
   const [containerWidth, setContainerWidth] = useState(0);
@@ -148,8 +120,6 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     setTrackedFile(file);
     setIsPlaying(false);
     setProgress(0);
-    setCurrentTime(0);
-    setDuration(0);
     setPeaks(null);
     setWaveformError(!!file && file.size > MAX_DECODE_FILE_SIZE);
   }
@@ -204,13 +174,6 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     const audio = audioRef.current;
     if (!audio || !audio.duration) return;
     setProgress(audio.currentTime / audio.duration);
-    setCurrentTime(audio.currentTime);
-  };
-
-  const handleLoadedMetadata = () => {
-    const audio = audioRef.current;
-    if (!audio || !Number.isFinite(audio.duration)) return;
-    setDuration(audio.duration);
   };
 
   const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -221,15 +184,9 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
     audio.currentTime = ratio * audio.duration;
     setProgress(ratio);
-    setCurrentTime(ratio * audio.duration);
   };
 
   const handleBrowseClick = () => inputRef.current?.click();
-
-  const handleRemove = () => {
-    if (inputRef.current) inputRef.current.value = '';
-    onFileChange(null);
-  };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -237,8 +194,6 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     const dropped = event.dataTransfer.files?.[0];
     if (dropped) onFileChange(dropped);
   };
-
-  const fileExtension = file?.name.split('.').pop()?.toUpperCase();
 
   const skeletonHeights = useMemo(
     () => Array.from({ length: displayBarCount }, (_, i) => 25 + Math.abs(Math.sin(i * 0.45)) * 65),
@@ -291,45 +246,23 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
       )}
 
       {file && (
-        <div className="w-full max-w-xl rounded-2xl border border-[#E5E7EB] bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#EDFFE7] text-[#22C55E]">
-                <FileAudio2 size={18} />
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-[13px] font-semibold text-[#101828]">{file.name}</p>
-                <p className="text-xs text-[#98A2B3]">
-                  {formatFileSize(file.size)}
-                  {fileExtension ? ` · ${fileExtension}` : ''}
-                  {!isAcceptedFile(file) ? ' · Unsupported format' : ''}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-1">
-              <button
-                type="button"
-                onClick={handleBrowseClick}
-                aria-label="Replace track"
-                title="Replace track"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#667085] hover:bg-[#F2F4F7] hover:text-[#101828]"
-              >
-                <RefreshCw size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={handleRemove}
-                aria-label="Remove track"
-                title="Remove track"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#667085] hover:bg-[#FEF2F2] hover:text-[#DC2626]"
-              >
-                <Trash2 size={15} />
-              </button>
-            </div>
+        <div className="space-y-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full bg-[#EDFFE7] px-3 py-1.5 text-[13px] font-medium text-[#22C55E]">
+              <Music2 size={14} className="shrink-0" />
+              <span className="truncate">{file.name}</span>
+            </span>
+            <button
+              type="button"
+              onClick={handleBrowseClick}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-dashed border-[#D0D5DD] px-3 py-1.5 text-[13px] font-medium text-[#667085] transition-colors hover:border-primary hover:text-[#101828]"
+            >
+              <Upload size={14} />
+              Replace Track
+            </button>
           </div>
 
-          <div className="mt-3 flex items-center gap-3 rounded-xl bg-[#F9FAFB] p-2.5">
+          <div className="flex w-full items-center gap-3 rounded-xl border border-[#E5E7EB] bg-[#F9FAFB] p-3">
             <button
               type="button"
               onClick={handleTogglePlay}
@@ -353,7 +286,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
               aria-valuenow={Math.round(progress * 100)}
               onClick={handleSeek}
               className={[
-                'flex h-11 min-w-0 flex-1 items-center gap-[2px] overflow-hidden',
+                'flex h-10 min-w-0 flex-1 items-center gap-[2px] overflow-hidden',
                 waveformStatus === 'ready' ? 'cursor-pointer' : '',
               ].join(' ')}
             >
@@ -361,7 +294,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
                 skeletonHeights.map((height, i) => (
                   <span
                     key={i}
-                    className="shrink-0 animate-pulse rounded-full bg-[#E4E7EC]"
+                    className="shrink-0 animate-pulse rounded-full bg-primary/20"
                     style={{ width: BAR_WIDTH_PX, height: `${height}%` }}
                   />
                 ))}
@@ -377,7 +310,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
                       key={i}
                       className={[
                         'shrink-0 rounded-full transition-colors',
-                        played ? 'bg-primary' : 'bg-[#D0D5DD]',
+                        played ? 'bg-primary' : 'bg-primary/25',
                       ].join(' ')}
                       style={{ width: BAR_WIDTH_PX, height: `${Math.max(peak * 100, 8)}%` }}
                     />
@@ -385,8 +318,8 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
                 })}
             </div>
 
-            <span className="shrink-0 text-xs tabular-nums text-[#98A2B3]">
-              {formatDuration(currentTime)} / {formatDuration(duration)}
+            <span className="hidden shrink-0 max-w-[35%] truncate text-[13px] text-[#667085] sm:inline">
+              {file.name}
             </span>
           </div>
         </div>
@@ -396,14 +329,12 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
         <audio
           ref={audioRef}
           src={audioUrl}
-          onLoadedMetadata={handleLoadedMetadata}
           onTimeUpdate={handleTimeUpdate}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onEnded={() => {
             setIsPlaying(false);
             setProgress(0);
-            setCurrentTime(0);
           }}
         />
       )}

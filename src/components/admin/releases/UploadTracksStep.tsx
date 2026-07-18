@@ -386,7 +386,7 @@ export default function UploadTracksStep({
                     {TRACK_VERSION_OPTIONS.map(option => (
                       <GreenRadioOption
                         key={option.value}
-                        name={`trackVersion-${track.id}`}
+                        name={`trackVersion-${index}`}
                         value={option.value}
                         label={option.label}
                         checked={track.trackVersion === option.value}

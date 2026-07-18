@@ -1,12 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Music2, Pause, Play, Upload, UploadCloud } from 'lucide-react';
-import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 
-// Peaks are analyzed once at a fixed high resolution, then downsampled to
-// however many thin bars actually fit the container at render time — so
-// bars stay thin and dense instead of stretching to fill any given width.
 const WAVEFORM_ANALYSIS_RESOLUTION = 300;
 const BAR_WIDTH_PX = 2;
 const BAR_GAP_PX = 2;
@@ -14,11 +10,44 @@ const BAR_WIDTH_PX_LG = 3;
 const BAR_GAP_PX_LG = 3;
 const MIN_BAR_COUNT = 16;
 
-// Decoding the full PCM data client-side gets slow/memory-heavy well before
-// the 1GB upload cap, so waveform analysis is skipped past this size.
-const MAX_DECODE_FILE_SIZE = 150 * 1024 * 1024;
+const DEFAULT_ACCEPT = 'audio/wav,audio/flac,audio/mpeg,.wav,.flac,.mp3';
+const DEFAULT_ACCEPTED_EXTENSIONS = ['.wav', '.flac', '.mp3'];
+const DEFAULT_MAX_SIZE_BYTES = 1024 * 1024 * 1024;
+const DEFAULT_DROPZONE_HINT = 'WAV or FLAC · Min. 16-bit, 44.1 kHz · Max 1GB';
 
-function downsamplePeaks(source: number[], targetCount: number): number[] {
+const DEFAULT_MAX_DECODE_SIZE_BYTES = 150 * 1024 * 1024;
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ['KB', 'MB', 'GB'];
+  let value = bytes / 1024;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unitIndex]}`;
+}
+
+export function validateAudioFile(
+  file: File,
+  acceptedExtensions: string[],
+  maxSizeBytes: number,
+): string | null {
+  const matchesExtension =
+    acceptedExtensions.length === 0 ||
+    acceptedExtensions.some(ext => file.name.toLowerCase().endsWith(ext.toLowerCase()));
+
+  if (!matchesExtension) {
+    return `Unsupported file type. Accepted formats: ${acceptedExtensions.join(', ')}`;
+  }
+  if (file.size > maxSizeBytes) {
+    return `File is too large. Max size is ${formatFileSize(maxSizeBytes)}.`;
+  }
+  return null;
+}
+
+export function downsamplePeaks(source: number[], targetCount: number): number[] {
   if (targetCount >= source.length) return source;
 
   const blockSize = source.length / targetCount;
@@ -37,7 +66,7 @@ function downsamplePeaks(source: number[], targetCount: number): number[] {
   return result;
 }
 
-async function extractWaveformPeaks(file: File, barCount: number): Promise<number[]> {
+export async function extractWaveformPeaks(file: File, barCount: number): Promise<number[]> {
   type WindowWithWebkitAudio = typeof window & { webkitAudioContext?: typeof AudioContext };
   const AudioContextClass =
     window.AudioContext ?? (window as WindowWithWebkitAudio).webkitAudioContext;
@@ -50,9 +79,6 @@ async function extractWaveformPeaks(file: File, barCount: number): Promise<numbe
     const blockSize = Math.max(1, Math.floor(rawData.length / barCount));
     const peaks: number[] = [];
 
-    // RMS (energy) per block, not raw max sample — loud/mastered tracks hit
-    // close to full scale in almost every block, which makes a max-based
-    // waveform look like a flat, uniform-height stripe instead of varying.
     for (let i = 0; i < barCount; i++) {
       const start = i * blockSize;
       let sumSquares = 0;
@@ -66,8 +92,6 @@ async function extractWaveformPeaks(file: File, barCount: number): Promise<numbe
     const maxPeak = Math.max(...peaks, 0.0001);
     return peaks.map(peak => {
       const normalized = peak / maxPeak;
-      // Boost contrast — RMS values cluster together too, so a sqrt curve
-      // spreads them back out into a visually varied waveform shape.
       return Math.max(Math.sqrt(normalized), 0.06);
     });
   } finally {
@@ -75,15 +99,42 @@ async function extractWaveformPeaks(file: File, barCount: number): Promise<numbe
   }
 }
 
-type TrackFileUploadFieldProps = {
+export type TrackFileUploadFieldProps = {
   file: File | null;
   onFileChange: (file: File | null) => void;
+  label?: string | null;
+  accept?: string;
+  acceptedExtensions?: string[];
+  maxSizeBytes?: number;
+  maxDecodeSizeBytes?: number;
+  dropzoneHint?: string;
+  helperText?: string;
+  error?: string;
+  required?: boolean;
+  disabled?: boolean;
+  className?: string;
+
+  onError?: (message: string) => void;
 };
 
-export default function TrackFileUploadField({ file, onFileChange }: TrackFileUploadFieldProps) {
+export default function TrackFileUploadField({
+  file,
+  onFileChange,
+  label = 'Track File',
+  accept = DEFAULT_ACCEPT,
+  acceptedExtensions = DEFAULT_ACCEPTED_EXTENSIONS,
+  maxSizeBytes = DEFAULT_MAX_SIZE_BYTES,
+  maxDecodeSizeBytes = DEFAULT_MAX_DECODE_SIZE_BYTES,
+  dropzoneHint,
+  helperText,
+  error,
+  required,
+  disabled,
+  className,
+  onError,
+}: TrackFileUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const waveformRef = useRef<HTMLDivElement | null>(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -92,18 +143,23 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
   const [containerWidth, setContainerWidth] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const [waveformNode, setWaveformNode] = useState<HTMLDivElement | null>(null);
+  const waveformRef = useCallback((node: HTMLDivElement | null) => {
+    setWaveformNode(node);
+  }, []);
 
   useEffect(() => {
-    const node = waveformRef.current;
-    if (!node) return;
+    if (!waveformNode) return;
 
     const observer = new ResizeObserver(entries => {
       setContainerWidth(entries[0]?.contentRect.width ?? 0);
     });
 
-    observer.observe(node);
+    observer.observe(waveformNode);
     return () => observer.disconnect();
-  }, []);
+  }, [waveformNode]);
 
   useEffect(() => {
     const mql = window.matchMedia('(min-width: 1024px)');
@@ -132,13 +188,13 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     setIsPlaying(false);
     setProgress(0);
     setPeaks(null);
-    setWaveformError(!!file && file.size > MAX_DECODE_FILE_SIZE);
+    setWaveformError(!!file && file.size > maxDecodeSizeBytes);
   }
 
-  const oversized = !!file && file.size > MAX_DECODE_FILE_SIZE;
+  const oversizedForDecode = !!file && file.size > maxDecodeSizeBytes;
   const waveformStatus: 'idle' | 'loading' | 'ready' | 'unavailable' = !file
     ? 'idle'
-    : waveformError || oversized
+    : waveformError || oversizedForDecode
       ? 'unavailable'
       : peaks
         ? 'ready'
@@ -153,7 +209,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
   }, [audioUrl]);
 
   useEffect(() => {
-    if (!file || oversized) return;
+    if (!file || oversizedForDecode) return;
 
     let cancelled = false;
 
@@ -168,7 +224,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     return () => {
       cancelled = true;
     };
-  }, [file, oversized]);
+  }, [file, oversizedForDecode]);
 
   const handleTogglePlay = () => {
     const audio = audioRef.current;
@@ -197,13 +253,38 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     setProgress(ratio);
   };
 
-  const handleBrowseClick = () => inputRef.current?.click();
+  const handleBrowseClick = () => {
+    if (!disabled) inputRef.current?.click();
+  };
+
+  const acceptFile = (candidate: File | null) => {
+    if (!candidate) {
+      setValidationError(null);
+      onFileChange(null);
+      return;
+    }
+
+    const message = validateAudioFile(candidate, acceptedExtensions, maxSizeBytes);
+    if (message) {
+      setValidationError(message);
+      onError?.(message);
+      return;
+    }
+
+    setValidationError(null);
+    onFileChange(candidate);
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    acceptFile(event.target.files?.[0] ?? null);
+    event.target.value = '';
+  };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
-    const dropped = event.dataTransfer.files?.[0];
-    if (dropped) onFileChange(dropped);
+    if (disabled) return;
+    acceptFile(event.dataTransfer.files?.[0] ?? null);
   };
 
   const skeletonHeights = useMemo(
@@ -211,35 +292,49 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
     [displayBarCount],
   );
 
+  const resolvedDropzoneHint = dropzoneHint ?? DEFAULT_DROPZONE_HINT;
+
+  const resolvedMessage = error ?? validationError;
+
   return (
-    <FormFieldInput label="Track File">
+    <div className={['flex w-full flex-col gap-1.5', className ?? ''].join(' ').trim()}>
+      {label ? (
+        <label className="text-[1rem] font-medium text-[#161721]">
+          {label}
+          {required ? <span className="text-red-400"> *</span> : null}
+        </label>
+      ) : null}
+
       <input
         ref={inputRef}
         type="file"
-        accept="audio/wav,audio/flac,.wav,.flac,.mp3"
+        accept={accept}
+        disabled={disabled}
         className="hidden"
-        onChange={e => onFileChange(e.target.files?.[0] ?? null)}
+        onChange={handleInputChange}
       />
 
       {!file && (
         <div
           role="button"
-          tabIndex={0}
+          tabIndex={disabled ? -1 : 0}
+          aria-disabled={disabled}
           onClick={handleBrowseClick}
           onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
+            if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
               e.preventDefault();
               handleBrowseClick();
             }
           }}
           onDragOver={e => {
             e.preventDefault();
-            setIsDragging(true);
+            if (!disabled) setIsDragging(true);
           }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           className={[
-            'flex cursor-pointer flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors',
+            'flex flex-col items-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors',
+            disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
             isDragging
               ? 'border-primary bg-[#F0FDF4]'
               : 'border-[#D0D5DD] bg-[#F9FAFB] hover:border-primary hover:bg-[#F0FDF4]',
@@ -252,7 +347,7 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
             Drag &amp; drop your track here, or{' '}
             <span className="text-[#22C55E] underline underline-offset-2">browse</span>
           </p>
-          <p className="text-xs text-[#98A2B3]">WAV or FLAC · Min. 16-bit, 44.1 kHz · Max 1GB</p>
+          <p className="text-xs text-[#98A2B3]">{resolvedDropzoneHint}</p>
         </div>
       )}
 
@@ -265,8 +360,9 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
             </span>
             <button
               type="button"
+              disabled={disabled}
               onClick={handleBrowseClick}
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-dashed border-[#D0D5DD] px-3 py-1.5 text-[13px] font-medium text-[#667085] transition-colors hover:border-primary hover:text-[#101828]"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-dashed border-[#D0D5DD] px-3 py-1.5 text-[13px] font-medium text-[#667085] transition-colors hover:border-primary hover:text-[#101828] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload size={14} />
               Replace Track
@@ -350,6 +446,12 @@ export default function TrackFileUploadField({ file, onFileChange }: TrackFileUp
           }}
         />
       )}
-    </FormFieldInput>
+
+      {resolvedMessage ? (
+        <p className="text-xs text-[#DC2626]">{resolvedMessage}</p>
+      ) : helperText ? (
+        <p className="text-xs text-[#98A2B3]">{helperText}</p>
+      ) : null}
+    </div>
   );
 }

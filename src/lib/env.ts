@@ -14,5 +14,5 @@ export const env = {
   apiBaseUrl: trimTrailingSlash(
     process.env.NEXT_PUBLIC_API_BASE_URL ?? defaultApiBaseUrl,
   ),
-  designMode: toBoolean(process.env.NEXT_PUBLIC_DESIGN_MODE, true),
+  designMode: toBoolean(process.env.NEXT_PUBLIC_DESIGN_MODE, false),
 };

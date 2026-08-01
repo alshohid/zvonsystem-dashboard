@@ -31,8 +31,7 @@ type ForgotPasswordForm = {
   confirmPassword: string;
 };
 
-const CODE_LENGTH = 5;
-const AUTH_HERO_PATH = "/images/auth/activate-workspace-hero.jpg";
+const CODE_LENGTH = 6;
 
 const inputClassName =
   "h-[50px] w-full rounded-[12px] border border-[#D9E0EF] bg-white px-4 text-sm text-[#101828] outline-none transition placeholder:text-[#A0A8BC] hover:border-[#C5CEE4] focus:border-[#2E3A83] focus:ring-4 focus:ring-[#2E3A83]/8";
@@ -459,7 +458,7 @@ export default function ForgotPasswordRecovery() {
       <AuthLogo />
 
       {currentStep === "email" ? (
-        <>
+        <div>
           <ScreenHeader
             title="Forgot Password"
             description="Enter your email address and we'll send you password reset instructions."
@@ -509,7 +508,19 @@ export default function ForgotPasswordRecovery() {
               {forgotPasswordState.isLoading ? "Sending Code..." : "Send Code"}
             </button>
           </form>
-        </>
+
+          <div className="mt-6 flex items-center justify-center text-sm">
+            <p className="text-[#7C859C]">
+              Remember your password?{" "}
+              <Link
+                href={authRoutes.login}
+                className="text-primary font-semibold"
+              >
+                Login
+              </Link>
+            </p>
+          </div>
+        </div>
       ) : null}
 
       {currentStep === "otp" ? (

@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
 import { authRoutes } from "@/src/lib/auth/config";
 import AuthShadowPanel from "@/src/sharedComponents/auth/AuthShadowPanel";
+import { useSignUpMutation } from "@/src/redux/features/auth/authapi";
+import { useRouter } from "next/navigation";
 
 type SignUpFormValues = {
   name: string;
@@ -25,7 +28,8 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [notice, setNotice] = useState("");
-
+  const [signUp, { isLoading }] = useSignUpMutation();
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -37,7 +41,7 @@ export default function SignUp() {
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
-  const onSubmit = (data: SignUpFormValues) => {
+  const onSubmit = async (data: SignUpFormValues) => {
     clearErrors("confirmPassword");
     setNotice("");
 
@@ -49,7 +53,15 @@ export default function SignUp() {
       return;
     }
 
-    setNotice("Sign up UI is ready for backend integration.");
+    try {
+      const response: any = await signUp({ name: data.name, email: data.email, password: data.password }).unwrap();
+      if (response.success) {
+        setNotice(response?.data?.message);
+        router.push(authRoutes.login);
+      }
+    } catch (error: any) {
+      setNotice(error?.data?.message);
+    }
   };
 
   return (
@@ -239,10 +251,17 @@ export default function SignUp() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-sm font-semibold text-[#101828] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+                  disabled={isSubmitting || isLoading}
+                  className={`inline-flex h-[52px] w-full items-center justify-center gap-2 rounded-[14px] bg-primary px-5 text-sm font-semibold text-[#101828] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70 ${isLoading ? "text-black" : ""}`}
                 >
-                  Create Account
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="text-black">Creating Account...</span>
+                    </div>
+                  ) : (
+                    "Create Account"
+                  )}
                 </button>
 
                 <p className="text-center text-sm text-[#7C859C]">

@@ -1,9 +1,9 @@
 import type { AuthRole } from "@/src/types/auth";
 
 export const authCookieNames = {
-  token: "jr_auth_token",
-  refreshToken: "jr_refresh_token",
-  role: "jr_auth_role",
+  token: "zvn_auth_token",
+  refreshToken: "zvn_refresh_token",
+  role: "zvn_auth_role",
 } as const;
 
 export const authRoutes = {
@@ -12,17 +12,13 @@ export const authRoutes = {
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
   signUp: "/sign-up",
-  dispatcherDashboard: "/dispatcher/dashboard",
+  // dispatcherDashboard: "/dispatcher/dashboard",
   adminDashboard: "/admin/dashboard",
   superAdminDashboard: "/super-admin/dashboard",
 } as const;
 
 export const normalizeAuthRole = (role?: string | null): AuthRole => {
-  if (
-    role === "dispatcher" ||
-    role === "admin" ||
-    role === "super-admin"
-  ) {
+  if (role === "ARTIST" || role === "ADMIN") {
     return role;
   }
 
@@ -32,15 +28,11 @@ export const normalizeAuthRole = (role?: string | null): AuthRole => {
 export const getDefaultRouteForRole = (role?: string | null) => {
   const normalizedRole = normalizeAuthRole(role);
 
-  if (normalizedRole === "dispatcher") {
-    return authRoutes.dispatcherDashboard;
-  }
-
-  if (normalizedRole === "admin") {
+  if (normalizedRole === "ARTIST") {
     return authRoutes.adminDashboard;
   }
 
-  if (normalizedRole === "super-admin") {
+  if (normalizedRole === "ADMIN") {
     return authRoutes.superAdminDashboard;
   }
 
@@ -55,16 +47,12 @@ export const isAllowedRedirectForRole = (
     return false;
   }
 
-  if (role === "admin") {
-    return pathname.startsWith("/admin/dashboard");
-  }
-
-  if (role === "dispatcher") {
-    return pathname.startsWith("/dispatcher/dashboard");
-  }
-
-  if (role === "super-admin") {
+  if (role === "ADMIN") {
     return pathname.startsWith("/super-admin/dashboard");
+  }
+
+  if (role === "ARTIST") {
+    return pathname.startsWith("/admin/dashboard");
   }
 
   return false;

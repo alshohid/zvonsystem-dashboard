@@ -22,6 +22,17 @@ const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    signUp: builder.mutation<
+      { success?: boolean; message?: string },
+      { name: string; email: string; password: string }
+    >({
+      query: (credentials) => ({
+        url: "/auth/register",
+        method: "POST",
+        body: credentials,
+      }),
+      invalidatesTags: ["User"],
+    }),
     changePassword: builder.mutation<
       { success?: boolean; message?: string },
       { old_password: string; new_password: string }
@@ -61,6 +72,7 @@ const authApi = baseApi.injectEndpoints({
 
 export const {
   useLogoutUserMutation,
+  useSignUpMutation,
   useForgotPasswordMutation,
   useResendVerificationEmailMutation,
   useResetPasswordMutation,

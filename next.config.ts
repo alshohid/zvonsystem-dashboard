@@ -3,7 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   images: {
-    domains: ["192.168.7.42"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "unlined-glacial-luridness.ngrok-free.dev",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "[IP_ADDRESS]",
+      },
+    ],
   },
   webpack(config) {
     config.module.rules.push({

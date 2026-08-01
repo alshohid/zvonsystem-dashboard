@@ -1,5 +1,4 @@
-export type AuthRole = "dispatcher" | "admin" | "super-admin" | null;
-
+export type AuthRole = "ARTIST" | "ADMIN" | null;
 export interface LoginParams {
   email: string;
   password: string;

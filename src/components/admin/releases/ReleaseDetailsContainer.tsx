@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Disc3, Loader2, Pause, Play } from 'lucide-react';
 import { resolveMediaUrl } from '@/src/lib/env';
 import { getErrorMessage } from '@/src/lib/getErrorMessage';
@@ -20,6 +20,7 @@ import {
   getTrackVersionLabel,
 } from './releaseFormOptions';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
 
 const ALL_RELEASES_PAGE_SIZE = 12;
 
@@ -50,13 +51,11 @@ type ReleaseDetailsContainerProps = {
 
 export default function ReleaseDetailsContainer({
   releaseId,
-  backPath = '/admin/dashboard/releases',
 }: ReleaseDetailsContainerProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const fromAllReleases = searchParams.get('from') === 'all';
 
-  // `GET /releases/:id` only serves the signed-in artist's own releases, so a
-  // release opened from All Releases is read back out of the list query.
   const listQuery = useGetAllReleasesQuery(
     {
       page: Math.max(Number(searchParams.get('page')) || 1, 1),
@@ -84,13 +83,14 @@ export default function ReleaseDetailsContainer({
   const error = ownedQuery.error ?? listQuery.error;
 
   const backLink = (
-    <Link
-      href={backPath}
+    <Button
+      onClick={() => router.back()}
+      variant="ghost"
       className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#98A2B3] transition hover:text-[#101828]"
     >
       <ArrowLeft className="h-4 w-4" />
       Releases
-    </Link>
+    </Button>
   );
 
   if (isLoading) {

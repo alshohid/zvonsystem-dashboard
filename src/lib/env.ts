@@ -19,10 +19,19 @@ export const env = {
   designMode: toBoolean(process.env.NEXT_PUBLIC_DESIGN_MODE, false),
 };
 
+
 export const resolveMediaUrl = (path?: string | null) => {
   if (!path) return null;
-  if (/^https?:\/\//i.test(path)) return path;
-  if (!env.mediaBaseUrl) return null;
 
-  return `${env.mediaBaseUrl}/${path.replace(/^\/+/, "")}`;
+  const isAbsolute = /^https?:\/\//i.test(path);
+  const isOwnStorage =
+    !!env.mediaBaseUrl && (!isAbsolute || path.startsWith(`${env.mediaBaseUrl}/`));
+
+  if (!isOwnStorage) return isAbsolute ? path : null;
+
+  const storagePath = (
+    isAbsolute ? path.slice(env.mediaBaseUrl.length) : path
+  ).replace(/^\/+/, "");
+
+  return `/api/media?path=${encodeURIComponent(storagePath)}`;
 };

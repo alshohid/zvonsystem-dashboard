@@ -20,7 +20,7 @@ export default function ReleaseCard({ release, href }: ReleaseCardProps) {
     release.persons?.find(person => person.role === 'MAIN_ARTIST')?.name ??
     release.persons?.[0]?.name ??
     null;
-console.log("coverUrl",coverUrl);
+
   return (
     <Link
       href={href}

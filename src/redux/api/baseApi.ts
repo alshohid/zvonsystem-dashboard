@@ -24,8 +24,9 @@ import type {
 const baseQuery = fetchBaseQuery({
   baseUrl: env.apiBaseUrl,
   prepareHeaders: (headers, { getState }) => {
+  
     const token = (getState() as RootState).auth.token;
-
+    headers.set('ngrok-skip-browser-warning', 'true');
     headers.set("accept", "*/*");
 
     if (token) {
@@ -142,6 +143,7 @@ export const baseApi = createApi({
     "AnalyticsOverview",
     "GuideOverview",
     "NotificationsOverview",
+    "Release",
   ],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginParams>({

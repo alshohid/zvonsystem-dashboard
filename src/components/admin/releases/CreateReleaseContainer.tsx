@@ -1,20 +1,37 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import TopTabs, { TabItem } from '@/src/components/common/TopTabs';
+import { getErrorMessage } from '@/src/lib/getErrorMessage';
 import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
+import {
+  useCreateReleaseMutation,
+  useGetReleaseByIdQuery,
+  useUpdateReleaseMutation,
+} from '@/src/redux/features/releases/releasesApi';
+import type { ReleaseStatus } from '@/src/types/releaseTypes';
 import DistributionStep from './DistributionStep';
 import ReleaseInfoStep from './ReleaseInfoStep';
-import type { ReleaseSummaryData } from './releaseFormOptions';
 import ScheduleSubmitStep from './ScheduleSubmitStep';
 import UploadTracksStep from './UploadTracksStep';
-
-type ReleaseStepKey =
-  | 'release-info'
-  | 'upload-tracks'
-  | 'distribution'
-  | 'schedule-submit';
+import {
+  buildReleaseFormData,
+  clearFormSession,
+  createEmptyForm,
+  getAudioOrderError,
+  getStepValidationError,
+  hydrateFormFromRelease,
+  readFormFromSession,
+  RELEASE_STEP_KEYS,
+  saveFormToSession,
+  stepKeyToNumber,
+  stepNumberToKey,
+  type ReleaseFormState,
+  type ReleaseStepKey,
+} from './releaseFormState';
 
 const RELEASE_STEPS: TabItem<ReleaseStepKey>[] = [
   { key: 'release-info', label: 'Release Info' },
@@ -25,34 +42,144 @@ const RELEASE_STEPS: TabItem<ReleaseStepKey>[] = [
 
 type CreateReleaseContainerProps = {
   releasesListPath?: string;
-};
-
-const DEFAULT_SUMMARY: ReleaseSummaryData = {
-  releaseName: '',
-  subtitle: '',
-  releaseType: 'Album',
-  artistName: '',
-  genre: '',
-  labelName: '',
-  releaseDate: '',
-  trackCount: 1,
+  moderationPath?: string;
 };
 
 export default function CreateReleaseContainer({
   releasesListPath = '/admin/dashboard/releases',
+  moderationPath = '/admin/dashboard/releases/moderation',
 }: CreateReleaseContainerProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const requestedReleaseId = searchParams.get('id');
+
   const [step, setStep] = useTabsQueryState<ReleaseStepKey>(
     'step',
     'release-info',
   );
-  const [summary, setSummary] = useState<ReleaseSummaryData>(DEFAULT_SUMMARY);
+  const [form, setForm] = useState<ReleaseFormState>(createEmptyForm);
+  const hydratedIdRef = useRef<string | null>(null);
+
+  const { data, isFetching, isError, error } = useGetReleaseByIdQuery(
+    requestedReleaseId ?? '',
+    { skip: !requestedReleaseId },
+  );
+
+  const [createRelease, { isLoading: isCreating }] = useCreateReleaseMutation();
+  const [updateRelease, { isLoading: isUpdating }] = useUpdateReleaseMutation();
+  const isSaving = isCreating || isUpdating;
+
+  // A fresh visit restores whatever the previous step left in the session.
+  useEffect(() => {
+    if (requestedReleaseId) return;
+
+    const restored = readFormFromSession();
+    if (restored) setForm(restored);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const release = data?.data;
+    if (!release || hydratedIdRef.current === release.id) return;
+
+    hydratedIdRef.current = release.id;
+    setForm(hydrateFormFromRelease(release));
+    setStep(stepNumberToKey(release.current_step));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  useEffect(() => {
+    saveFormToSession(form);
+  }, [form]);
+
+  const patchForm = useCallback((patch: Partial<ReleaseFormState>) => {
+    setForm(prev => ({ ...prev, ...patch }));
+  }, []);
 
   const stepIndex = RELEASE_STEPS.findIndex(s => s.key === step);
-  const goToStep = (index: number) => {
-    const target = RELEASE_STEPS[index];
+
+  const persist = async (status: ReleaseStatus, stepNumber: number) => {
+    const body = buildReleaseFormData(form, { status, currentStep: stepNumber });
+
+    if (form.releaseId) {
+      const response = await updateRelease({
+        id: form.releaseId,
+        body,
+      }).unwrap();
+      return response.data;
+    }
+
+    const response = await createRelease(body).unwrap();
+    const created = response.data;
+
+    // Guard the hydration effect so the fetch triggered by `?id=` cannot wipe
+    // the files that are still only held in memory.
+    hydratedIdRef.current = created.id;
+    setForm(prev => ({ ...prev, releaseId: created.id }));
+
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('id', created.id);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+
+    return created;
+  };
+
+  const handleSaveDraft = async () => {
+    const audioError = getAudioOrderError(form.tracks);
+    if (audioError) {
+      toast.error(audioError);
+      return;
+    }
+
+    try {
+      await persist('DRAFT', stepKeyToNumber(step));
+      toast.success('Draft saved.');
+    } catch (saveError) {
+      toast.error(getErrorMessage(saveError, 'Could not save the draft.'));
+    }
+  };
+
+  const handleNext = () => {
+    const validationError = getStepValidationError(form, step);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    const target = RELEASE_STEPS[stepIndex + 1];
     if (target) setStep(target.key);
   };
+
+  const handleBack = () => {
+    const target = RELEASE_STEPS[stepIndex - 1];
+    if (target) setStep(target.key);
+    else router.push(releasesListPath);
+  };
+
+  const handleSubmit = async () => {
+    for (const key of RELEASE_STEP_KEYS) {
+      const validationError = getStepValidationError(form, key);
+      if (validationError) {
+        toast.error(validationError);
+        setStep(key);
+        return false;
+      }
+    }
+
+    try {
+      await persist('IN_MODERATION', RELEASE_STEP_KEYS.length);
+      clearFormSession();
+      return true;
+    } catch (submitError) {
+      toast.error(
+        getErrorMessage(submitError, 'Could not submit the release.'),
+      );
+      return false;
+    }
+  };
+
+  const isLoadingDraft = Boolean(requestedReleaseId) && isFetching && !data;
 
   return (
     <div className="space-y-6">
@@ -61,7 +188,7 @@ export default function CreateReleaseContainer({
           Releases
         </p>
         <h1 className="mt-1 text-2xl font-semibold text-[#101828]">
-          Create New Release
+          {form.releaseId ? 'Continue Release' : 'Create New Release'}
         </h1>
       </div>
 
@@ -73,37 +200,71 @@ export default function CreateReleaseContainer({
       />
 
       <div className="rounded-2xl border border-[#E9EDF5] bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] md:p-6">
-        {step === 'release-info' && (
-          <ReleaseInfoStep
-            onNext={() => goToStep(stepIndex + 1)}
-            onBack={() => router.push(releasesListPath)}
-            onSummaryChange={patch => setSummary(prev => ({ ...prev, ...patch }))}
-          />
-        )}
+        {isLoadingDraft ? (
+          <div className="flex items-center justify-center gap-2 py-16 text-sm text-[#667085]">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading your draft…
+          </div>
+        ) : isError ? (
+          <div className="space-y-3 py-16 text-center">
+            <p className="text-sm font-medium text-[#B42318]">
+              {getErrorMessage(error, 'This release could not be loaded.')}
+            </p>
+            <button
+              type="button"
+              onClick={() => router.push(releasesListPath)}
+              className="text-[13px] font-semibold text-[#22C55E] hover:underline"
+            >
+              Back to releases
+            </button>
+          </div>
+        ) : (
+          <>
+            {step === 'release-info' && (
+              <ReleaseInfoStep
+                form={form}
+                onChange={patchForm}
+                onNext={handleNext}
+                onBack={handleBack}
+                onSaveDraft={handleSaveDraft}
+                isSaving={isSaving}
+              />
+            )}
 
-        {step === 'upload-tracks' && (
-          <UploadTracksStep
-            onBack={() => goToStep(stepIndex - 1)}
-            onNext={() => goToStep(stepIndex + 1)}
-            onTrackCountChange={trackCount =>
-              setSummary(prev => ({ ...prev, trackCount }))
-            }
-          />
-        )}
+            {step === 'upload-tracks' && (
+              <UploadTracksStep
+                form={form}
+                onChange={patchForm}
+                onNext={handleNext}
+                onBack={handleBack}
+                onSaveDraft={handleSaveDraft}
+                isSaving={isSaving}
+              />
+            )}
 
-        {step === 'distribution' && (
-          <DistributionStep
-            onBack={() => goToStep(stepIndex - 1)}
-            onNext={() => goToStep(stepIndex + 1)}
-          />
-        )}
+            {step === 'distribution' && (
+              <DistributionStep
+                form={form}
+                onChange={patchForm}
+                onNext={handleNext}
+                onBack={handleBack}
+                onSaveDraft={handleSaveDraft}
+                isSaving={isSaving}
+              />
+            )}
 
-        {step === 'schedule-submit' && (
-          <ScheduleSubmitStep
-            summary={summary}
-            onBack={() => goToStep(stepIndex - 1)}
-            onSubmit={() => router.push(releasesListPath)}
-          />
+            {step === 'schedule-submit' && (
+              <ScheduleSubmitStep
+                form={form}
+                onChange={patchForm}
+                onBack={handleBack}
+                onSaveDraft={handleSaveDraft}
+                onSubmit={handleSubmit}
+                onDone={() => router.push(moderationPath)}
+                isSaving={isSaving}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

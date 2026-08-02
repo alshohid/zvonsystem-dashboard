@@ -1,4 +1,18 @@
-export type SelectOption = { value: string; label: string };
+import {
+  PERSON_ROLES,
+  RELEASE_GENRES,
+  RELEASE_TYPES,
+  TRACK_VERSIONS,
+  type PersonRole,
+  type ReleaseGenre,
+  type ReleaseType,
+  type TrackVersion,
+} from "@/src/types/releaseTypes";
+
+export type SelectOption<TValue extends string = string> = {
+  value: TValue;
+  label: string;
+};
 
 const MIN_RELEASE_LEAD_DAYS = 14;
 
@@ -16,82 +30,96 @@ export const getMinReleaseDate = (from: Date = new Date()) => {
 // A previously-released date can be any day up to and including today.
 export const getTodayDate = () => toDateInputValue(new Date());
 
-export type ReleaseSummaryData = {
-  releaseName: string;
-  subtitle: string;
-  releaseType: string;
-  artistName: string;
-  genre: string;
-  labelName: string;
-  releaseDate: string;
-  trackCount: number;
+const PERSON_ROLE_LABELS: Record<PersonRole, string> = {
+  MAIN_ARTIST: "Main Artist",
+  FEAT: "feat.",
+  REMIXER: "Remixer",
+  PRODUCER: "Producer",
 };
 
-export const PERSON_ROLE_OPTIONS: SelectOption[] = [
-  { value: "main-artist", label: "Main Artist" },
-  { value: "feat", label: "feat." },
-  { value: "remixer", label: "Remixer" },
-];
+export const PERSON_ROLE_OPTIONS: SelectOption<PersonRole>[] = PERSON_ROLES.map(
+  (value) => ({ value, label: PERSON_ROLE_LABELS[value] }),
+);
 
-export const GENRE_OPTIONS: SelectOption[] = [
-  "Ambient",
-  "Avant-Garde",
-  "Bass",
-  "Breakbeat",
-  "Classical",
-  "Country",
-  "Dance",
-  "Downtempo",
-  "Dubstep",
-  "EDM",
-  "Electronic",
-  "Electronica",
-  "Folk",
-  "Funk",
-  "Garage",
-  "Hardcore",
-  "Hip-Hop/Rap",
-  "House",
-  "IDM/Experimental",
-  "Indie Pop",
-  "Industrial",
-  "Instrumental",
-  "Jungle/Drum & Bass",
-  "Latin",
-  "Lounge",
-  "New Age",
-  "New Wave",
-  "Piano",
-  "Pop",
-  "Post-Rock",
-  "Punk",
-  "R&B/Soul",
-  "Reggae",
-  "Rock",
-  "Rockabilly",
-  "Soul",
-  "Tech House",
-  "Techno",
-  "Trance",
-].map((label) => ({ value: label.toLowerCase(), label }));
+const GENRE_LABELS: Record<ReleaseGenre, string> = {
+  AMBIENT: "Ambient",
+  ANIME: "Anime",
+  BASS: "Bass",
+  BREAKBEAT: "Breakbeat",
+  CLASSICAL: "Classical",
+  COUNTRY: "Country",
+  DANCE: "Dance",
+  DISCO: "Disco",
+  DOWNTEMPO: "Downtempo",
+  DUBSTEP: "Dubstep",
+  EDM: "EDM",
+  ELECTRONIC: "Electronic",
+  ELECTRONICA: "Electronica",
+  FOLK: "Folk",
+  FUNK: "Funk",
+  GARAGE: "Garage",
+  HARDCORE: "Hardcore",
+  HIP_HOP_RAP: "Hip-Hop / Rap",
+  HOUSE: "House",
+  IDM_EXPERIMENTAL: "IDM / Experimental",
+  INDIE_POP: "Indie Pop",
+  INDUSTRIAL: "Industrial",
+  INSTRUMENTAL: "Instrumental",
+  JUNGLE_DRUM_N_BASS: "Jungle / Drum & Bass",
+  LATIN: "Latin",
+  LOUNGE: "Lounge",
+  NEW_AGE: "New Age",
+  NEW_WAVE: "New Wave",
+  PHONK_FUNK: "Phonk / Funk",
+  PIANO: "Piano",
+  POP: "Pop",
+  PUNK: "Punk",
+  RNB_SOUL: "R&B / Soul",
+  REGGAE: "Reggae",
+  ROCK: "Rock",
+  RUSSIAN: "Russian",
+  SOUL: "Soul",
+  TECH_HOUSE: "Tech House",
+  TECHNO: "Techno",
+  TRANCE: "Trance",
+};
+
+export const GENRE_OPTIONS: SelectOption<ReleaseGenre>[] = RELEASE_GENRES.map(
+  (value) => ({ value, label: GENRE_LABELS[value] }),
+);
+
+export const getGenreLabel = (genre: ReleaseGenre | "" | null) =>
+  genre ? GENRE_LABELS[genre] : "";
+
+const RELEASE_TYPE_LABELS: Record<ReleaseType, string> = {
+  SINGLE: "Single",
+  EP: "EP",
+  ALBUM: "Album",
+};
+
+export const RELEASE_TYPE_OPTIONS: SelectOption<ReleaseType>[] =
+  RELEASE_TYPES.map((value) => ({ value, label: RELEASE_TYPE_LABELS[value] }));
+
+export const getReleaseTypeLabel = (type: ReleaseType | "" | null) =>
+  type ? RELEASE_TYPE_LABELS[type] : "";
+
+const TRACK_VERSION_LABELS: Record<TrackVersion, string> = {
+  ORIGINAL: "Original",
+  EXPLICIT_CONTENT: "Explicit Content",
+  LIVE: "Live",
+  COVER: "Cover",
+  REMIX: "Remix",
+  INSTRUMENTAL: "Instrumental",
+};
+
+export const TRACK_VERSION_OPTIONS: SelectOption<TrackVersion>[] =
+  TRACK_VERSIONS.map((value) => ({
+    value,
+    label: TRACK_VERSION_LABELS[value],
+  }));
 
 export const LABEL_NAME_OPTIONS: SelectOption[] = [
   { value: "independent", label: "Independent / Self-Released" },
-];
-
-export const RELEASE_TYPE_OPTIONS: SelectOption[] = [
-  { value: "Single", label: "Single" },
-  { value: "EP", label: "EP" },
-  { value: "Album", label: "Album" },
-];
-
-export const TRACK_VERSION_OPTIONS: SelectOption[] = [
-  { value: "Original", label: "Original" },
-  { value: "Explicit Content", label: "Explicit Content" },
-  { value: "Live", label: "Live" },
-  { value: "Cover", label: "Cover" },
-  { value: "Remix", label: "Remix" },
-  { value: "Instrumental", label: "Instrumental" },
 ];
 
 export const PLATFORM_OPTIONS: string[] = [
@@ -127,143 +155,160 @@ export const PLATFORM_OPTIONS: string[] = [
   "Peloton",
 ];
 
+export type TerritoryCountry = { code: string; label: string };
+
+/**
+ * `apiField` is the per-region array the backend expects; countries travel as
+ * ISO 3166-1 alpha-2 codes and are also mirrored into `selected_countries`.
+ */
 export type TerritoryRegion = {
   id: string;
   label: string;
-  countries: string[];
+  apiField: "cis_countries" | "europe" | "americas" | "africa" | "oceania";
+  countries: TerritoryCountry[];
 };
+
+const country = (code: string, label: string): TerritoryCountry => ({
+  code,
+  label,
+});
 
 export const TERRITORY_REGIONS: TerritoryRegion[] = [
   {
     id: "cis",
     label: "CIS (Commonwealth of Independent States)",
+    apiField: "cis_countries",
     countries: [
-      "Armenia",
-      "Azerbaijan",
-      "Belarus",
-      "Georgia",
-      "Kazakhstan",
-      "Kyrgyzstan",
-      "Moldova",
-      "Russia",
-      "Tajikistan",
-      "Turkmenistan",
-      "Ukraine",
-      "Uzbekistan",
+      country("AM", "Armenia"),
+      country("AZ", "Azerbaijan"),
+      country("BY", "Belarus"),
+      country("GE", "Georgia"),
+      country("KZ", "Kazakhstan"),
+      country("KG", "Kyrgyzstan"),
+      country("MD", "Moldova"),
+      country("RU", "Russia"),
+      country("TJ", "Tajikistan"),
+      country("TM", "Turkmenistan"),
+      country("UA", "Ukraine"),
+      country("UZ", "Uzbekistan"),
     ],
   },
   {
     id: "europe",
     label: "Europe",
+    apiField: "europe",
     countries: [
-      "Albania",
-      "Austria",
-      "Belgium",
-      "Bosnia",
-      "Bulgaria",
-      "Croatia",
-      "Czech Republic",
-      "Denmark",
-      "Estonia",
-      "Finland",
-      "France",
-      "Germany",
-      "Greece",
-      "Hungary",
-      "Iceland",
-      "Ireland",
-      "Italy",
-      "Latvia",
-      "Lithuania",
-      "Luxembourg",
-      "Montenegro",
-      "Netherlands",
-      "North Macedonia",
-      "Norway",
-      "Poland",
-      "Portugal",
-      "Romania",
-      "Serbia",
-      "Slovakia",
-      "Slovenia",
-      "Spain",
-      "Sweden",
-      "Switzerland",
-      "United Kingdom",
+      country("AL", "Albania"),
+      country("AT", "Austria"),
+      country("BE", "Belgium"),
+      country("BA", "Bosnia & Herzegovina"),
+      country("BG", "Bulgaria"),
+      country("HR", "Croatia"),
+      country("CZ", "Czech Republic"),
+      country("DK", "Denmark"),
+      country("EE", "Estonia"),
+      country("FI", "Finland"),
+      country("FR", "France"),
+      country("DE", "Germany"),
+      country("GR", "Greece"),
+      country("HU", "Hungary"),
+      country("IS", "Iceland"),
+      country("IE", "Ireland"),
+      country("IT", "Italy"),
+      country("LV", "Latvia"),
+      country("LT", "Lithuania"),
+      country("LU", "Luxembourg"),
+      country("ME", "Montenegro"),
+      country("NL", "Netherlands"),
+      country("MK", "North Macedonia"),
+      country("NO", "Norway"),
+      country("PL", "Poland"),
+      country("PT", "Portugal"),
+      country("RO", "Romania"),
+      country("RS", "Serbia"),
+      country("SK", "Slovakia"),
+      country("SI", "Slovenia"),
+      country("ES", "Spain"),
+      country("SE", "Sweden"),
+      country("CH", "Switzerland"),
+      country("GB", "United Kingdom"),
     ],
   },
   {
     id: "americas",
     label: "Americas",
+    apiField: "americas",
     countries: [
-      "Argentina",
-      "Bolivia",
-      "Brazil",
-      "Canada",
-      "Chile",
-      "Colombia",
-      "Costa Rica",
-      "Cuba",
-      "Dominican Republic",
-      "Ecuador",
-      "El Salvador",
-      "Guatemala",
-      "Honduras",
-      "Jamaica",
-      "Mexico",
-      "Nicaragua",
-      "Panama",
-      "Paraguay",
-      "Peru",
-      "Trinidad & Tobago",
-      "United States",
-      "Uruguay",
+      country("AR", "Argentina"),
+      country("BO", "Bolivia"),
+      country("BR", "Brazil"),
+      country("CA", "Canada"),
+      country("CL", "Chile"),
+      country("CO", "Colombia"),
+      country("CR", "Costa Rica"),
+      country("CU", "Cuba"),
+      country("DO", "Dominican Republic"),
+      country("EC", "Ecuador"),
+      country("SV", "El Salvador"),
+      country("GT", "Guatemala"),
+      country("HN", "Honduras"),
+      country("JM", "Jamaica"),
+      country("MX", "Mexico"),
+      country("NI", "Nicaragua"),
+      country("PA", "Panama"),
+      country("PY", "Paraguay"),
+      country("PE", "Peru"),
+      country("TT", "Trinidad & Tobago"),
+      country("US", "United States"),
+      country("UY", "Uruguay"),
     ],
   },
   {
     id: "africa-middle-east",
     label: "Africa & Middle East",
+    apiField: "africa",
     countries: [
-      "Algeria",
-      "Bahrain",
-      "Egypt",
-      "Ethiopia",
-      "Ghana",
-      "Israel",
-      "Jordan",
-      "Kenya",
-      "Kuwait",
-      "Lebanon",
-      "Nigeria",
-      "Oman",
-      "Saudi Arabia",
-      "South Africa",
-      "Tanzania",
-      "Tunisia",
-      "Turkey",
-      "UAE",
+      country("DZ", "Algeria"),
+      country("BH", "Bahrain"),
+      country("EG", "Egypt"),
+      country("ET", "Ethiopia"),
+      country("GH", "Ghana"),
+      country("IL", "Israel"),
+      country("JO", "Jordan"),
+      country("KE", "Kenya"),
+      country("KW", "Kuwait"),
+      country("LB", "Lebanon"),
+      country("NG", "Nigeria"),
+      country("OM", "Oman"),
+      country("SA", "Saudi Arabia"),
+      country("ZA", "South Africa"),
+      country("TZ", "Tanzania"),
+      country("TN", "Tunisia"),
+      country("TR", "Turkey"),
+      country("AE", "United Arab Emirates"),
     ],
   },
   {
     id: "oceania-other",
     label: "Oceania & Other",
+    apiField: "oceania",
     countries: [
-      "Australia",
-      "Bangladesh",
-      "China",
-      "India",
-      "Indonesia",
-      "Japan",
-      "Malaysia",
-      "New Zealand",
-      "Pakistan",
-      "Philippines",
-      "Qatar",
-      "Singapore",
-      "South Korea",
-      "Sri Lanka",
-      "Thailand",
-      "Vietnam",
+      country("AU", "Australia"),
+      country("BD", "Bangladesh"),
+      country("CN", "China"),
+      country("IN", "India"),
+      country("ID", "Indonesia"),
+      country("JP", "Japan"),
+      country("MY", "Malaysia"),
+      country("NZ", "New Zealand"),
+      country("PK", "Pakistan"),
+      country("PH", "Philippines"),
+      country("QA", "Qatar"),
+      country("SG", "Singapore"),
+      country("KR", "South Korea"),
+      country("LK", "Sri Lanka"),
+      country("TH", "Thailand"),
+      country("VN", "Vietnam"),
     ],
   },
 ];
@@ -274,7 +319,7 @@ export const AD_PLATFORM_SCOPE_OPTIONS: SelectOption[] = [
 ];
 
 export const TERRITORY_SCOPE_OPTIONS: SelectOption[] = [
-  { value: "all", label: "In all countries" },
-  { value: "certain", label: "Only in certain countries" },
-  { value: "cis", label: "In the CIS" },
+  { value: "ALL", label: "In all countries" },
+  { value: "CERTAIN", label: "Only in certain countries" },
+  { value: "CIS", label: "In the CIS" },
 ];

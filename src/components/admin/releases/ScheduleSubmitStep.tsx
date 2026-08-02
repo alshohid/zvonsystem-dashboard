@@ -1,33 +1,43 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight, Check } from 'lucide-react';
+import { ArrowRight, Check, Loader2, Save } from 'lucide-react';
 import { Modal } from '@/src/components/ui/modal';
 import { GreenCheckbox } from './formControls';
-import type { ReleaseSummaryData } from './releaseFormOptions';
+import { getGenreLabel, getReleaseTypeLabel } from './releaseFormOptions';
+import type { ReleaseFormState } from './releaseFormState';
 
 type ScheduleSubmitStepProps = {
-  summary: ReleaseSummaryData;
+  form: ReleaseFormState;
+  onChange: (patch: Partial<ReleaseFormState>) => void;
   onBack: () => void;
-  onSubmit: () => void;
+  onSaveDraft: () => void;
+  onSubmit: () => Promise<boolean>;
+  onDone: () => void;
+  isSaving: boolean;
 };
 
 export default function ScheduleSubmitStep({
-  summary,
+  form,
+  onChange,
   onBack,
+  onSaveDraft,
   onSubmit,
+  onDone,
+  isSaving,
 }: ScheduleSubmitStepProps) {
-  const [moderatorMessage, setModeratorMessage] = useState('');
-  const [agreed, setAgreed] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const releaseTitle = summary.releaseName || 'this release';
+  const releaseTitle = form.releaseName || 'this release';
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
+    const succeeded = await onSubmit();
+    if (!succeeded) return;
+
     setConfirmOpen(false);
     setSubmitted(true);
-    setTimeout(onSubmit, 1800);
+    setTimeout(onDone, 1800);
   };
 
   if (submitted) {
@@ -48,15 +58,20 @@ export default function ScheduleSubmitStep({
     );
   }
 
+  const mainArtist =
+    form.persons.find(person => person.role === 'MAIN_ARTIST')?.name ||
+    form.persons[0]?.name ||
+    '';
+
   const summaryRows: { label: string; value: string }[] = [
-    { label: 'Title', value: summary.releaseName || '—' },
-    { label: 'Subtitle', value: summary.subtitle || '—' },
-    { label: 'Type', value: summary.releaseType || '—' },
-    { label: 'Artist', value: summary.artistName || '—' },
-    { label: 'Genre', value: summary.genre || '—' },
-    { label: 'Label', value: summary.labelName || '—' },
-    { label: 'Release Date', value: summary.releaseDate || '—' },
-    { label: 'Tracks', value: `${summary.trackCount} track(s)` },
+    { label: 'Title', value: form.releaseName || '—' },
+    { label: 'Subtitle', value: form.subtitle || '—' },
+    { label: 'Type', value: getReleaseTypeLabel(form.releaseType) || '—' },
+    { label: 'Artist', value: mainArtist || '—' },
+    { label: 'Genre', value: getGenreLabel(form.genre) || '—' },
+    { label: 'Label', value: form.labelName || '—' },
+    { label: 'Release Date', value: form.releaseDate || '—' },
+    { label: 'Tracks', value: `${form.tracks.length} track(s)` },
   ];
 
   return (
@@ -101,8 +116,8 @@ export default function ScheduleSubmitStep({
         </div>
 
         <textarea
-          value={moderatorMessage}
-          onChange={e => setModeratorMessage(e.target.value)}
+          value={form.moderatorMessage}
+          onChange={e => onChange({ moderatorMessage: e.target.value })}
           placeholder="Write what you want to send to the moderator"
           rows={4}
           className="w-full resize-none rounded-lg border border-[#E9E9EA] bg-[#F5F7FB] px-4 py-3 text-[13px] text-[#161721] outline-none placeholder:text-[#A1A1AA] focus:border-[#8FA17E] focus:ring-2 focus:ring-[#8FA17E]/15"
@@ -110,28 +125,44 @@ export default function ScheduleSubmitStep({
 
         <GreenCheckbox
           label="All information is filled correctly. I agree with everything"
-          checked={agreed}
-          onChange={setAgreed}
+          checked={form.agreed}
+          onChange={checked => onChange({ agreed: checked })}
         />
       </section>
 
-      <div className="flex items-center justify-between border-t border-[#E5E7EB] pt-5">
+      <div className="flex flex-col gap-3 border-t border-[#E5E7EB] pt-5 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={onBack}
-          className="text-[13px] font-medium text-[#344054] hover:text-[#101828]"
+          className="text-left text-[13px] font-medium text-[#344054] hover:text-[#101828]"
         >
           &lt; Back
         </button>
 
-        <button
-          type="button"
-          disabled={!agreed}
-          onClick={() => setConfirmOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Next <ArrowRight size={16} />
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onSaveDraft}
+            disabled={isSaving}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-[#D0D5DD] px-5 py-2.5 text-[13px] font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSaving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Save size={16} />
+            )}
+            Save Draft
+          </button>
+
+          <button
+            type="button"
+            disabled={!form.agreed || isSaving}
+            onClick={() => setConfirmOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Submit For Review <ArrowRight size={16} />
+          </button>
+        </div>
       </div>
 
       <Modal
@@ -161,15 +192,18 @@ export default function ScheduleSubmitStep({
             <button
               type="button"
               onClick={() => setConfirmOpen(false)}
-              className="flex-1 rounded-xl bg-[#F2F4F7] px-4 py-2.5 text-[13px] font-semibold text-[#344054] hover:bg-[#E4E7EC]"
+              disabled={isSaving}
+              className="flex-1 rounded-xl bg-[#F2F4F7] px-4 py-2.5 text-[13px] font-semibold text-[#344054] hover:bg-[#E4E7EC] disabled:opacity-60"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleConfirm}
-              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A]"
+              disabled={isSaving}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A] disabled:opacity-60"
             >
+              {isSaving ? <Loader2 size={16} className="animate-spin" /> : null}
               Confirm
             </button>
           </div>

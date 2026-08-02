@@ -52,10 +52,6 @@ export function proxy(request: NextRequest) {
     );
   }
 
-  if (pathname === authRoutes.signUp) {
-    return NextResponse.redirect(new URL(authRoutes.login, request.url));
-  }
-
   if (isAuthPage) {
     if (isAuthenticated) {
       return NextResponse.redirect(

@@ -1,21 +1,34 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { CheckCircle2 } from 'lucide-react';
-import { MOCK_CHANGE_ISSUES } from './mockChanges';
+import { CheckCircle2, Loader2 } from 'lucide-react';
+import { getErrorMessage } from '@/src/lib/getErrorMessage';
+import { useGetMyReleasesQuery } from '@/src/redux/features/releases/releasesApi';
+import type { ApiRelease } from '@/src/types/releaseTypes';
 import ChangeIssueCard from './ChangeIssueCard';
+import { clearFormSession } from './releaseFormState';
 
-export default function ChangesContainer() {
+const PAGE_SIZE = 50;
+
+type ChangesContainerProps = {
+  createPath?: string;
+};
+
+export default function ChangesContainer({
+  createPath = '/admin/dashboard/releases/create',
+}: ChangesContainerProps) {
   const router = useRouter();
-  const [issues, setIssues] = useState(MOCK_CHANGE_ISSUES);
 
-  const handlePreview = (id: string) => {
-    router.push(`/admin/dashboard/releases/create?draft=${id}`);
-  };
+  const { data, isLoading, isError, error } = useGetMyReleasesQuery({
+    status: 'REJECTED',
+    limit: PAGE_SIZE,
+  });
 
-  const handleFixNow = (id: string) => {
-    router.push(`/admin/dashboard/releases/create?draft=${id}`);
+  const issues = data?.data ?? [];
+
+  const openRelease = (release: ApiRelease) => {
+    clearFormSession();
+    router.push(`${createPath}?id=${release.id}`);
   };
 
   return (
@@ -35,14 +48,25 @@ export default function ChangesContainer() {
         </span>
       </div>
 
-      {issues.length > 0 ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center gap-2 rounded-2xl border border-[#E9EDF5] bg-white py-16 text-sm text-[#667085]">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Loading releases…
+        </div>
+      ) : isError ? (
+        <div className="rounded-2xl border border-[#FECDD3] bg-[#FEF2F2] py-12 text-center">
+          <p className="text-sm font-medium text-[#B42318]">
+            {getErrorMessage(error, 'Releases could not be loaded.')}
+          </p>
+        </div>
+      ) : issues.length > 0 ? (
         <div className="space-y-4">
           {issues.map(issue => (
             <ChangeIssueCard
               key={issue.id}
-              issue={issue}
-              onPreview={handlePreview}
-              onFixNow={handleFixNow}
+              release={issue}
+              onPreview={openRelease}
+              onFixNow={openRelease}
             />
           ))}
         </div>

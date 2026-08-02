@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { ArrowRight, ChevronDown, Plus, X } from 'lucide-react';
+import { AlertTriangle, ChevronDown, Music2, Plus, X } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleContent,
@@ -9,140 +8,80 @@ import {
 } from '@/src/components/ui/collapsible';
 import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
 import TextInputField from '@/src/components/ui/input/TextInputField';
+import type { PersonRole, TrackVersion } from '@/src/types/releaseTypes';
 import ReleaseSelectField from './ReleaseSelectField';
+import StepFooter from './StepFooter';
 import TrackFileUploadField from './TrackFileUploadField';
 import { FIELD_INPUT_CLASSNAME, GreenCheckbox, GreenRadioOption } from './formControls';
 import { PERSON_ROLE_OPTIONS, TRACK_VERSION_OPTIONS } from './releaseFormOptions';
-
-type TrackPerson = { name: string; role: string };
-type TrackAuthor = { musicAuthor: string; wordsAuthor: string };
-
-type Track = {
-  id: string;
-  expanded: boolean;
-  file: File | null;
-  trackName: string;
-  subtitle: string;
-  isrc: string;
-  persons: TrackPerson[];
-  authors: TrackAuthor[];
-  ownsFullRights: boolean;
-  soundRecording: string;
-  phonogramProducer: string;
-  preListeningSeconds: string;
-  trackLanguage: string;
-  trackVersion: string;
-};
-
-function createTrack(expanded: boolean): Track {
-  return {
-    id: crypto.randomUUID(),
-    expanded,
-    file: null,
-    trackName: '',
-    subtitle: '',
-    isrc: '',
-    persons: [{ name: '', role: 'main-artist' }],
-    authors: [{ musicAuthor: '', wordsAuthor: '' }],
-    ownsFullRights: false,
-    soundRecording: '',
-    phonogramProducer: '',
-    preListeningSeconds: '0',
-    trackLanguage: '',
-    trackVersion: 'Original',
-  };
-}
+import {
+  createEmptyTrack,
+  getAudioOrderError,
+  type PersonForm,
+  type ReleaseFormState,
+  type TrackAuthorForm,
+  type TrackForm,
+} from './releaseFormState';
 
 type UploadTracksStepProps = {
+  form: ReleaseFormState;
+  onChange: (patch: Partial<ReleaseFormState>) => void;
   onNext: () => void;
   onBack: () => void;
-  onTrackCountChange?: (count: number) => void;
+  onSaveDraft: () => void;
+  isSaving: boolean;
 };
 
 export default function UploadTracksStep({
+  form,
+  onChange,
   onNext,
   onBack,
-  onTrackCountChange,
+  onSaveDraft,
+  isSaving,
 }: UploadTracksStepProps) {
-  const [tracks, setTracks] = useState<Track[]>([createTrack(true)]);
+  const tracks = form.tracks;
+  const audioOrderError = getAudioOrderError(tracks);
 
-  useEffect(() => {
-    onTrackCountChange?.(tracks.length);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tracks.length]);
+  const setTracks = (next: TrackForm[]) => onChange({ tracks: next });
 
-  const updateTrack = (id: string, patch: Partial<Track>) => {
-    setTracks(prev => prev.map(t => (t.id === id ? { ...t, ...patch } : t)));
-  };
-
-  const addTrack = () => {
-    setTracks(prev => [...prev, createTrack(true)]);
+  const updateTrack = (uid: string, patch: Partial<TrackForm>) => {
+    setTracks(tracks.map(track => (track.uid === uid ? { ...track, ...patch } : track)));
   };
 
   const updateTrackPerson = (
-    trackId: string,
+    uid: string,
     index: number,
-    patch: Partial<TrackPerson>,
+    patch: Partial<PersonForm>,
   ) => {
-    setTracks(prev =>
-      prev.map(t =>
-        t.id !== trackId
-          ? t
+    setTracks(
+      tracks.map(track =>
+        track.uid !== uid
+          ? track
           : {
-            ...t,
-            persons: t.persons.map((p, i) => (i === index ? { ...p, ...patch } : p)),
+            ...track,
+            persons: track.persons.map((person, i) =>
+              i === index ? { ...person, ...patch } : person,
+            ),
           },
-      ),
-    );
-  };
-
-  const addTrackPerson = (trackId: string) => {
-    setTracks(prev =>
-      prev.map(t =>
-        t.id !== trackId
-          ? t
-          : { ...t, persons: [...t.persons, { name: '', role: '' }] },
-      ),
-    );
-  };
-
-  const removeTrackPerson = (trackId: string, index: number) => {
-    setTracks(prev =>
-      prev.map(t =>
-        t.id !== trackId
-          ? t
-          : { ...t, persons: t.persons.filter((_, i) => i !== index) },
       ),
     );
   };
 
   const updateTrackAuthor = (
-    trackId: string,
+    uid: string,
     index: number,
-    patch: Partial<TrackAuthor>,
+    patch: Partial<TrackAuthorForm>,
   ) => {
-    setTracks(prev =>
-      prev.map(t =>
-        t.id !== trackId
-          ? t
+    setTracks(
+      tracks.map(track =>
+        track.uid !== uid
+          ? track
           : {
-            ...t,
-            authors: t.authors.map((a, i) => (i === index ? { ...a, ...patch } : a)),
-          },
-      ),
-    );
-  };
-
-  const toggleMoreAuthors = (trackId: string, checked: boolean) => {
-    setTracks(prev =>
-      prev.map(t =>
-        t.id !== trackId
-          ? t
-          : {
-            ...t,
-            authors: checked
-              ? [...t.authors, { musicAuthor: '', wordsAuthor: '' }]
-              : t.authors.slice(0, 1),
+            ...track,
+            authors: track.authors.map((author, i) =>
+              i === index ? { ...author, ...patch } : author,
+            ),
           },
       ),
     );
@@ -157,21 +96,48 @@ export default function UploadTracksStep({
         </p>
       </div>
 
+      {audioOrderError ? (
+        <div className="flex items-start gap-2 rounded-xl border border-[#FDE68A] bg-[#FFFBEB] px-4 py-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#D97706]" />
+          <p className="text-[13px] text-[#92400E]">{audioOrderError}</p>
+        </div>
+      ) : null}
+
       <div className="space-y-3">
         {tracks.map((track, index) => (
           <Collapsible
-            key={track.id}
+            key={track.uid}
             open={track.expanded}
-            onOpenChange={open => updateTrack(track.id, { expanded: open })}
+            onOpenChange={open => updateTrack(track.uid, { expanded: open })}
             className="rounded-xl border border-[#E5E7EB]"
           >
             <CollapsibleTrigger className="flex w-full items-center gap-3 px-4 py-3 text-left">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary text-xs font-semibold text-black">
                 {index + 1}
               </span>
-              <span className="flex-1 text-[13px] font-medium text-[#101828]">
-                Track {index + 1}
+              <span className="flex-1 truncate text-[13px] font-medium text-[#101828]">
+                {track.trackName || `Track ${index + 1}`}
               </span>
+              {tracks.length > 1 && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Remove track ${index + 1}`}
+                  onClick={event => {
+                    event.stopPropagation();
+                    setTracks(tracks.filter(item => item.uid !== track.uid));
+                  }}
+                  onKeyDown={event => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setTracks(tracks.filter(item => item.uid !== track.uid));
+                  }}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#98A2B3] hover:bg-[#FEF2F2] hover:text-[#DC2626]"
+                >
+                  <X size={15} />
+                </span>
+              )}
               <ChevronDown
                 size={16}
                 className={[
@@ -184,15 +150,23 @@ export default function UploadTracksStep({
             <CollapsibleContent className="space-y-6 border-t border-[#E5E7EB] px-4 py-4">
               <TrackFileUploadField
                 file={track.file}
-                onFileChange={file => updateTrack(track.id, { file })}
+                onFileChange={file => updateTrack(track.uid, { file })}
               />
+
+              {!track.file && track.existingAudioName ? (
+                <p className="-mt-4 flex items-center gap-1.5 text-xs text-[#667085]">
+                  <Music2 size={14} className="text-[#22C55E]" />
+                  Already uploaded: {track.existingAudioName}
+                </p>
+              ) : null}
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <TextInputField
                   label="Track Name"
+                  required
                   placeholder="Track Name"
                   value={track.trackName}
-                  onChange={e => updateTrack(track.id, { trackName: e.target.value })}
+                  onChange={e => updateTrack(track.uid, { trackName: e.target.value })}
                   helperText="Cyrillic must NOT be transliterated for Apple Music"
                   inputClassName={FIELD_INPUT_CLASSNAME}
                 />
@@ -200,7 +174,7 @@ export default function UploadTracksStep({
                   label="Subtitle"
                   placeholder="Optional"
                   value={track.subtitle}
-                  onChange={e => updateTrack(track.id, { subtitle: e.target.value })}
+                  onChange={e => updateTrack(track.uid, { subtitle: e.target.value })}
                   helperText="e.g. Remix, Acoustic, Version. Leave blank if none."
                   inputClassName={FIELD_INPUT_CLASSNAME}
                 />
@@ -210,7 +184,7 @@ export default function UploadTracksStep({
                 label="ISRC"
                 placeholder="Optional"
                 value={track.isrc}
-                onChange={e => updateTrack(track.id, { isrc: e.target.value })}
+                onChange={e => updateTrack(track.uid, { isrc: e.target.value })}
                 helperText="International unique code. Leave blank we will assign one for you."
                 inputClassName={FIELD_INPUT_CLASSNAME}
               />
@@ -234,14 +208,18 @@ export default function UploadTracksStep({
                         placeholder="Alias"
                         value={person.name}
                         onChange={e =>
-                          updateTrackPerson(track.id, pIndex, { name: e.target.value })
+                          updateTrackPerson(track.uid, pIndex, { name: e.target.value })
                         }
                         inputClassName={FIELD_INPUT_CLASSNAME}
                       />
                       <ReleaseSelectField
                         label="Person's Role"
                         value={person.role}
-                        onChange={v => updateTrackPerson(track.id, pIndex, { role: v })}
+                        onChange={value =>
+                          updateTrackPerson(track.uid, pIndex, {
+                            role: value as PersonRole,
+                          })
+                        }
                         options={PERSON_ROLE_OPTIONS}
                         placeholder="Select Role"
                       />
@@ -250,7 +228,11 @@ export default function UploadTracksStep({
                     {pIndex > 0 && (
                       <button
                         type="button"
-                        onClick={() => removeTrackPerson(track.id, pIndex)}
+                        onClick={() =>
+                          updateTrack(track.uid, {
+                            persons: track.persons.filter((_, i) => i !== pIndex),
+                          })
+                        }
                         aria-label="Remove artist"
                         className="mt-6 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[#98A2B3] hover:bg-[#FEF2F2] hover:text-[#DC2626]"
                       >
@@ -262,7 +244,11 @@ export default function UploadTracksStep({
 
                 <button
                   type="button"
-                  onClick={() => addTrackPerson(track.id)}
+                  onClick={() =>
+                    updateTrack(track.uid, {
+                      persons: [...track.persons, { name: '', role: '' }],
+                    })
+                  }
                   className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#22C55E] hover:underline"
                 >
                   <Plus size={16} /> Add Artist
@@ -287,7 +273,7 @@ export default function UploadTracksStep({
                       placeholder="Full name"
                       value={author.musicAuthor}
                       onChange={e =>
-                        updateTrackAuthor(track.id, aIndex, {
+                        updateTrackAuthor(track.uid, aIndex, {
                           musicAuthor: e.target.value,
                         })
                       }
@@ -298,7 +284,7 @@ export default function UploadTracksStep({
                       placeholder="Full name"
                       value={author.wordsAuthor}
                       onChange={e =>
-                        updateTrackAuthor(track.id, aIndex, {
+                        updateTrackAuthor(track.uid, aIndex, {
                           wordsAuthor: e.target.value,
                         })
                       }
@@ -310,7 +296,13 @@ export default function UploadTracksStep({
                 <GreenCheckbox
                   label="Add more authors"
                   checked={track.authors.length > 1}
-                  onChange={checked => toggleMoreAuthors(track.id, checked)}
+                  onChange={checked =>
+                    updateTrack(track.uid, {
+                      authors: checked
+                        ? [...track.authors, { musicAuthor: '', wordsAuthor: '' }]
+                        : track.authors.slice(0, 1),
+                    })
+                  }
                 />
               </section>
 
@@ -331,7 +323,7 @@ export default function UploadTracksStep({
                     placeholder="© Year Label / Artist"
                     value={track.soundRecording}
                     onChange={e =>
-                      updateTrack(track.id, { soundRecording: e.target.value })
+                      updateTrack(track.uid, { soundRecording: e.target.value })
                     }
                     inputClassName={FIELD_INPUT_CLASSNAME}
                   />
@@ -340,7 +332,7 @@ export default function UploadTracksStep({
                     placeholder="℗ Year Label / Artist"
                     value={track.phonogramProducer}
                     onChange={e =>
-                      updateTrack(track.id, { phonogramProducer: e.target.value })
+                      updateTrack(track.uid, { phonogramProducer: e.target.value })
                     }
                     inputClassName={FIELD_INPUT_CLASSNAME}
                   />
@@ -349,7 +341,9 @@ export default function UploadTracksStep({
                 <GreenCheckbox
                   label="I own 100% rights to this release"
                   checked={track.ownsFullRights}
-                  onChange={checked => updateTrack(track.id, { ownsFullRights: checked })}
+                  onChange={checked =>
+                    updateTrack(track.uid, { ownsFullRights: checked })
+                  }
                 />
               </section>
 
@@ -366,7 +360,7 @@ export default function UploadTracksStep({
                     min={0}
                     value={track.preListeningSeconds}
                     onChange={e =>
-                      updateTrack(track.id, { preListeningSeconds: e.target.value })
+                      updateTrack(track.uid, { preListeningSeconds: e.target.value })
                     }
                     inputClassName={FIELD_INPUT_CLASSNAME}
                   />
@@ -375,7 +369,7 @@ export default function UploadTracksStep({
                     placeholder='e.g. English or "Without words"'
                     value={track.trackLanguage}
                     onChange={e =>
-                      updateTrack(track.id, { trackLanguage: e.target.value })
+                      updateTrack(track.uid, { trackLanguage: e.target.value })
                     }
                     inputClassName={FIELD_INPUT_CLASSNAME}
                   />
@@ -386,11 +380,15 @@ export default function UploadTracksStep({
                     {TRACK_VERSION_OPTIONS.map(option => (
                       <GreenRadioOption
                         key={option.value}
-                        name={`trackVersion-${index}`}
+                        name={`trackVersion-${track.uid}`}
                         value={option.value}
                         label={option.label}
                         checked={track.trackVersion === option.value}
-                        onChange={v => updateTrack(track.id, { trackVersion: v })}
+                        onChange={value =>
+                          updateTrack(track.uid, {
+                            trackVersion: value as TrackVersion,
+                          })
+                        }
                       />
                     ))}
                   </div>
@@ -404,30 +402,19 @@ export default function UploadTracksStep({
       <div className="flex items-center justify-center border-t border-dashed border-[#D0D5DD] pt-4">
         <button
           type="button"
-          onClick={addTrack}
+          onClick={() => setTracks([...tracks, createEmptyTrack(true)])}
           className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#22C55E] hover:underline"
         >
           <Plus size={16} /> Add track
         </button>
       </div>
 
-      <div className="flex items-center justify-between border-t border-[#E5E7EB] pt-5">
-        <button
-          type="button"
-          onClick={onBack}
-          className="text-[13px] font-medium text-[#344054] hover:text-[#101828]"
-        >
-          &lt; Back
-        </button>
-
-        <button
-          type="button"
-          onClick={onNext}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-6 py-2.5 text-[13px] font-semibold text-black hover:bg-[#16A34A]"
-        >
-          Next <ArrowRight size={16} />
-        </button>
-      </div>
+      <StepFooter
+        onBack={onBack}
+        onSaveDraft={onSaveDraft}
+        onNext={onNext}
+        isSaving={isSaving}
+      />
     </div>
   );
 }

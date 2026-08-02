@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { SidebarProvider } from "@/src/context/SidebarContext";
 import { ThemeProvider } from "@/src/context/ThemeContext";
@@ -25,6 +26,7 @@ export default function RootLayout({
         <ReduxProvider>
           <ThemeProvider>
             <SidebarProvider>{children}</SidebarProvider>
+            <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
             {/* <TwScreenSize /> */}
           </ThemeProvider>
         </ReduxProvider>

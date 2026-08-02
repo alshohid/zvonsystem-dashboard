@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import ReleaseDetailsContainer from '@/src/components/admin/releases/ReleaseDetailsContainer';
+import ReleaseDetailsSkeleton from '@/src/components/admin/releases/ReleaseDetailsSkeleton';
 
 export default async function AdminReleaseDetailsPage({
   params,
@@ -9,7 +10,7 @@ export default async function AdminReleaseDetailsPage({
   const { releaseId } = await params;
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<ReleaseDetailsSkeleton />}>
       <ReleaseDetailsContainer releaseId={releaseId} />
     </Suspense>
   );

@@ -20,18 +20,29 @@ export const env = {
 };
 
 
+/** Keeps only the path part of a value, so `http://host:5050/a/b` becomes `/a/b`. */
+const toPathname = (value: string) => {
+  const match = /^[a-z][a-z\d+.-]*:\/\/[^/]*(\/.*)?$/i.exec(value);
+  return match ? (match[1] ?? "/") : value;
+};
+
+const trimSlashes = (value: string) => value.replace(/^\/+|\/+$/g, "");
 export const resolveMediaUrl = (path?: string | null) => {
-  if (!path) return null;
+  const raw = path?.trim();
+  if (!raw || !env.mediaBaseUrl) return null;
 
-  const isAbsolute = /^https?:\/\//i.test(path);
-  const isOwnStorage =
-    !!env.mediaBaseUrl && (!isAbsolute || path.startsWith(`${env.mediaBaseUrl}/`));
+  const basePath = trimSlashes(toPathname(env.mediaBaseUrl));
+  let storagePath = trimSlashes(toPathname(raw));
 
-  if (!isOwnStorage) return isAbsolute ? path : null;
+  // Tolerate a base that already carries the storage prefix the path repeats.
+  if (
+    basePath &&
+    (storagePath === basePath || storagePath.startsWith(`${basePath}/`))
+  ) {
+    storagePath = trimSlashes(storagePath.slice(basePath.length));
+  }
 
-  const storagePath = (
-    isAbsolute ? path.slice(env.mediaBaseUrl.length) : path
-  ).replace(/^\/+/, "");
+  if (!storagePath) return null;
 
   return `/api/media?path=${encodeURIComponent(storagePath)}`;
 };

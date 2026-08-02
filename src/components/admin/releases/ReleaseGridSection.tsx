@@ -1,10 +1,11 @@
 'use client';
 
-import { Disc3, Loader2 } from 'lucide-react';
+import { Disc3 } from 'lucide-react';
 import ReusablePagination from '@/src/components/tables/ReusablePagination';
 import { getErrorMessage } from '@/src/lib/getErrorMessage';
 import type { ApiRelease } from '@/src/types/releaseTypes';
 import ReleaseCard from './ReleaseCard';
+import ReleaseGridSkeleton from './ReleaseGridSkeleton';
 
 const PAGINATION_ACTIVE_CLASSNAME =
   'border-[#22C55E] bg-[#22C55E] text-white';
@@ -40,13 +41,10 @@ export default function ReleaseGridSection({
   emptyTitle,
   emptyMessage,
 }: ReleaseGridSectionProps) {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center gap-2 rounded-2xl border border-[#E9EDF5] bg-white py-16 text-sm text-[#667085]">
-        <Loader2 className="h-4 w-4 animate-spin" />
-        Loading releases…
-      </div>
-    );
+  // A page already visited is served from cache, so only an uncached fetch —
+  // first load, a new filter, a new search term — falls back to the skeleton.
+  if (isLoading || (isFetching && releases.length === 0)) {
+    return <ReleaseGridSkeleton count={Math.min(pageSize, 8)} />;
   }
 
   if (isError) {

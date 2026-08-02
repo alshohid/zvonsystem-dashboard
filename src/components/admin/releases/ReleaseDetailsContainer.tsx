@@ -1,9 +1,8 @@
 'use client';
 
 import { useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Disc3, Loader2, Pause, Play } from 'lucide-react';
+import { ArrowLeft, Disc3, Pause, Play } from 'lucide-react';
 import { resolveMediaUrl } from '@/src/lib/env';
 import { getErrorMessage } from '@/src/lib/getErrorMessage';
 import {
@@ -11,6 +10,7 @@ import {
   useGetReleaseByIdQuery,
 } from '@/src/redux/features/releases/releasesApi';
 import type { ApiRelease, ApiTrack } from '@/src/types/releaseTypes';
+import ReleaseDetailsSkeleton from './ReleaseDetailsSkeleton';
 import ReleaseStatusBadge from './ReleaseStatusBadge';
 import {
   getCountryLabel,
@@ -97,10 +97,7 @@ export default function ReleaseDetailsContainer({
     return (
       <div className="space-y-6">
         {backLink}
-        <div className="flex items-center justify-center gap-2 rounded-2xl border border-[#E9EDF5] bg-white py-20 text-sm text-[#667085]">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Loading release…
-        </div>
+        <ReleaseDetailsSkeleton withBackLink={false} />
       </div>
     );
   }
@@ -378,10 +375,10 @@ function TracksCard({ tracks }: { tracks: ApiTrack[] }) {
         </p>
       ) : (
         <ul>
-          {sortedTracks.map((track, index) => {
+            {sortedTracks.map((track, index) => {
             const audioUrl = resolveMediaUrl(track.audioUrl?.path);
-            const isPlaying = playingTrackId === track.id;
-
+              const isPlaying = playingTrackId === track.id;
+      
             return (
               <li
                 key={track.id}

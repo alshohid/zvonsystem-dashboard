@@ -36,8 +36,6 @@ export default function AllReleasesContainer({
     const releases = data?.data ?? [];
     const meta = data?.meta;
 
-    // The public single-release endpoint is owner-scoped, so the details page
-    // re-runs this exact query to read another artist's release from cache.
     const buildHref = (id: string) => {
         const params = new URLSearchParams({ from: 'all', page: String(page) });
         if (search) params.set('search', search);

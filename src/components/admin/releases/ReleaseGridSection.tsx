@@ -41,8 +41,7 @@ export default function ReleaseGridSection({
   emptyTitle,
   emptyMessage,
 }: ReleaseGridSectionProps) {
-  // A page already visited is served from cache, so only an uncached fetch —
-  // first load, a new filter, a new search term — falls back to the skeleton.
+
   if (isLoading || (isFetching && releases.length === 0)) {
     return <ReleaseGridSkeleton count={Math.min(pageSize, 8)} />;
   }
@@ -73,7 +72,7 @@ export default function ReleaseGridSection({
     <div className="space-y-4">
       <div
         className={[
-          'grid grid-cols-1 gap-5 transition-opacity sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          'grid grid-cols-2 gap-5 transition-opacity sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
           isFetching ? 'opacity-60' : '',
         ].join(' ')}
       >

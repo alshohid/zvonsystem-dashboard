@@ -1,30 +1,52 @@
 'use client';
 
-import TopTabs, { TabItem } from '@/src/components/common/TopTabs';
-import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
-import { MOCK_RELEASES, type ReleaseStatus } from './mockReleases';
-import ReleaseCard from './ReleaseCard';
+import { useEffect, useState } from 'react';
+import SearchInput from '@/src/components/ui/input/searchInput/SearchInput';
+import { useDebouncedValue } from '@/src/lib/helper/useDebouncedValue';
+import { useQueryParams } from '@/src/lib/helper/useQueryState';
+import { useGetAllReleasesQuery } from '@/src/redux/features/releases/releasesApi';
+import ReleaseGridSection from './ReleaseGridSection';
 
-type FilterKey = 'all' | ReleaseStatus;
+const PAGE_SIZE = 12;
 
-const FILTER_TABS: TabItem<FilterKey>[] = [
-    { key: 'all', label: 'All' },
-    { key: 'live', label: 'Live' },
-    { key: 'scheduled', label: 'Scheduled' },
-    { key: 'in-review', label: 'In Review' },
-];
+export default function AllReleasesContainer({
+    detailsBasePath = '/admin/dashboard/releases',
+}: {
+    detailsBasePath?: string;
+}) {
+    const { get, setMany } = useQueryParams();
 
-export default function AllReleasesContainer() {
-    const [filter, setFilter] = useTabsQueryState<FilterKey>('filter', 'all');
+    const page = Math.max(Number(get('page', '1')) || 1, 1);
+    const search = get('search');
 
-    const releases =
-        filter === 'all'
-            ? MOCK_RELEASES
-            : MOCK_RELEASES.filter(release => release.status === filter);
+    const [searchInput, setSearchInput] = useState(search);
+    const debouncedSearch = useDebouncedValue(searchInput);
+
+    useEffect(() => {
+        if (debouncedSearch === search) return;
+        setMany({ search: debouncedSearch, page: '1' });
+    }, [debouncedSearch, search, setMany]);
+
+    const { data, isLoading, isFetching, isError, error } = useGetAllReleasesQuery({
+        search: search || undefined,
+        page,
+        limit: PAGE_SIZE,
+    });
+
+    const releases = data?.data ?? [];
+    const meta = data?.meta;
+
+    // The public single-release endpoint is owner-scoped, so the details page
+    // re-runs this exact query to read another artist's release from cache.
+    const buildHref = (id: string) => {
+        const params = new URLSearchParams({ from: 'all', page: String(page) });
+        if (search) params.set('search', search);
+        return `${detailsBasePath}/${id}?${params.toString()}`;
+    };
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#98A2B3]">
                         Releases
@@ -34,20 +56,33 @@ export default function AllReleasesContainer() {
                     </h1>
                 </div>
 
-                <TopTabs variant="pills" tabs={FILTER_TABS} activeKey={filter} onChange={setFilter} />
+                <SearchInput
+                    value={searchInput}
+                    onChange={event => setSearchInput(event.target.value)}
+                    placeholder="Search by release name or UPC"
+                    containerClassName="w-full sm:max-w-sm"
+                />
             </div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {releases.map(release => (
-                    <ReleaseCard key={release.id} release={release} />
-                ))}
-            </div>
-
-            {releases.length === 0 ? (
-                <p className="py-10 text-center text-sm text-[#98A2B3]">
-                    No releases match this filter yet.
-                </p>
-            ) : null}
+            <ReleaseGridSection
+                releases={releases}
+                isLoading={isLoading}
+                isFetching={isFetching}
+                isError={isError}
+                error={error}
+                page={page}
+                pageSize={PAGE_SIZE}
+                totalItems={meta?.total ?? releases.length}
+                totalPages={meta?.totalPages ?? 1}
+                onPageChange={next => setMany({ page: String(next) })}
+                buildHref={release => buildHref(release.id)}
+                emptyTitle={search ? 'No matching releases' : 'No live releases yet'}
+                emptyMessage={
+                    search
+                        ? 'Try a different release name or UPC.'
+                        : 'Approved releases appear here once they go live on the platform.'
+                }
+            />
         </div>
     );
 }

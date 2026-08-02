@@ -10,6 +10,8 @@ type ReusablePaginationProps = {
   onPageChange: (page: number) => void;
   itemLabel?: string;
   className?: string;
+  /** Lets a page theme the selected page button without forking the component. */
+  activeClassName?: string;
 };
 
 type PageToken = number | "ellipsis-left" | "ellipsis-right";
@@ -44,6 +46,7 @@ export default function ReusablePagination({
   onPageChange,
   itemLabel = "results",
   className = "",
+  activeClassName = "border-[#2E3A83] bg-[#2E3A83] text-white",
 }: ReusablePaginationProps) {
   const safeTotalPages = Math.max(totalPages, 1);
   const safeCurrentPage = Math.min(Math.max(currentPage, 1), safeTotalPages);
@@ -78,7 +81,7 @@ export default function ReusablePagination({
               className={[
                 "inline-flex h-8 min-w-8 items-center justify-center rounded-[8px] border px-2 text-sm font-medium transition",
                 pageToken === safeCurrentPage
-                  ? "border-[#2E3A83] bg-[#2E3A83] text-white"
+                  ? activeClassName
                   : "border-[#D0D5DD] bg-white text-[#344054] hover:bg-[#F9FAFB]",
               ].join(" ")}
             >

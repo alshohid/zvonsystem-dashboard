@@ -1,5 +1,6 @@
 import { baseApi } from "@/src/redux/api/baseApi";
 import type {
+  AllReleasesQuery,
   ApiEnvelope,
   MyReleasesQuery,
   ReleaseListResponse,
@@ -27,6 +28,20 @@ const releasesApi = baseApi.injectEndpoints({
           id,
         })),
       ],
+    }),
+
+    /** Every LIVE release on the platform, not just the current user's. */
+    getAllReleases: builder.query<ReleaseListResponse, AllReleasesQuery | void>({
+      query: (params) => ({
+        url: "/releases/all-releases",
+        method: "GET",
+        params: {
+          page: params?.page ?? 1,
+          limit: params?.limit ?? 10,
+          ...(params?.search ? { search: params.search } : {}),
+        },
+      }),
+      providesTags: [{ type: "Release" as const, id: "LIST-PUBLIC" }],
     }),
 
     getReleaseById: builder.query<ReleaseResponse, string>({
@@ -106,6 +121,7 @@ const releasesApi = baseApi.injectEndpoints({
 
 export const {
   useGetMyReleasesQuery,
+  useGetAllReleasesQuery,
   useGetReleaseByIdQuery,
   useCreateReleaseMutation,
   useUpdateReleaseMutation,

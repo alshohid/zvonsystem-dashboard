@@ -84,7 +84,6 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
     }
 
     const isDashboardRoot =
-      path === authRoutes.dispatcherDashboard ||
       path === authRoutes.adminDashboard ||
       path === authRoutes.superAdminDashboard;
 
@@ -128,11 +127,9 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
       <div className="flex items-center justify-between gap-3 pb-4">
         <Link
           href={
-            role === "dispatcher"
-              ? authRoutes.dispatcherDashboard
-              : role === "super-admin"
-                ? authRoutes.superAdminDashboard
-                : authRoutes.adminDashboard
+            role === "super-admin"
+              ? authRoutes.superAdminDashboard
+              : authRoutes.adminDashboard
           }
           className="flex min-w-0 items-center gap-2.5"
           onClick={handleItemClick}

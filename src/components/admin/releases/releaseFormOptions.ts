@@ -41,6 +41,9 @@ export const PERSON_ROLE_OPTIONS: SelectOption<PersonRole>[] = PERSON_ROLES.map(
   (value) => ({ value, label: PERSON_ROLE_LABELS[value] }),
 );
 
+export const getPersonRoleLabel = (role: PersonRole | "" | null) =>
+  role ? PERSON_ROLE_LABELS[role] : "";
+
 const GENRE_LABELS: Record<ReleaseGenre, string> = {
   AMBIENT: "Ambient",
   ANIME: "Anime",
@@ -117,6 +120,9 @@ export const TRACK_VERSION_OPTIONS: SelectOption<TrackVersion>[] =
     value,
     label: TRACK_VERSION_LABELS[value],
   }));
+
+export const getTrackVersionLabel = (version: TrackVersion | "" | null) =>
+  version ? TRACK_VERSION_LABELS[version] : "";
 
 export const LABEL_NAME_OPTIONS: SelectOption[] = [
   { value: "independent", label: "Independent / Self-Released" },
@@ -312,6 +318,15 @@ export const TERRITORY_REGIONS: TerritoryRegion[] = [
     ],
   },
 ];
+
+const COUNTRY_LABELS_BY_CODE: Record<string, string> = Object.fromEntries(
+  TERRITORY_REGIONS.flatMap((region) =>
+    region.countries.map(({ code, label }) => [code, label]),
+  ),
+);
+
+export const getCountryLabel = (code: string) =>
+  COUNTRY_LABELS_BY_CODE[code] ?? code;
 
 export const AD_PLATFORM_SCOPE_OPTIONS: SelectOption[] = [
   { value: "all", label: "On all ad platforms" },

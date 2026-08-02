@@ -191,9 +191,12 @@ export type ReleaseListResponse = ApiEnvelope<ApiRelease[]> & {
 
 export type ReleaseResponse = ApiEnvelope<ApiRelease>;
 
-export type MyReleasesQuery = {
-  status?: ReleaseStatus;
+export type AllReleasesQuery = {
   search?: string;
   page?: number;
   limit?: number;
+};
+
+export type MyReleasesQuery = AllReleasesQuery & {
+  status?: ReleaseStatus;
 };

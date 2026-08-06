@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-interface SwitchProps extends React.HTMLAttributes<HTMLButtonElement> {
+interface SwitchProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     checked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
 }

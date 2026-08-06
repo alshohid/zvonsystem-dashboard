@@ -5,12 +5,14 @@ type ReviewedTodayPanelProps = {
   title: string;
   emptyMessage: string;
   items: ReviewedItem[];
+  buildHref: (item: ReviewedItem) => string;
 };
 
 export default function ReviewedTodayPanel({
   title,
   emptyMessage,
   items,
+  buildHref,
 }: ReviewedTodayPanelProps) {
   return (
     <div className="rounded-2xl border border-[#E9EDF5] bg-white p-5">
@@ -18,7 +20,11 @@ export default function ReviewedTodayPanel({
 
       <div className="mt-2 divide-y divide-[#EEF2ED]">
         {items.map((item) => (
-          <ReviewedTodayListItem key={item.id} item={item} />
+          <ReviewedTodayListItem
+            key={item.id}
+            item={item}
+            href={buildHref(item)}
+          />
         ))}
 
         {items.length === 0 ? (

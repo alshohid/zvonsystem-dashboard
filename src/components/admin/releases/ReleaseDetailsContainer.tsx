@@ -51,6 +51,7 @@ type ReleaseDetailsContainerProps = {
 
 export default function ReleaseDetailsContainer({
   releaseId,
+  backPath = '/admin/dashboard/releases',
 }: ReleaseDetailsContainerProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -84,7 +85,7 @@ export default function ReleaseDetailsContainer({
 
   const backLink = (
     <Button
-      onClick={() => router.back()}
+      onClick={() => router.push(backPath)}
       variant="ghost"
       className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#98A2B3] transition hover:text-[#101828]"
     >

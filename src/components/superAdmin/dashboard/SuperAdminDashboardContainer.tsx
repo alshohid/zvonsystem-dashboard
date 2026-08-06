@@ -126,8 +126,6 @@ export default function SuperAdminDashboardContainer() {
     setUpdatingId(id);
 
     try {
-      // Admin status changes go through PATCH /releases/:id/status — the FormData
-      // PUT is owner-scoped and returns 404 for another artist's release.
       await updateStatus({ id, status }).unwrap();
       toast.success(
         status === "APPROVED" ? "Release approved." : "Release rejected.",
@@ -206,6 +204,9 @@ export default function SuperAdminDashboardContainer() {
           title="Approved Releases"
           emptyMessage="No approved releases yet."
           items={approvedItems}
+          buildHref={(item) =>
+            `/super-admin/dashboard/releases/${item.id}?tab=approved`
+          }
         />
       ) : null}
 
@@ -214,6 +215,9 @@ export default function SuperAdminDashboardContainer() {
           title="Rejected Releases"
           emptyMessage="No rejected releases yet."
           items={rejectedItems}
+          buildHref={(item) =>
+            `/super-admin/dashboard/releases/${item.id}?tab=rejected`
+          }
         />
       ) : null}
 

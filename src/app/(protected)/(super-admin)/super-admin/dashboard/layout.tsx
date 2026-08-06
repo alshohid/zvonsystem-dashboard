@@ -17,6 +17,7 @@ export default function SuperAdminDashboardLayout({
         "/super-admin/dashboard/pricing-plan",
         "/super-admin/dashboard/pricing-management",
         "/super-admin/dashboard/revenue-analytics",
+        "/super-admin/dashboard/releases",
       ]}
     >
       {children}

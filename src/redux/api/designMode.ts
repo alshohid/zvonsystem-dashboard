@@ -62,6 +62,78 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     };
   }
 
+  if (url === "/settings/profile") {
+    if (method === "PUT") {
+      const body = (getBody(args) ?? {}) as Record<string, string>;
+      return buildSuccess({
+        id: "design-user-1",
+        name: body.name ?? "Artist User",
+        username: body.username ?? "artist",
+        bio: body.bio ?? null,
+        genre: body.genre ?? null,
+        website: body.website || null,
+        country: body.country || null,
+        location: body.location || null,
+        avatar: null,
+        email: "artist@gmail.com",
+        phone_number: null,
+        language: null,
+      });
+    }
+
+    return buildSuccess({
+      id: "design-user-1",
+      name: "Artist User",
+      username: "artist",
+      bio: "Electronic music producer.",
+      genre: "ELECTRONIC",
+      website: "https://example.com",
+      country: "BD",
+      location: "Dhaka",
+      avatar: null,
+      email: "artist@gmail.com",
+      phone_number: "+1234567891",
+      language: "English",
+    });
+  }
+
+  if (url === "/settings/profile/avatar" && method === "POST") {
+    return buildSuccess({
+      id: "design-user-1",
+      name: "Artist User",
+      username: "artist",
+      bio: null,
+      genre: null,
+      website: null,
+      country: null,
+      location: null,
+      avatar: "/images/profile_bw.jpg",
+      email: "artist@gmail.com",
+      phone_number: null,
+      language: null,
+    });
+  }
+
+  if (url === "/settings/account") {
+    if (method === "DELETE") {
+      return buildSuccess(null);
+    }
+
+    return buildSuccess({
+      id: "design-user-1",
+      email: "artist@gmail.com",
+      name: "Artist User",
+      username: "artist",
+      avatar: null,
+      created_at: "2026-01-15T00:00:00.000Z",
+      email_verified_at: "2026-01-15T00:00:00.000Z",
+    });
+  }
+
+  if (url === "/settings/account/change-password" && method === "POST") {
+    return buildSuccess(null);
+  }
+
   if (url === "/dashboard") {
     return buildSuccess(
       {

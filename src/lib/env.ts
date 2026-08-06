@@ -55,3 +55,26 @@ export const resolveMediaUrl = (pathOrUrl?: string | null) => {
 
   return `/api/media?path=${encodeURIComponent(storagePath)}`;
 };
+
+/**
+ * Profile/account avatars arrive as absolute URLs, storage paths, or (buggily)
+ * a storage host prefixed onto another absolute URL such as ui-avatars.
+ */
+export const resolveAvatarUrl = (avatar?: string | null) => {
+  const raw = avatar?.trim();
+  if (!raw) return null;
+
+  const nestedAbsolute = raw.match(
+    /^https?:\/\/[^/]+\/public\/storage\/(https?:\/\/.+)$/i,
+  );
+  if (nestedAbsolute) return nestedAbsolute[1];
+
+  if (/^https?:\/\//i.test(raw)) {
+    if (env.mediaBaseUrl && raw.startsWith(`${env.mediaBaseUrl}/`)) {
+      return resolveMediaUrl(raw);
+    }
+    return raw;
+  }
+
+  return resolveMediaUrl(raw);
+};

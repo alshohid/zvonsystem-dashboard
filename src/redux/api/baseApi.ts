@@ -146,6 +146,8 @@ export const baseApi = createApi({
     "Release",
     "RevenueAnalytics",
     "SuperAdminDashboard",
+    "SettingsProfile",
+    "SettingsAccount",
   ],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginParams>({

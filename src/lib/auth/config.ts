@@ -18,7 +18,7 @@ export const authRoutes = {
 } as const;
 
 export const normalizeAuthRole = (role?: string | null): AuthRole => {
-  if (role === "ARTIST" || role === "ADMIN") {
+  if (role === "CLIENT" || role === "ADMIN") {
     return role;
   }
 
@@ -28,7 +28,7 @@ export const normalizeAuthRole = (role?: string | null): AuthRole => {
 export const getDefaultRouteForRole = (role?: string | null) => {
   const normalizedRole = normalizeAuthRole(role);
 
-  if (normalizedRole === "ARTIST") {
+  if (normalizedRole === "CLIENT") {
     return authRoutes.adminDashboard;
   }
 
@@ -51,7 +51,7 @@ export const isAllowedRedirectForRole = (
     return pathname.startsWith("/super-admin/dashboard");
   }
 
-  if (role === "ARTIST") {
+  if (role === "CLIENT") {
     return pathname.startsWith("/admin/dashboard");
   }
 

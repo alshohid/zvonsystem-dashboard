@@ -67,7 +67,7 @@ export function proxy(request: NextRequest) {
       return NextResponse.redirect(buildLoginRedirect(request));
     }
 
-    if (role !== "ARTIST") {
+    if (role !== "CLIENT") {
       return NextResponse.redirect(
         new URL(defaultAuthenticatedRoute, request.url),
       );

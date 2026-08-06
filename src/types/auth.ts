@@ -1,4 +1,4 @@
-export type AuthRole = "ARTIST" | "ADMIN" | null;
+export type AuthRole = "CLIENT" | "ADMIN" | null;
 export interface LoginParams {
   email: string;
   password: string;

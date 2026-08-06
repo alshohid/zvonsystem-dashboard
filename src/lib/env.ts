@@ -27,8 +27,17 @@ const toPathname = (value: string) => {
 };
 
 const trimSlashes = (value: string) => value.replace(/^\/+|\/+$/g, "");
-export const resolveMediaUrl = (path?: string | null) => {
-  const raw = path?.trim();
+
+/**
+ * Turns an uploaded file's `path` or `full_url` into a same-origin preview URL.
+ *
+ * Absolute ngrok URLs cannot be used directly in `<img>` / `next/image` — the
+ * free tunnel answers with an interstitial HTML page unless a special header is
+ * set, which the browser cannot send. Everything is therefore relayed through
+ * `/api/media`.
+ */
+export const resolveMediaUrl = (pathOrUrl?: string | null) => {
+  const raw = pathOrUrl?.trim();
   if (!raw || !env.mediaBaseUrl) return null;
 
   const basePath = trimSlashes(toPathname(env.mediaBaseUrl));

@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Upload, X } from 'lucide-react';
 import { resolveMediaUrl } from '@/src/lib/env';
-import Image from 'next/image';
 
 type ImageUploadFieldProps = {
   value: File | null;
@@ -15,7 +14,7 @@ type ImageUploadFieldProps = {
   /** Shown when no new file is picked but the release already has an upload. */
   existingFileName?: string | null;
   existingFilePath?: string | null;
-  /** Prefer this absolute URL (API `full_url`) over resolving `existingFilePath`. */
+  /** API `cover_url.full_url` — proxied the same way as `path` (ngrok-safe). */
   existingFileUrl?: string | null;
 };
 
@@ -31,11 +30,18 @@ export default function ImageUploadField({
   existingFileUrl = null,
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const objectUrl = useMemo(() => (value ? URL.createObjectURL(value) : null), [value]);
-  // Local pick first; after save, prefer the API's full_url, then media proxy.
+  const objectUrl = useMemo(
+    () => (value ? URL.createObjectURL(value) : null),
+    [value],
+  );
+
   const previewUrl =
-    objectUrl ?? existingFileUrl ?? resolveMediaUrl(existingFilePath);
-  const hasExistingUpload = Boolean(existingFileName || existingFileUrl) && !value;
+    objectUrl ??
+    resolveMediaUrl(existingFileUrl) ??
+    resolveMediaUrl(existingFilePath);
+
+  const hasExistingUpload =
+    Boolean(existingFileName || existingFileUrl || existingFilePath) && !value;
 
   useEffect(() => {
     return () => {
@@ -52,9 +58,14 @@ export default function ImageUploadField({
 
   return (
     <div className="flex flex-wrap items-start gap-4">
-      {previewUrl && (
+      {previewUrl ? (
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-[#E5E7EB] sm:h-24 sm:w-24">
-          <Image src={previewUrl} alt={previewAlt} width={96} height={96} className="h-full w-full object-cover" priority unoptimized />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={previewUrl}
+            alt={previewAlt}
+            className="h-full w-full object-cover"
+          />
           {value ? (
             <button
               type="button"
@@ -66,7 +77,7 @@ export default function ImageUploadField({
             </button>
           ) : null}
         </div>
-      )}
+      ) : null}
 
       <div className="min-w-0">
         <input

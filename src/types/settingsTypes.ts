@@ -74,3 +74,27 @@ export interface ApiNotificationsSettingsResponse {
   message: string;
   data: ApiNotificationsSettingsResponseData;
 }
+
+export interface ApiRegionSettingsResponse {
+  success: boolean;
+  message: string;
+  data: ApiRegionSettings;
+}
+
+export interface ApiRegionSettings {
+  country: string;
+  language: string;
+}
+
+
+export interface ApiRegionSettingsPayload {
+  country: string;
+  language: string;
+}
+
+
+export interface ApiRegionSettingsUpdateResponse {
+  success: boolean;
+  message: string;
+  data: ApiRegionSettings;
+}

@@ -5,6 +5,9 @@ import type {
   ApiNotificationsSettingsResponse,
   ApiNotificationsSettingsUpdateResponse,
   ApiProfile,
+  ApiRegionSettingsPayload,
+  ApiRegionSettingsResponse,
+  ApiRegionSettingsUpdateResponse,
   ChangePasswordBody,
   SettingsEnvelope,
   UpdateProfileBody,
@@ -68,7 +71,26 @@ const settingsApi = baseApi.injectEndpoints({
           body,
         }),
         invalidatesTags: ["SettingsAccount"],
+    }),
+    getSettingsRegion: builder.query<ApiRegionSettingsResponse, void>({
+      query: () => ({
+        url: "/settings/region",
+        method: "GET",
       }),
+      providesTags: ["SettingsAccount"],
+    }),
+
+    updateSettingsRegion: builder.mutation<
+      ApiRegionSettingsUpdateResponse,
+      ApiRegionSettingsPayload
+    >({
+      query: (body) => ({
+        url: "/settings/region",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["SettingsAccount"],
+    }),
     changePassword: builder.mutation<
       SettingsEnvelope<unknown>,
       ChangePasswordBody
@@ -100,6 +122,8 @@ export const {
   useDeleteAccountMutation,
   useGetSettingsNotificationsQuery,
   useUpdateSettingsNotificationsMutation,
+  useGetSettingsRegionQuery,
+  useUpdateSettingsRegionMutation,
 } = settingsApi;
 
 export default settingsApi;

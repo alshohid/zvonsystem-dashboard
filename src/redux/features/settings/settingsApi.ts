@@ -1,6 +1,9 @@
 import { baseApi } from "@/src/redux/api/baseApi";
 import type {
   ApiAccountSettings,
+  ApiNotificationsSettingsPayload,
+  ApiNotificationsSettingsResponse,
+  ApiNotificationsSettingsUpdateResponse,
   ApiProfile,
   ChangePasswordBody,
   SettingsEnvelope,
@@ -51,7 +54,21 @@ const settingsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["SettingsAccount"],
     }),
-
+    getSettingsNotifications: builder.query<ApiNotificationsSettingsResponse, void>({
+        query: () => ({
+          url: "/settings/notifications",
+          method: "GET",
+        }),
+        providesTags: ["SettingsAccount"],
+      }),
+    updateSettingsNotifications: builder.mutation<ApiNotificationsSettingsUpdateResponse, ApiNotificationsSettingsPayload>({
+        query: (body) => ({
+          url: "/settings/notifications",
+          method: "PUT",
+          body,
+        }),
+        invalidatesTags: ["SettingsAccount"],
+      }),
     changePassword: builder.mutation<
       SettingsEnvelope<unknown>,
       ChangePasswordBody
@@ -81,6 +98,8 @@ export const {
   useGetAccountSettingsQuery,
   useChangePasswordMutation,
   useDeleteAccountMutation,
+  useGetSettingsNotificationsQuery,
+  useUpdateSettingsNotificationsMutation,
 } = settingsApi;
 
 export default settingsApi;

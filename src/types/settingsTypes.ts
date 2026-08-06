@@ -45,3 +45,32 @@ export type SettingsEnvelope<T> = {
   message: string;
   data: T;
 };
+export interface ApiNotificationsSettingsResponseData {
+  data: {
+    releaseStatusUpdates: boolean;
+    moderationFeedback?: boolean;
+    releaseScheduled?: boolean;
+    pushNotifications?: boolean;
+    weeklyDigest?: boolean;
+  };
+}
+
+export interface ApiNotificationsSettingsPayload {
+  releaseStatusUpdates?: boolean;
+  moderationFeedback?: boolean;
+  releaseScheduled?: boolean;
+  pushNotifications?: boolean;
+  weeklyDigest?: boolean;
+}
+
+export interface ApiNotificationsSettingsUpdateResponse {
+  success: boolean;
+  message: string;
+  data: ApiNotificationsSettingsResponseData;
+}
+
+export interface ApiNotificationsSettingsResponse {
+  success: boolean;
+  message: string;
+  data: ApiNotificationsSettingsResponseData;
+}

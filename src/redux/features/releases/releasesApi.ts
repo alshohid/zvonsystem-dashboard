@@ -112,6 +112,7 @@ const releasesApi = baseApi.injectEndpoints({
         { type: "Release", id: "LIST-APPROVED" },
         { type: "Release", id: "LIST-REJECTED" },
         { type: "Release", id: "LIST-ALL" },
+        "SuperAdminDashboard",
       ],
     }),
   }),

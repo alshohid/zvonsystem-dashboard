@@ -10,15 +10,10 @@ export default function SuperAdminDashboardLayout({
       dashboardHref="/super-admin/dashboard"
       placeholderTitle="Super Admin Workspace Placeholder"
       implementedPaths={[
-        "/super-admin/dashboard/performance",
-        "/super-admin/dashboard/documents",
+        "/super-admin/dashboard",
         "/super-admin/dashboard/user-management",
-        "/super-admin/dashboard/organizations",
-        "/super-admin/dashboard/support",
         "/super-admin/dashboard/settings",
         "/super-admin/dashboard/invoices",
-        "/super-admin/dashboard/statements",
-        "/super-admin/dashboard/dispatcher-management",
         "/super-admin/dashboard/pricing-plan",
         "/super-admin/dashboard/pricing-management",
         "/super-admin/dashboard/revenue-analytics",

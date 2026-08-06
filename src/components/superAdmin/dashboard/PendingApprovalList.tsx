@@ -1,8 +1,8 @@
-import type { PendingRelease } from "./mockSuperAdminDashboard";
+import type { DashboardReleaseSummary } from "@/src/types/superAdminDashboardTypes";
 import PendingApprovalListItem from "./PendingApprovalListItem";
 
 type PendingApprovalListProps = {
-  releases: PendingRelease[];
+  releases: DashboardReleaseSummary[];
   selectedId: string;
   onSelect: (id: string) => void;
 };

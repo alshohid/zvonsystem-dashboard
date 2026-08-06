@@ -1,21 +1,34 @@
-import { CheckCircle2, Clock, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import Badge from "@/src/components/ui/badge/Badge";
-import type { ReviewedItem, ReviewOutcome } from "./mockSuperAdminDashboard";
+import type { ReviewedItem, ReviewOutcome } from "./types";
 
 const OUTCOME_META: Record<
   ReviewOutcome,
-  { icon: typeof CheckCircle2; badgeColor: "success" | "warning" | "error"; label: string }
+  {
+    icon: typeof CheckCircle2;
+    badgeColor: "success" | "error";
+    label: string;
+  }
 > = {
-  approved: { icon: CheckCircle2, badgeColor: "success", label: "Approved" },
-  "changes-requested": { icon: Clock, badgeColor: "warning", label: "Changes Requested" },
-  rejected: { icon: XCircle, badgeColor: "error", label: "Rejected" },
+  approved: {
+    icon: CheckCircle2,
+    badgeColor: "success",
+    label: "Approved",
+  },
+  rejected: {
+    icon: XCircle,
+    badgeColor: "error",
+    label: "Rejected",
+  },
 };
 
 type ReviewedTodayListItemProps = {
   item: ReviewedItem;
 };
 
-export default function ReviewedTodayListItem({ item }: ReviewedTodayListItemProps) {
+export default function ReviewedTodayListItem({
+  item,
+}: ReviewedTodayListItemProps) {
   const meta = OUTCOME_META[item.outcome];
   const Icon = meta.icon;
 
@@ -26,7 +39,9 @@ export default function ReviewedTodayListItem({ item }: ReviewedTodayListItemPro
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-[#101828]">{item.title}</p>
+        <p className="truncate text-sm font-semibold text-[#101828]">
+          {item.title}
+        </p>
         <p className="truncate text-xs text-[#667085]">
           {item.artist} · {item.type}
         </p>

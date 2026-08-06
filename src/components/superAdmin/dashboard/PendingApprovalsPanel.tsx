@@ -1,10 +1,11 @@
-import type { PendingRelease } from "./mockSuperAdminDashboard";
+import type { DashboardReleaseSummary } from "@/src/types/superAdminDashboardTypes";
 import PendingApprovalList from "./PendingApprovalList";
 import PendingApprovalDetail from "./PendingApprovalDetail";
 
 type PendingApprovalsPanelProps = {
-  releases: PendingRelease[];
+  releases: DashboardReleaseSummary[];
   selectedId: string;
+  updatingId?: string | null;
   onSelect: (id: string) => void;
   onApprove: (id: string) => void;
   onReject: (id: string) => void;
@@ -13,6 +14,7 @@ type PendingApprovalsPanelProps = {
 export default function PendingApprovalsPanel({
   releases,
   selectedId,
+  updatingId = null,
   onSelect,
   onApprove,
   onReject,
@@ -21,11 +23,16 @@ export default function PendingApprovalsPanel({
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_3fr]">
-      <PendingApprovalList releases={releases} selectedId={selectedId} onSelect={onSelect} />
+      <PendingApprovalList
+        releases={releases}
+        selectedId={selectedId}
+        onSelect={onSelect}
+      />
 
       {selectedRelease ? (
         <PendingApprovalDetail
-          release={selectedRelease}
+          summary={selectedRelease}
+          isUpdating={updatingId === selectedRelease.id}
           onApprove={() => onApprove(selectedRelease.id)}
           onReject={() => onReject(selectedRelease.id)}
         />

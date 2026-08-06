@@ -62,6 +62,55 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     };
   }
 
+  if (url === "/dashboard") {
+    return buildSuccess(
+      {
+        stats: {
+          pendingApprovals: 2,
+          approvedToday: 1,
+          totalArtists: 3,
+          totalReleases: 12,
+        },
+        pendingApprovals: [
+          {
+            id: "design-pending-1",
+            name: "Afterglow (Deluxe)",
+            artistName: "Kiran Dey",
+            type: "ALBUM",
+            submittedAt: new Date().toISOString(),
+            coverUrl: null,
+            trackCount: 16,
+            artistNote: "Deluxe edition with bonus tracks.",
+          },
+        ],
+        approvedReleases: [
+          {
+            id: "design-approved-1",
+            name: "Broken Signal",
+            artistName: "Artist User",
+            type: "EP",
+            submittedAt: new Date().toISOString(),
+            coverUrl: null,
+            trackCount: 2,
+            artistNote: null,
+          },
+        ],
+        rejectedReleases: [],
+        artists: [
+          {
+            id: "design-artist-1",
+            name: "Artist User",
+            email: "artist@gmail.com",
+            releaseCount: 12,
+            joinedAt: new Date().toISOString(),
+            avatar: null,
+          },
+        ],
+      },
+      { role: "admin" },
+    );
+  }
+
   if (url === "/dashboard/overview") {
     return buildSuccess({
       ownerName: "Johan",

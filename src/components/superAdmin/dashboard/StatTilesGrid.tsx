@@ -1,12 +1,19 @@
 import type { ElementType } from "react";
-import { AlertCircle, Clock, RefreshCw, TrendingDown, TrendingUp, Users } from "lucide-react";
-import type { StatTile, StatTileId } from "./mockSuperAdminDashboard";
+import {
+  CheckCircle2,
+  Clock,
+  RefreshCw,
+  TrendingDown,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import type { StatTile, StatTileId } from "./types";
 
 const STAT_ICON_BY_ID: Record<StatTileId, ElementType> = {
-  "total-users": Users,
+  "total-artists": Users,
   "total-releases": RefreshCw,
   "releases-in-queue": Clock,
-  "flagged-content": AlertCircle,
+  "approved-today": CheckCircle2,
 };
 
 type StatTilesGridProps = {
@@ -18,9 +25,13 @@ export default function StatTilesGrid({ stats }: StatTilesGridProps) {
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => {
         const Icon = STAT_ICON_BY_ID[stat.id];
-        const TrendIcon = stat.trend.direction === "up" ? TrendingUp : TrendingDown;
+        const hasTrend = Boolean(stat.trend);
+        const TrendIcon =
+          stat.trend?.direction === "up" ? TrendingUp : TrendingDown;
         const trendColorClass =
-          stat.trend.direction === "up" ? "text-success-600" : "text-error-600";
+          stat.trend?.direction === "up"
+            ? "text-success-600"
+            : "text-error-600";
 
         return (
           <div
@@ -36,12 +47,18 @@ export default function StatTilesGrid({ stats }: StatTilesGridProps) {
               </div>
             </div>
 
-            <p className="mt-4 text-3xl font-semibold text-[#101828]">{stat.value}</p>
-
-            <p className={`mt-2 inline-flex items-center gap-1 text-xs font-medium ${trendColorClass}`}>
-              <TrendIcon size={14} />
-              {stat.trend.label}
+            <p className="mt-4 text-3xl font-semibold text-[#101828]">
+              {stat.value}
             </p>
+
+            {hasTrend && stat.trend ? (
+              <p
+                className={`mt-2 inline-flex items-center gap-1 text-xs font-medium ${trendColorClass}`}
+              >
+                <TrendIcon size={14} />
+                {stat.trend.label}
+              </p>
+            ) : null}
           </div>
         );
       })}

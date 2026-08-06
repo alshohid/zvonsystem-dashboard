@@ -14,7 +14,7 @@ export type RevenueStat = {
 
 export type RevenueGrowthPoint = {
   month: string;
-  streams: number;
+  revenue: number;
 };
 
 export type UserGrowthPoint = {

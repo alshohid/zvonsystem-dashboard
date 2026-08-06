@@ -72,7 +72,7 @@ const baseQueryWithReauth: BaseQueryFn<
               {
                 url: "/auth/refresh-token",
                 method: "POST",
-                body: { refresh_token: refreshToken },
+                // body: { refresh_token: refreshToken },
                 headers: {
                   access_token: token,
                   Authorization: `Bearer ${token}`,
@@ -144,6 +144,7 @@ export const baseApi = createApi({
     "GuideOverview",
     "NotificationsOverview",
     "Release",
+    "RevenueAnalytics",
   ],
   endpoints: (builder) => ({
     login: builder.mutation<LoginResponse, LoginParams>({

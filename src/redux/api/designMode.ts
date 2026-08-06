@@ -249,6 +249,62 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     });
   }
 
+  if (url === "/revenue/analytics") {
+    return buildSuccess({
+      stats: {
+        totalStreams: 7.99,
+        totalStreamsChange: 12,
+        totalRevenue: 7.99,
+        totalRevenueChange: 0,
+        activeSubs: 2,
+        activeSubsChange: 4,
+        arpu: 7.99,
+        arpuChange: -2,
+      },
+      revenueGrowth: [
+        { month: "Sep", revenue: 0 },
+        { month: "Oct", revenue: 0 },
+        { month: "Nov", revenue: 0 },
+        { month: "Dec", revenue: 0 },
+        { month: "Jan", revenue: 0 },
+        { month: "Feb", revenue: 0 },
+        { month: "Mar", revenue: 0 },
+        { month: "Apr", revenue: 0 },
+        { month: "May", revenue: 0 },
+        { month: "Jun", revenue: 0 },
+        { month: "Jul", revenue: 0 },
+        { month: "Aug", revenue: 7.99 },
+      ],
+      userGrowth: [
+        { month: "Sep", users: 0 },
+        { month: "Oct", users: 0 },
+        { month: "Nov", users: 0 },
+        { month: "Dec", users: 0 },
+        { month: "Jan", users: 0 },
+        { month: "Feb", users: 0 },
+        { month: "Mar", users: 0 },
+        { month: "Apr", users: 0 },
+        { month: "May", users: 0 },
+        { month: "Jun", users: 0 },
+        { month: "Jul", users: 0 },
+        { month: "Aug", users: 1 },
+      ],
+      planDistribution: [
+        { plan: "Pro", count: 1, percentage: 50 },
+        { plan: "Free", count: 1, percentage: 50 },
+      ],
+      topArtists: [
+        {
+          artistId: "design-artist-1",
+          artistName: "Artist User",
+          plan: "Free",
+          releases: 20,
+          revenue: 7.99,
+        },
+      ],
+    });
+  }
+
   if (url === "/analytics/overview") {
     return buildSuccess({
       summaryStats: [

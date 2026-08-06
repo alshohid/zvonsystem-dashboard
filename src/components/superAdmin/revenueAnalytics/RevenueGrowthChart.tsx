@@ -27,7 +27,7 @@ export default function RevenueGrowthChart({ data }: RevenueGrowthChartProps) {
             className="h-2.5 w-2.5 rounded-full"
             style={{ backgroundColor: DASHBOARD_COLORS.streamAccent }}
           />
-          Streams
+          Revenue
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export default function RevenueGrowthChart({ data }: RevenueGrowthChartProps) {
             />
             <Area
               type="monotone"
-              dataKey="streams"
+              dataKey="revenue"
               stroke={DASHBOARD_COLORS.streamAccent}
               strokeWidth={3}
               fill="url(#revenueGrowthFill)"

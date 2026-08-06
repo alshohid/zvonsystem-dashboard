@@ -53,6 +53,8 @@ export type ReleaseFormState = {
   coverFile: File | null;
   existingCoverName: string | null;
   existingCoverPath: string | null;
+  /** Prefer `cover_url.full_url` for the upload-field preview after save. */
+  existingCoverUrl: string | null;
   persons: PersonForm[];
   genre: ReleaseGenre | "";
   upc: string;
@@ -121,6 +123,7 @@ export function createEmptyForm(): ReleaseFormState {
     coverFile: null,
     existingCoverName: null,
     existingCoverPath: null,
+    existingCoverUrl: null,
     persons: [{ name: "", role: "MAIN_ARTIST" }],
     genre: "",
     upc: "",
@@ -201,6 +204,7 @@ export function hydrateFormFromRelease(
     releaseType: release.type ?? "ALBUM",
     existingCoverName: release.cover_url?.name ?? null,
     existingCoverPath: release.cover_url?.path ?? null,
+    existingCoverUrl: release.cover_url?.full_url ?? null,
     persons:
       release.persons && release.persons.length > 0
         ? release.persons.map((person) => ({

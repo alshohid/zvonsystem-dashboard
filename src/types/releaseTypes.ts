@@ -87,6 +87,8 @@ export type ApiFileRef = {
   name: string | null;
   type: string | null;
   path: string | null;
+  /** Absolute public URL returned by the API; prefer this for form previews. */
+  full_url?: string | null;
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;

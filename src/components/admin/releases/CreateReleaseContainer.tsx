@@ -102,27 +102,42 @@ export default function CreateReleaseContainer({
   const persist = async (status: ReleaseStatus, stepNumber: number) => {
     const body = buildReleaseFormData(form, { status, currentStep: stepNumber });
 
-    if (form.releaseId) {
-      const response = await updateRelease({
-        id: form.releaseId,
-        body,
-      }).unwrap();
-      return response.data;
+    const saved = form.releaseId
+      ? (
+          await updateRelease({
+            id: form.releaseId,
+            body,
+          }).unwrap()
+        ).data
+      : (await createRelease(body).unwrap()).data;
+
+    // After upload the local File is gone; switch the preview to cover_url.full_url.
+    hydratedIdRef.current = saved.id;
+    setForm(prev => ({
+      ...prev,
+      releaseId: saved.id,
+      coverFile: null,
+      existingCoverName: saved.cover_url?.name ?? prev.existingCoverName,
+      existingCoverPath: saved.cover_url?.path ?? prev.existingCoverPath,
+      existingCoverUrl: saved.cover_url?.full_url ?? prev.existingCoverUrl,
+      tracks: prev.tracks.map((track, index) => {
+        const savedTrack = saved.tracks?.[index];
+        if (!savedTrack?.audioUrl) return track;
+        return {
+          ...track,
+          file: null,
+          existingAudioName: savedTrack.audioUrl.name ?? track.existingAudioName,
+        };
+      }),
+    }));
+
+    if (!form.releaseId) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('id', saved.id);
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }
 
-    const response = await createRelease(body).unwrap();
-    const created = response.data;
-
-    // Guard the hydration effect so the fetch triggered by `?id=` cannot wipe
-    // the files that are still only held in memory.
-    hydratedIdRef.current = created.id;
-    setForm(prev => ({ ...prev, releaseId: created.id }));
-
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('id', created.id);
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-
-    return created;
+    return saved;
   };
 
   const handleSaveDraft = async () => {

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Upload, X } from 'lucide-react';
 import { resolveMediaUrl } from '@/src/lib/env';
+import Image from 'next/image';
 
 type ImageUploadFieldProps = {
   value: File | null;
@@ -14,6 +15,8 @@ type ImageUploadFieldProps = {
   /** Shown when no new file is picked but the release already has an upload. */
   existingFileName?: string | null;
   existingFilePath?: string | null;
+  /** Prefer this absolute URL (API `full_url`) over resolving `existingFilePath`. */
+  existingFileUrl?: string | null;
 };
 
 export default function ImageUploadField({
@@ -25,11 +28,14 @@ export default function ImageUploadField({
   previewAlt = 'Preview',
   existingFileName = null,
   existingFilePath = null,
+  existingFileUrl = null,
 }: ImageUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const objectUrl = useMemo(() => (value ? URL.createObjectURL(value) : null), [value]);
-  const previewUrl = objectUrl ?? resolveMediaUrl(existingFilePath);
-  const hasExistingUpload = Boolean(existingFileName) && !value;
+  // Local pick first; after save, prefer the API's full_url, then media proxy.
+  const previewUrl =
+    objectUrl ?? existingFileUrl ?? resolveMediaUrl(existingFilePath);
+  const hasExistingUpload = Boolean(existingFileName || existingFileUrl) && !value;
 
   useEffect(() => {
     return () => {
@@ -48,8 +54,7 @@ export default function ImageUploadField({
     <div className="flex flex-wrap items-start gap-4">
       {previewUrl && (
         <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-[#E5E7EB] sm:h-24 sm:w-24">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={previewUrl} alt={previewAlt} className="h-full w-full object-cover" />
+          <Image src={previewUrl} alt={previewAlt} width={96} height={96} className="h-full w-full object-cover" priority unoptimized />
           {value ? (
             <button
               type="button"

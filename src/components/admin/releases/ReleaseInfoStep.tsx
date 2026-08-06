@@ -106,6 +106,7 @@ export default function ReleaseInfoStep({
             previewAlt="Cover preview"
             existingFileName={form.existingCoverName}
             existingFilePath={form.existingCoverPath}
+            existingFileUrl={form.existingCoverUrl}
           />
           <p className="mt-1.5 text-xs text-[#98A2B3]">
             Format: .jpg, .png. Min: 1400x1400px, Max: 6000x6000px, 72dpi+.

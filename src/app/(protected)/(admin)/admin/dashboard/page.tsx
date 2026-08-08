@@ -1,5 +1,5 @@
-import DesignDashboard from "@/src/components/design/DesignDashboard";
+import ArtistDashboardDashboard from "@/src/components/design/DesignDashboard";
 
 export default function AdminDashboardPage() {
-  return <DesignDashboard />;
+  return <ArtistDashboardDashboard />;
 }

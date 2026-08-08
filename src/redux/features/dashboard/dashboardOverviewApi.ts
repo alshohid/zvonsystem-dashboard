@@ -1,14 +1,23 @@
 import { baseApi } from "@/src/redux/api/baseApi";
-import { IDashboardOverviewResponse } from "@/src/types/dashboardOverviewTypes";
+import type {
+  IArtistDashboardResponse,
+  IArtistDashboardViewModel,
+} from "@/src/types/dashboardOverviewTypes";
+import { DashboardOverviewMapper } from "@/src/lib/dashboard/dashboardOverviewMapper";
 
 const DashboardOverviewApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getDashboardOverview: builder.query<IDashboardOverviewResponse, void>({
+    getDashboardOverview: builder.query<
+      IArtistDashboardViewModel,
+      void
+    >({
       query: () => ({
-        url: "/dashboard/overview",
+        url: "/dashboard/artist",
         method: "GET",
       }),
       providesTags: ["DashboardOverview"],
+      transformResponse: (response: IArtistDashboardResponse) =>
+        DashboardOverviewMapper.fromDto(response.data),
     }),
   }),
 

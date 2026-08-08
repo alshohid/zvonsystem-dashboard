@@ -1,8 +1,6 @@
 "use client";
 
-import { TrendingDown, TrendingUp } from "lucide-react";
-import type { ISummaryStat, SummaryStatId } from "@/src/types/dashboardOverviewTypes";
-import { DASHBOARD_COLORS } from "@/src/components/design/dashboard/dashboardTheme";
+import type { DashboardStatId, IDashboardStat } from "@/src/types/dashboardOverviewTypes";
 import {
   HeadPhoneIcon,
   ProgressIcon,
@@ -11,15 +9,15 @@ import {
 } from "@/src/icons";
 
 // Card icons are a fixed, UI-only concern — never sourced from the API response.
-const STAT_ICON_BY_ID: Record<SummaryStatId, typeof HeadPhoneIcon> = {
-  "total-streams": HeadPhoneIcon,
+const STAT_ICON_BY_ID: Record<DashboardStatId, typeof HeadPhoneIcon> = {
+  "total-releases": ReleaseIcon,
   "in-progress": ProgressIcon,
   "total-published": PublishedIcon,
-  "active-releases": ReleaseIcon,
+  "active-releases": HeadPhoneIcon,
 };
 
 type SummaryStatsGridProps = {
-  stats: ISummaryStat[];
+  stats: IDashboardStat[];
 };
 
 export default function SummaryStatsGrid({ stats }: SummaryStatsGridProps) {
@@ -27,9 +25,6 @@ export default function SummaryStatsGrid({ stats }: SummaryStatsGridProps) {
     <div className="grid gap-4 md:gap-8 sm:grid-cols-2 xl:grid-cols-4">
       {stats.map((stat) => {
         const Icon = STAT_ICON_BY_ID[stat.id];
-        const TrendIcon = stat.trend.direction === "up" ? TrendingUp : TrendingDown;
-        const trendColor =
-          stat.trend.direction === "up" ? DASHBOARD_COLORS.success : DASHBOARD_COLORS.danger;
 
         return (
           <div
@@ -45,14 +40,8 @@ export default function SummaryStatsGrid({ stats }: SummaryStatsGridProps) {
               </div>
             </div>
 
-            <p className="mt-4 text-3xl font-semibold text-[#101828]">{stat.value}</p>
-
-            <p
-              className="mt-2 inline-flex items-center gap-1 text-xs font-medium"
-              style={{ color: trendColor }}
-            >
-              <TrendIcon size={14} />
-              {stat.trend.label}
+            <p className="mt-4 text-3xl font-semibold text-[#101828]">
+              {stat.value.toLocaleString()}
             </p>
           </div>
         );

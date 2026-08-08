@@ -7,10 +7,10 @@ import {
 } from "@/src/components/design/dashboard/dashboardFormat";
 
 type GreetingHeaderProps = {
-  ownerName: string;
+  ownerName?: string;
 };
 
-export default function GreetingHeader({ ownerName }: GreetingHeaderProps) {
+export default function GreetingHeader({ ownerName = "Artist" }: GreetingHeaderProps) {
   const { weekday, full, period } = useMemo(() => {
     const now = new Date();
     return { ...formatTodayHeading(now), period: getGreetingPeriod(now) };

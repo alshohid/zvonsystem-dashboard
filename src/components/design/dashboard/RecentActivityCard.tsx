@@ -1,11 +1,9 @@
 
 import { ActivityTrendIcon } from "@/src/icons";
-import type { IRecentActivityItem } from "@/src/types/dashboardOverviewTypes";
-
-
+import type { IArtistActivityItem } from "@/src/types/dashboardOverviewTypes";
 
 type RecentActivityCardProps = {
-  items: IRecentActivityItem[];
+  items: IArtistActivityItem[];
 };
 
 export default function RecentActivityCard({ items }: RecentActivityCardProps) {
@@ -15,8 +13,6 @@ export default function RecentActivityCard({ items }: RecentActivityCardProps) {
 
       <div className="mt-4 flex flex-col">
         {items.map((item) => {
-
-
           return (
             <div
               key={item.id}
@@ -25,9 +21,10 @@ export default function RecentActivityCard({ items }: RecentActivityCardProps) {
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#101828] text-white">
                 <ActivityTrendIcon className="text-white" />
               </div>
-              <div className="min-w-0">
-                <p className="text-sm text-[#344054]">{item.message}</p>
-                <p className="mt-0.5 text-xs text-[#98A2B3]">{item.occurredAgo}</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-[#344054]">{item.title}</p>
+                <p className="mt-0.5 text-xs text-[#667085]">{item.description}</p>
+                <p className="mt-0.5 text-[11px] text-[#98A2B3]">{item.timeAgo}</p>
               </div>
             </div>
           );

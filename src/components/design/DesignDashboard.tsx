@@ -5,16 +5,15 @@ import {
   DashboardOverviewError,
   DashboardOverviewSkeleton,
   GreetingHeader,
-  LatestAlbumCard,
   PlatformBreakdownCard,
   RecentActivityCard,
-  StreamingPerformanceChart,
+  ReleaseStatusChart,
   SummaryStatsGrid,
   TopTracksCard,
   UpcomingReleasesCard,
 } from "@/src/components/design/dashboard";
 
-export default function DesignDashboard() {
+export default function ArtistDashboardDashboard() {
   const { data, isLoading, isFetching, isError, refetch } =
     useGetDashboardOverviewQuery();
 
@@ -26,30 +25,26 @@ export default function DesignDashboard() {
     return <DashboardOverviewError onRetry={refetch} />;
   }
 
-  const overview = data.data;
-
+  const overview = data;
 
   return (
     <div className="space-y-6">
-      <GreetingHeader ownerName={overview.ownerName} />
+      <GreetingHeader ownerName="Artist" />
 
-      <SummaryStatsGrid stats={overview.summaryStats} />
+      <SummaryStatsGrid stats={overview.stats} />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <StreamingPerformanceChart data={overview.streamingPerformance} />
+        <ReleaseStatusChart data={overview.releaseStatusChart} />
         <PlatformBreakdownCard
           shares={overview.platformShares}
-          totalStreams={overview.totalPlatformStreams}
+          totalReleases={overview.totalReleases}
         />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <TopTracksCard tracks={overview.topTracks} />
 
-        <div className="flex min-w-0 flex-col gap-6">
-          <LatestAlbumCard album={overview.albumSpotlight} />
-          <RecentActivityCard items={overview.recentActivity} />
-        </div>
+        <RecentActivityCard items={overview.recentActivity} />
       </div>
 
       <UpcomingReleasesCard releases={overview.upcomingReleases} />

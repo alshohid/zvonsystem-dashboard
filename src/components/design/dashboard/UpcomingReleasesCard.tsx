@@ -1,10 +1,10 @@
-import { Disc3, Music2 } from "lucide-react";
-import type { IUpcomingRelease } from "@/src/types/dashboardOverviewTypes";
+import Image from "next/image";
+import type { IArtistUpcomingRelease } from "@/src/types/dashboardOverviewTypes";
 import { UPCOMING_STATUS_CLASSES } from "@/src/components/design/dashboard/dashboardTheme";
 import { formatReleaseDate } from "@/src/components/design/dashboard/dashboardFormat";
 
 type UpcomingReleasesCardProps = {
-  releases: IUpcomingRelease[];
+  releases: IArtistUpcomingRelease[];
 };
 
 export default function UpcomingReleasesCard({ releases }: UpcomingReleasesCardProps) {
@@ -14,19 +14,27 @@ export default function UpcomingReleasesCard({ releases }: UpcomingReleasesCardP
 
       <div className="mt-4 flex flex-col divide-y divide-[#F1F3F9]">
         {releases.map((release) => {
-          const ReleaseIcon = release.releaseType === "Album" ? Disc3 : Music2;
-
           return (
-            <div key={release.id} className="flex items-center justify-between gap-4 py-4">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#F7F3FE] text-[#2E3A83]">
-                  <ReleaseIcon size={16} />
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-[#101828]">{release.title}</p>
-                  <p className="mt-0.5 text-xs text-[#98A2B3]">
-                    {formatReleaseDate(release.releaseDate)} &middot; {release.releaseType}
-                  </p>
+            <div key={release.id} className="flex items-center gap-4 py-4">
+              <Image
+                src={release.coverUrl || "/images/album-thumbnail.png"}
+                alt={release.name}
+                width={44}
+                height={44}
+                className="h-11 w-11 shrink-0 rounded-lg object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-[#101828]">{release.name}</p>
+                <p className="mt-0.5 truncate text-xs text-[#98A2B3]">
+                  {release.subtitle && `${release.subtitle} · `}
+                  {release.trackCount} track{release.trackCount > 1 ? "s" : ""} ·{" "}
+                  {formatReleaseDate(release.releaseDate)}
+                </p>
+                <div className="mt-2 h-1.5 w-full max-w-[220px] overflow-hidden rounded-full bg-[#F1F3F9]">
+                  <div
+                    className="h-full rounded-full bg-primary"
+                    style={{ width: `${release.completionPercentage}%` }}
+                  />
                 </div>
               </div>
 

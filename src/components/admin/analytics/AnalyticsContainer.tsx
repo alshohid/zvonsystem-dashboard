@@ -8,8 +8,8 @@ import {
     AnalyticsSummaryGrid,
     StreamTrendChart,
     TopCountriesCard,
+    TrackPerformanceCard,
 } from "@/src/components/design/analytics";
-import { TopTracksCard } from "@/src/components/design/dashboard";
 
 export default function AnalyticsContainer() {
     const { data, isLoading, isFetching, isError, refetch } =
@@ -36,7 +36,10 @@ export default function AnalyticsContainer() {
                 <TopCountriesCard countries={overview.topCountries} />
             </div>
 
-            <TopTracksCard title="Track Performance" tracks={overview.trackPerformance} />
+            <TrackPerformanceCard
+                title="Track Performance"
+                tracks={overview.trackPerformance}
+            />
         </div>
     );
 }

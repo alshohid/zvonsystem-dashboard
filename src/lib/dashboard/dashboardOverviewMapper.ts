@@ -17,11 +17,6 @@ import type {
   PlatformColorToken,
 } from "@/src/types/dashboardOverviewTypes";
 
-/**
- * Mapping metadata for the four summary stat cards. Kept local to this class
- * (Single Responsibility: conversion concerns live only here) and ordered so
- * cards render in a stable, meaningful order.
- */
 const STAT_META: Array<{
   key: keyof IArtistStatsDto;
   id: DashboardStatId;
@@ -39,17 +34,8 @@ const PLATFORM_COLOR_CYCLE: PlatformColorToken[] = [
   "danger",
 ];
 
-/**
- * Converts the raw `/dashboard/artist` transport payload into the normalized
- * view-model the dashboard UI renders. Keeping this transformation behind a
- * single class means the component never depends on the wire format
- * (Dependency Inversion) and new sections can be added without editing
- * existing code (Open/Closed).
- */
 export class DashboardOverviewMapper {
-  private constructor() {
-    // Static mapping utility — not meant to be instantiated.
-  }
+  private constructor() {}
 
   static fromDto(dto: IArtistDashboardDto): IArtistDashboardViewModel {
     return {
@@ -60,6 +46,7 @@ export class DashboardOverviewMapper {
       topTracks: this.mapTopTracks(dto.topTracks),
       recentActivity: this.mapActivity(dto.recentActivity),
       upcomingReleases: this.mapUpcomingReleases(dto.upcomingReleases),
+      albumSpotlight: dto.albumSpotlight,
     };
   }
 
@@ -86,14 +73,11 @@ export class DashboardOverviewMapper {
         id: `platform-${index}`,
         platform,
         releases,
-        colorToken:
-          PLATFORM_COLOR_CYCLE[index % PLATFORM_COLOR_CYCLE.length],
+        colorToken: PLATFORM_COLOR_CYCLE[index % PLATFORM_COLOR_CYCLE.length],
       }));
   }
 
-  private static extractTotalReleases(
-    items: IPlatformReleaseDto[],
-  ): number {
+  private static extractTotalReleases(items: IPlatformReleaseDto[]): number {
     const total = items.find(
       ({ platform }) => platform.toLowerCase() === "total",
     );
@@ -101,28 +85,28 @@ export class DashboardOverviewMapper {
   }
 
   private static mapTopTracks(items: IArtistTopTrackDto[]): IArtistTopTrack[] {
-    return items.map(({ id, name, releaseName, duration, audioUrl, coverUrl }) => ({
-      id,
-      name,
-      releaseName,
-      duration,
-      audioUrl,
-      coverUrl,
-    }));
+    return items.map(
+      ({ id, name, releaseName, duration, audioUrl, coverUrl }) => ({
+        id,
+        name,
+        releaseName,
+        duration,
+        audioUrl,
+        coverUrl,
+      }),
+    );
   }
 
   private static mapActivity(
     items: IArtistActivityDto[],
   ): IArtistActivityItem[] {
-    return items.map(
-      ({ id, type, title, description, timeAgo }) => ({
-        id,
-        kind: type,
-        title,
-        description,
-        timeAgo,
-      }),
-    );
+    return items.map(({ id, type, title, description, timeAgo }) => ({
+      id,
+      kind: type,
+      title,
+      description,
+      timeAgo,
+    }));
   }
 
   private static mapUpcomingReleases(

@@ -5,6 +5,7 @@ import {
   DashboardOverviewError,
   DashboardOverviewSkeleton,
   GreetingHeader,
+  LatestAlbumCard,
   PlatformBreakdownCard,
   RecentActivityCard,
   ReleaseStatusChart,
@@ -44,7 +45,12 @@ export default function ArtistDashboardDashboard() {
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
         <TopTracksCard tracks={overview.topTracks} />
 
-        <RecentActivityCard items={overview.recentActivity} />
+        <div className="flex min-w-0 flex-col gap-6">
+          {overview.albumSpotlight && (
+            <LatestAlbumCard album={overview.albumSpotlight} />
+          )}
+          <RecentActivityCard items={overview.recentActivity} />
+        </div>
       </div>
 
       <UpcomingReleasesCard releases={overview.upcomingReleases} />

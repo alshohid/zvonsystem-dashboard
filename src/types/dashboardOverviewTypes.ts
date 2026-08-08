@@ -1,9 +1,5 @@
 import type { IBaseResponse } from "@/src/types/dashboardTypes";
 
-// ---------------------------------------------------------------------------
-// Shared primitives (analytics workspace depends on these — do not remove).
-// ---------------------------------------------------------------------------
-
 export type TrendDirection = "up" | "down";
 
 export interface ITrend {
@@ -11,7 +7,6 @@ export interface ITrend {
   label: string;
 }
 
-/** Top-track entry used by the analytics workspace (streams + trend based). */
 export interface ITopTrack {
   id: string;
   rank: number;
@@ -21,12 +16,6 @@ export interface ITopTrack {
   duration: string;
   trend: ITrend;
 }
-
-// ---------------------------------------------------------------------------
-// Transport (DTO) layer — mirrors the `/dashboard/artist` response exactly.
-// These types describe what the API actually sends; they are mapped into the
-// view-model layer below before the UI consumes them.
-// ---------------------------------------------------------------------------
 
 export type ReleaseStatusLabel =
   | "Draft"
@@ -102,6 +91,22 @@ export interface IArtistUpcomingReleaseDto {
   labelName: string;
 }
 
+export interface IAlbumTrack {
+  id: string;
+  title: string;
+  audioUrl: string;
+}
+
+export interface IAlbumSpotlight {
+  id: string;
+  title: string;
+  trackCount: number;
+  countryCount: number;
+  coverImageUrl?: string;
+  previewAudioUrl?: string;
+  tracks?: IAlbumTrack[];
+}
+
 export interface IArtistDashboardDto {
   stats: IArtistStatsDto;
   releaseStatusChart: IReleaseStatusChartDto[];
@@ -109,17 +114,13 @@ export interface IArtistDashboardDto {
   topTracks: IArtistTopTrackDto[];
   recentActivity: IArtistActivityDto[];
   upcomingReleases: IArtistUpcomingReleaseDto[];
+  albumSpotlight?: IAlbumSpotlight;
 }
 
 export interface IArtistDashboardResponse extends IBaseResponse {
   role: string;
   data: IArtistDashboardDto;
 }
-
-// ---------------------------------------------------------------------------
-// View-model layer — the normalized shape the dashboard UI depends on.
-// Produced by DashboardOverviewMapper.fromDto(...).
-// ---------------------------------------------------------------------------
 
 export type DashboardStatId =
   | "total-releases"
@@ -188,4 +189,5 @@ export interface IArtistDashboardViewModel {
   topTracks: IArtistTopTrack[];
   recentActivity: IArtistActivityItem[];
   upcomingReleases: IArtistUpcomingRelease[];
+  albumSpotlight?: IAlbumSpotlight;
 }

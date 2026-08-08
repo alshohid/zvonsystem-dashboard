@@ -46,8 +46,8 @@ export default function ArtistDashboardDashboard() {
         <TopTracksCard tracks={overview.topTracks} />
 
         <div className="flex min-w-0 flex-col gap-6">
-          {overview.albumSpotlight && (
-            <LatestAlbumCard album={overview.albumSpotlight} />
+          {overview?.albumSpotlight && overview.albumSpotlight.length > 0 && (
+            <LatestAlbumCard albums={overview.albumSpotlight} />
           )}
           <RecentActivityCard items={overview.recentActivity} />
         </div>

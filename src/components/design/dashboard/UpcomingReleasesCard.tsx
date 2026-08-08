@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { resolveMediaUrl } from "@/src/lib/env";
 import type { IArtistUpcomingRelease } from "@/src/types/dashboardOverviewTypes";
 import { UPCOMING_STATUS_CLASSES } from "@/src/components/design/dashboard/dashboardTheme";
 import { formatReleaseDate } from "@/src/components/design/dashboard/dashboardFormat";
@@ -17,11 +18,12 @@ export default function UpcomingReleasesCard({ releases }: UpcomingReleasesCardP
           return (
             <div key={release.id} className="flex items-center gap-4 py-4">
               <Image
-                src={release.coverUrl || "/images/album-thumbnail.png"}
+                src={resolveMediaUrl(release.coverUrl) || "/images/album-thumbnail.png"}
                 alt={release.name}
                 width={44}
                 height={44}
                 className="h-11 w-11 shrink-0 rounded-lg object-cover"
+                unoptimized
               />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-[#101828]">{release.name}</p>

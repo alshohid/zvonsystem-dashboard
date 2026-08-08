@@ -114,7 +114,7 @@ export interface IArtistDashboardDto {
   topTracks: IArtistTopTrackDto[];
   recentActivity: IArtistActivityDto[];
   upcomingReleases: IArtistUpcomingReleaseDto[];
-  albumSpotlight?: IAlbumSpotlight;
+  albumSpotlight?: IAlbumSpotlight[];
 }
 
 export interface IArtistDashboardResponse extends IBaseResponse {
@@ -189,5 +189,5 @@ export interface IArtistDashboardViewModel {
   topTracks: IArtistTopTrack[];
   recentActivity: IArtistActivityItem[];
   upcomingReleases: IArtistUpcomingRelease[];
-  albumSpotlight?: IAlbumSpotlight;
+  albumSpotlight?: IAlbumSpotlight[];
 }

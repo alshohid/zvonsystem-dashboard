@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { resolveMediaUrl } from "@/src/lib/env";
 import type { IArtistTopTrack } from "@/src/types/dashboardOverviewTypes";
 
 type TopTracksCardProps = {
@@ -27,11 +28,12 @@ export default function TopTracksCard({
               {index + 1}
             </span>
             <Image
-              src={track.coverUrl || "/images/album-thumbnail.png"}
+              src={resolveMediaUrl(track.coverUrl) || "/images/album-thumbnail.png"}
               alt={track.name}
               width={40}
               height={40}
               className="h-10 w-10 shrink-0 rounded-lg object-cover"
+              unoptimized
             />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium text-[#101828]">{track.name}</p>

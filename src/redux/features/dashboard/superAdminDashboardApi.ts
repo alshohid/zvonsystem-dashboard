@@ -5,7 +5,7 @@ const superAdminDashboardApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getSuperAdminDashboard: builder.query<SuperAdminDashboardResponse, void>({
       query: () => ({
-        url: "/dashboard",
+        url: "/dashboard/admin",
         method: "GET",
       }),
       providesTags: ["SuperAdminDashboard"],

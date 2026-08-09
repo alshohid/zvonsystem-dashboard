@@ -8,7 +8,17 @@ import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
 import CheckoutFlow from './CheckoutFlow';
 import CurrentPlanCard from './CurrentPlanCard';
 import InvoiceHistoryList from './InvoiceHistoryList';
-import { CHECKOUT_STEP_TABS, MOCK_INVOICES, MOCK_PLANS } from './mockBillingData';
+import { CHECKOUT_STEP_TABS, MOCK_INVOICES } from './mockBillingData';
+import { getErrorMessage } from '@/src/lib/getErrorMessage';
+import {
+  mapApiPlanToDisplayPlan,
+  mapApiPlansToDisplayPlans,
+} from '@/src/lib/billing/billingMapper';
+import {
+  useCancelSubscriptionMutation,
+  useGetMySubscriptionQuery,
+  useGetPlansQuery,
+} from '@/src/redux/features/subscription/subscriptionApi';
 import PaymentMethodSummary from './PaymentMethodSummary';
 import PaymentSuccessScreen from './PaymentSuccessScreen';
 import PlanBillingToggle from './PlanBillingToggle';
@@ -23,12 +33,64 @@ export default function BillingContainer() {
   const [planParam, setPlanParam] = useQueryState('plan', '');
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly');
 
-  const selectedPlan = MOCK_PLANS.find(plan => plan.id === planParam);
+  const {
+    data: plansData,
+    isLoading: isPlansLoading,
+    isError: isPlansError,
+    refetch: refetchPlans,
+  } = useGetPlansQuery();
+
+  const {
+    data: subscriptionData,
+    isLoading: isSubscriptionLoading,
+  } = useGetMySubscriptionQuery();
+
+  const [cancelSubscription, { isLoading: isCancelling }] =
+    useCancelSubscriptionMutation();
+
+  const subscription = subscriptionData?.data;
+  const apiPlans = plansData?.data ?? [];
+  const plans = mapApiPlansToDisplayPlans(apiPlans, billingPeriod);
+
+  const selectedPlan =
+    plans.find(plan => plan.id === planParam) ??
+    (planParam
+      ? (() => {
+        const apiPlan =
+          apiPlans.find(plan => plan.id === planParam) ??
+          apiPlans.find(plan => plan.name === planParam.toUpperCase());
+        return apiPlan ? mapApiPlanToDisplayPlan(apiPlan, billingPeriod) : null;
+      })()
+      : null);
+
   const effectiveView: BillingView =
     view === 'success' ? 'success' : selectedPlan ? 'checkout' : 'landing';
 
   const handleSelectPlan = (id: PlanId) => {
     setPlanParam(id);
+  };
+
+  const handleUpgrade = () => {
+    const proPlan =
+      plans.find(
+        plan => plan.name.toLowerCase().startsWith('pro') && !plan.isCurrentPlan,
+      ) ??
+      plans.find(plan => plan.name.toLowerCase().startsWith('pro'));
+    if (proPlan) setPlanParam(proPlan.id);
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!subscription?.paypalSubscriptionId) return;
+
+    if (!window.confirm('Are you sure you want to cancel your subscription?')) {
+      return;
+    }
+
+    try {
+      await cancelSubscription(subscription.paypalSubscriptionId).unwrap();
+    } catch (err) {
+      console.error(getErrorMessage(err, 'Failed to cancel subscription.'));
+    }
   };
 
   return (
@@ -41,7 +103,9 @@ export default function BillingContainer() {
       </div>
 
       {effectiveView === 'success' && (
-        <PaymentSuccessScreen onGoToDashboard={() => router.push('/admin/dashboard')} />
+        <PaymentSuccessScreen
+          onGoToDashboard={() => router.push('/admin/dashboard')}
+        />
       )}
 
       {effectiveView === 'checkout' && selectedPlan && (
@@ -56,12 +120,13 @@ export default function BillingContainer() {
       {effectiveView === 'landing' && (
         <>
           <CurrentPlanCard
-            planName="Free Plan"
-            releasesRemainingLabel="2 of 3 free releases remaining"
-            usedFraction={1 / 3}
-            usedLabel="1/3 used"
-            onUpgrade={() => handleSelectPlan('pro')}
+            subscription={subscription}
+            isLoading={isSubscriptionLoading}
+            onUpgrade={handleUpgrade}
+            onCancel={handleCancelSubscription}
+            isCancelling={isCancelling}
           />
+
           <TopTabs variant="stepper" tabs={CHECKOUT_STEP_TABS} activeKey="plan" onChange={() => { }} />
 
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -69,14 +134,36 @@ export default function BillingContainer() {
             <PlanBillingToggle value={billingPeriod} onChange={setBillingPeriod} />
           </div>
 
+          {isPlansLoading ? (
+            <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {[0, 1, 2].map(index => (
+                <div
+                  key={index}
+                  className="h-72 animate-pulse rounded-2xl border border-[#E9EDF5] bg-white p-5"
+                />
+              ))}
+            </div>
+          ) : isPlansError ? (
+            <div className="rounded-2xl border border-[#FECDCA] bg-[#FEF3F2] p-5 text-sm text-[#B42318]">
+              <p className="font-medium">Couldn&apos;t load plans</p>
+              <p className="mt-1">Please try again in a moment.</p>
+              <button
+                type="button"
+                onClick={refetchPlans}
+                className="mt-3 rounded-md border border-[#FECDCA] px-3 py-1.5 text-xs font-medium hover:bg-[#FECDCA]/40"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              {plans.map(plan => (
+                <PricingCard key={plan.id} plan={plan} onSelect={handleSelectPlan} />
+              ))}
+            </div>
+          )}
 
-          <div className="grid grid-cols-1 gap-4 md:gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {MOCK_PLANS.map(plan => (
-              <PricingCard key={plan.id} plan={plan} onSelect={handleSelectPlan} />
-            ))}
-          </div>
-
-          <PaymentMethodSummary onAddCard={() => handleSelectPlan('pro')} />
+          <PaymentMethodSummary onAddCard={handleUpgrade} />
 
           <InvoiceHistoryList invoices={MOCK_INVOICES} />
         </>

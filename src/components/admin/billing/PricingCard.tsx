@@ -36,7 +36,7 @@ export default function PricingCard({ plan, onSelect }: PricingCardProps) {
           plan.highlighted ? 'bg-[#101828] text-primary' : 'bg-[#F2F4F7] text-[#667085]',
         ].join(' ')}
       >
-        <Icon size={16} />
+        <Icon size={16} className="size-5" />
       </div>
 
       <div>

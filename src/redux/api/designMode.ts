@@ -679,6 +679,329 @@ export const buildDesignModeResponse = (args: ApiArgs) => {
     });
   }
 
+  // ── Subscription & payment endpoints ──────────────────────────
+
+  if (url === "/subscription/plans") {
+    return buildSuccess(
+      [
+        {
+          id: "dc25546e-58bf-437d-8c92-583e1fa9c964",
+          name: "FREE",
+          displayName: "Free",
+          description: "Try the platform with limited uploads",
+          price: 0,
+          currency: "USD",
+          billingPeriod: "yearly",
+          features: [
+            "Up to 3 releases per year",
+            "All major streaming platforms",
+            "Basic analytics dashboard",
+            "Standard moderation queue",
+          ],
+          maxReleasesPerYear: 3,
+          hasPriorityModeration: false,
+          hasAdvancedAnalytics: false,
+          hasSoundcloudDistribution: false,
+          hasTidalDistribution: false,
+          hasDedicatedSupport: false,
+          earlyAccessFeatures: false,
+          isActive: true,
+          sortOrder: 1,
+          isCurrentPlan: false,
+          releasesUsed: 0,
+          releasesLimit: 999,
+          releasesRemaining: 999,
+        },
+        {
+          id: "89e101a2-7590-4ad2-9e6c-738cd25074e5",
+          name: "PRO",
+          displayName: "Pro",
+          description: "Billed as $95.88/year",
+          price: 7.99,
+          currency: "USD",
+          billingPeriod: "monthly",
+          features: [
+            "Unlimited releases",
+            "All major streaming platforms",
+            "Advanced analytics & insights",
+            "Priority moderation (faster approval)",
+            "SoundCloud & Tidal distribution",
+            "Early access to new features",
+            "Dedicated artist support",
+          ],
+          maxReleasesPerYear: null,
+          hasPriorityModeration: true,
+          hasAdvancedAnalytics: true,
+          hasSoundcloudDistribution: true,
+          hasTidalDistribution: true,
+          hasDedicatedSupport: true,
+          earlyAccessFeatures: true,
+          isActive: true,
+          sortOrder: 2,
+          isCurrentPlan: false,
+          releasesUsed: 0,
+          releasesLimit: 999,
+          releasesRemaining: 999,
+        },
+        {
+          id: "31490270-7fba-41d1-be3b-ac7d7428977c",
+          name: "PRO_YEARLY",
+          displayName: "Pro Yearly",
+          description: "Best value - Save 20%",
+          price: 95.88,
+          currency: "USD",
+          billingPeriod: "yearly",
+          features: [
+            "Unlimited releases",
+            "All major streaming platforms",
+            "Advanced analytics & insights",
+            "Priority moderation (faster approval)",
+            "SoundCloud & Tidal distribution",
+            "Early access to new features",
+            "Dedicated artist support",
+            "Save 20% compared to monthly",
+          ],
+          maxReleasesPerYear: null,
+          hasPriorityModeration: true,
+          hasAdvancedAnalytics: true,
+          hasSoundcloudDistribution: true,
+          hasTidalDistribution: true,
+          hasDedicatedSupport: true,
+          earlyAccessFeatures: true,
+          isActive: true,
+          sortOrder: 3,
+          isCurrentPlan: true,
+          releasesUsed: 0,
+          releasesLimit: 999,
+          releasesRemaining: 999,
+        },
+        {
+          id: "f353f7e6-36ea-4bde-9f0b-3a3e2695a098",
+          name: "PAY_PER_RELEASE",
+          displayName: "Pay Per Release",
+          description: "For artists who upload occasionally",
+          price: 2.99,
+          currency: "USD",
+          billingPeriod: "per_release",
+          features: [
+            "No monthly fee",
+            "All major platforms",
+            "Basic analytics",
+            "Pay only when you release",
+            "No long-term commitment",
+          ],
+          maxReleasesPerYear: null,
+          hasPriorityModeration: false,
+          hasAdvancedAnalytics: false,
+          hasSoundcloudDistribution: true,
+          hasTidalDistribution: true,
+          hasDedicatedSupport: false,
+          earlyAccessFeatures: false,
+          isActive: true,
+          sortOrder: 4,
+          isCurrentPlan: false,
+          releasesUsed: 0,
+          releasesLimit: 999,
+          releasesRemaining: 999,
+        },
+      ],
+      {
+        meta: {
+          total: 4,
+          page: 1,
+          limit: 10,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      },
+    );
+  }
+
+  if (url === "/subscription/my-subscription") {
+    return buildSuccess({
+      planId: "dc25546e-58bf-437d-8c92-583e1fa9c964",
+      planName: "FREE",
+      planDisplayName: "Free",
+      price: 0,
+      currency: "USD",
+      billingPeriod: "yearly",
+      status: "active",
+      startDate: new Date().toISOString(),
+      endDate: new Date(
+        Date.now() + 365 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+      releasesUsed: 1,
+      releasesLimit: 3,
+      releasesRemaining: 2,
+      progressPercentage: 33,
+      features: [
+        "Up to 3 releases per year",
+        "All major streaming platforms",
+        "Basic analytics dashboard",
+        "Standard moderation queue",
+      ],
+      subscriptionId: "073744ae-72e5-4a7c-8896-4f0357446110",
+      autoRenew: true,
+      createdAt: new Date(
+        Date.now() - 5 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+      updatedAt: new Date().toISOString(),
+      hasActiveSubscription: true,
+      isFreePlan: true,
+    });
+  }
+
+  if (url === "/subscription/stats") {
+    return buildSuccess({
+      totalPlans: 4,
+      plansByBillingPeriod: [
+        { billingPeriod: "yearly", count: 2 },
+        { billingPeriod: "per_release", count: 1 },
+        { billingPeriod: "monthly", count: 1 },
+      ],
+    });
+  }
+
+  if (url.startsWith("/subscription/cancel/")) {
+    return buildSuccess({
+      subscriptionId: "073744ae-72e5-4a7c-8896-4f0357446110",
+      status: "cancelled",
+      canceledAt: new Date().toISOString(),
+    });
+  }
+
+  if (url.startsWith("/subscription/plans/")) {
+    return buildSuccess({
+      id: "89e101a2-7590-4ad2-9e6c-738cd25074e5",
+      name: "PRO",
+      displayName: "Pro",
+      description: "Billed as $95.88/year",
+      price: 7.99,
+      currency: "USD",
+      billingPeriod: "monthly",
+      features: [
+        "Unlimited releases",
+        "All major streaming platforms",
+        "Advanced analytics & insights",
+        "Priority moderation (faster approval)",
+        "SoundCloud & Tidal distribution",
+        "Early access to new features",
+        "Dedicated artist support",
+      ],
+      maxReleasesPerYear: null,
+      hasPriorityModeration: true,
+      hasAdvancedAnalytics: true,
+      hasSoundcloudDistribution: true,
+      hasTidalDistribution: true,
+      hasDedicatedSupport: true,
+      earlyAccessFeatures: true,
+      isActive: true,
+      sortOrder: 2,
+    });
+  }
+
+  if (url === "/subscription-payment/create-checkout-session") {
+    const reqBody = getBody(args) as
+      | Record<string, unknown>
+      | undefined;
+    const planId = String(reqBody?.planId ?? "");
+    // FREE plan UUID from the `/subscription/plans` list.
+    const isFreePlan = planId === "dc25546e-58bf-437d-8c92-583e1fa9c964";
+    const billingCycle = String(reqBody?.billingCycle ?? "");
+
+    if (isFreePlan) {
+      return buildSuccess({
+        subscriptionId: "073744ae-72e5-4a7c-8896-4f0357446110",
+        isFree: true,
+        alreadyActive: false,
+        plan: {
+          id: planId,
+          name: "Free",
+          price: 0,
+          currency: "USD",
+          billingCycle: "yearly",
+        },
+        subscription: {
+          id: "073744ae-72e5-4a7c-8896-4f0357446110",
+          user_id: "cmsflfjuq0003v4jyg3u2hvl5",
+          plan_id: planId,
+          status: "active",
+          start_date: new Date().toISOString(),
+          end_date: new Date(
+            Date.now() + 365 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          releases_used_this_period: 0,
+          releases_limit: 3,
+          meta: {
+            auto_renew: false,
+            releases_used: 0,
+            releases_remaining: 3,
+          },
+        },
+      });
+    }
+
+    // Pay-per-release is charged directly by card (no PayPal approval step).
+    if (billingCycle === "PER_RELEASE") {
+      return buildSuccess({
+        subscriptionId: "I-PP-00001",
+        isFree: false,
+        isRepeatCustomer: false,
+        requiresCardEntry: true,
+        plan: {
+          id: planId,
+          name: "Pay Per Release",
+          price: 2.99,
+          currency: "USD",
+          billingCycle: "PER_RELEASE",
+        },
+      });
+    }
+
+    // Recurring plans (PRO / PRO_YEARLY) go through the PayPal approval flow.
+    return buildSuccess({
+      subscriptionId: "I-NDM0NFU39XJX",
+      approveUrl:
+        "https://www.sandbox.paypal.com/webapps/billing/subscriptions?ba_token=BA-10H68556NE088163E",
+      isFree: false,
+      isRepeatCustomer: true,
+      requiresCardEntry: false,
+      plan: {
+        id: planId,
+        name: "Pro",
+        price: 7.99,
+        currency: "USD",
+        billingCycle,
+      },
+    });
+  }
+
+  if (url === "/subscription-payment/process-payment") {
+    return buildSuccess({
+      subscription: {
+        id: "2fbb1dfb-342a-4292-84dc-d1ee4669c2a6",
+        status: "active",
+        start_date: new Date().toISOString(),
+        end_date: new Date(
+          Date.now() + 30 * 24 * 60 * 60 * 1000,
+        ).toISOString(),
+      },
+      transaction: {
+        id: "cmslmcwnb0001agjyd99dp4n6",
+        amount: "7.99",
+        currency: "USD",
+        status: "completed",
+        paid_at: new Date().toISOString(),
+        card_last_four: "8431",
+        card_brand: "American Express",
+      },
+      isRepeatCustomer: false,
+      hasSavedCard: false,
+      alreadyActive: true,
+    });
+  }
+
   if (url.includes("recent")) {
     return buildPaginated();
   }

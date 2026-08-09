@@ -28,6 +28,10 @@ export const MOCK_PLANS: Plan[] = [
     ],
     ctaLabel: "Current Plan",
     ctaDisabled: true,
+    billingCycle: "YEARLY",
+    currency: "USD",
+    isCurrentPlan: false,
+    isFree: true,
   },
   {
     id: "pro",
@@ -49,6 +53,10 @@ export const MOCK_PLANS: Plan[] = [
       { label: "Dedicated artist support", included: true },
     ],
     ctaLabel: "Upgrade - $7.99/mo",
+    billingCycle: "MONTHLY",
+    currency: "USD",
+    isCurrentPlan: false,
+    isFree: false,
   },
   {
     id: "label",
@@ -75,6 +83,10 @@ export const MOCK_PLANS: Plan[] = [
       { label: "Priority customer support", included: true },
     ],
     ctaLabel: "Choose Label - $19/mo",
+    billingCycle: "MONTHLY",
+    currency: "USD",
+    isCurrentPlan: false,
+    isFree: false,
   },
   {
     id: "pay-per-release",
@@ -93,6 +105,10 @@ export const MOCK_PLANS: Plan[] = [
       { label: "Priority moderation", included: false },
     ],
     ctaLabel: "Choose Pay Per Release",
+    billingCycle: "PER_RELEASE",
+    currency: "USD",
+    isCurrentPlan: false,
+    isFree: false,
   },
 ];
 

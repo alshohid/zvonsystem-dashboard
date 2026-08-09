@@ -1,6 +1,10 @@
 export type BillingPeriod = 'monthly' | 'annual';
 
-export type PlanId = 'free' | 'pro' | 'pay-per-release' | 'label';
+/**
+ * Plan identifier.  Originally a closed union (`'free' | 'pro' | …`) but the
+ * subscription API returns UUID strings, so the type is now `string`.
+ */
+export type PlanId = string;
 
 export type PlanFeature = {
   label: string;
@@ -20,6 +24,14 @@ export type Plan = {
   features: PlanFeature[];
   ctaLabel: string;
   ctaDisabled?: boolean;
+  /** Uppercase billing cycle sent to the payment API (`"MONTHLY"`, `"YEARLY"`, `"PER_RELEASE"`). */
+  billingCycle: string;
+  /** Currency code from the API (e.g. `"USD"`). */
+  currency: string;
+  /** Mirrors the API `isCurrentPlan` flag – used to render "Current Plan". */
+  isCurrentPlan: boolean;
+  /** Convenience: `price === 0`. */
+  isFree: boolean;
 };
 
 export type Invoice = {

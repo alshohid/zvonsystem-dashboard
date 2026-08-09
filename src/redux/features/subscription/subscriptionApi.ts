@@ -18,7 +18,7 @@ const subscriptionApi = baseApi.injectEndpoints({
         url: "/subscription/plans",
         method: "GET",
       }),
-      providesTags: ["SubscriptionPlan"],
+      providesTags: ["SubscriptionPlan", "Subscription"],
     }),
 
     getPlanById: builder.query<PlanResponse, string>({
@@ -28,6 +28,7 @@ const subscriptionApi = baseApi.injectEndpoints({
       }),
       providesTags: (_result, _error, id) => [
         { type: "SubscriptionPlan" as const, id },
+        { type: "Subscription" as const, id },
       ],
     }),
 
@@ -36,7 +37,7 @@ const subscriptionApi = baseApi.injectEndpoints({
         url: "/subscription/my-subscription",
         method: "GET",
       }),
-      providesTags: ["Subscription"],
+      providesTags: ["Subscription", "SubscriptionPlan"],
     }),
     getPlanStats: builder.query<PlanStatsResponse, void>({
       query: () => ({
@@ -51,7 +52,7 @@ const subscriptionApi = baseApi.injectEndpoints({
         url: `/subscription/cancel/${subscriptionId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Subscription"],
+      invalidatesTags: ["Subscription", "SubscriptionPlan"],
     }),
 
     createCheckoutSession: builder.mutation<
@@ -63,7 +64,7 @@ const subscriptionApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Subscription"],
+      invalidatesTags: ["Subscription", "SubscriptionPlan"],
     }),
 
     processPayment: builder.mutation<
@@ -75,7 +76,11 @@ const subscriptionApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Subscription", "SubscriptionStats"],
+      invalidatesTags: [
+        "Subscription",
+        "SubscriptionStats",
+        "SubscriptionPlan",
+      ],
     }),
   }),
   overrideExisting: true,

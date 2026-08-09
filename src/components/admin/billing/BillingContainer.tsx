@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import TopTabs from '@/src/components/common/TopTabs';
 import { useQueryState } from '@/src/lib/helper/useQueryState';
 import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
+import CancelSubscriptionModal from './CancelSubscriptionModal';
 import CheckoutFlow from './CheckoutFlow';
 import CurrentPlanCard from './CurrentPlanCard';
 import InvoiceHistoryList from './InvoiceHistoryList';
@@ -32,6 +34,7 @@ export default function BillingContainer() {
   const [view, setView] = useTabsQueryState<BillingView>('view', 'landing');
   const [planParam, setPlanParam] = useQueryState('plan', '');
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('monthly');
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
   const {
     data: plansData,
@@ -79,17 +82,21 @@ export default function BillingContainer() {
     if (proPlan) setPlanParam(proPlan.id);
   };
 
-  const handleCancelSubscription = async () => {
-    if (!subscription?.paypalSubscriptionId) return;
+  const openCancelModal = () => {
+    setCancelModalOpen(true);
+  };
 
-    if (!window.confirm('Are you sure you want to cancel your subscription?')) {
-      return;
-    }
+  const confirmCancelSubscription = async () => {
+    if (!subscription?.paypalSubscriptionId) return;
 
     try {
       await cancelSubscription(subscription.paypalSubscriptionId).unwrap();
+      setCancelModalOpen(false);
+      toast.success('Your subscription has been cancelled.');
     } catch (err) {
-      console.error(getErrorMessage(err, 'Failed to cancel subscription.'));
+      toast.error(
+        getErrorMessage(err, 'Failed to cancel subscription. Please try again.'),
+      );
     }
   };
 
@@ -123,8 +130,16 @@ export default function BillingContainer() {
             subscription={subscription}
             isLoading={isSubscriptionLoading}
             onUpgrade={handleUpgrade}
-            onCancel={handleCancelSubscription}
+            onCancel={openCancelModal}
             isCancelling={isCancelling}
+          />
+
+          <CancelSubscriptionModal
+            subscription={subscription}
+            isOpen={cancelModalOpen}
+            isCancelling={isCancelling}
+            onClose={() => !isCancelling && setCancelModalOpen(false)}
+            onConfirm={confirmCancelSubscription}
           />
 
           <TopTabs variant="stepper" tabs={CHECKOUT_STEP_TABS} activeKey="plan" onChange={() => { }} />
@@ -163,7 +178,7 @@ export default function BillingContainer() {
             </div>
           )}
 
-          <PaymentMethodSummary onAddCard={handleUpgrade} />
+          {/* <PaymentMethodSummary onAddCard={handleUpgrade} /> */}
 
           <InvoiceHistoryList invoices={MOCK_INVOICES} />
         </>

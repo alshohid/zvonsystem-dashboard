@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import TopTabs from '@/src/components/common/TopTabs';
@@ -42,19 +42,6 @@ const EMPTY_CARD_ENTRY: CardEntryValues = {
   cvv: '',
 };
 
-/**
- * Sandbox card used to complete `process-payment` when the user is returned
- * from PayPal (`…?step=checkout&subscription_id=…`) with an empty card form.
- * The user can override these values in the form before retrying via "Pay Now".
- */
-const PAYPAL_RETURN_CARD = {
-  cardHolderName: 'string',
-  cardNumber: '371449635398431',
-  expiryMonth: '12',
-  expiryYear: '29',
-  cvv: '123',
-};
-
 type CheckoutFlowProps = {
   plan: Plan;
   billingPeriod: BillingPeriod;
@@ -87,18 +74,7 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
 
   const searchParams = useSearchParams();
   const payPalSubscriptionId = searchParams.get('subscription_id');
-  const autoConfirmAttemptedRef = useRef(false);
 
-  /**
-   * PayPal approval callback.
-   *
-   * After the user approves the subscription on PayPal, the backend returns
-   * them to `/admin/dashboard/billing?plan=…&step=checkout&subscription_id=…&ba_token=…&token=…`.
-   * When we land here we seed the checkout session from the URL and
-   * automatically call `subscription-payment/process-payment` with that
-   * subscription id. The card form is shown so the user can retry via
-   * "Pay Now" if the auto-confirm fails.
-   */
   useEffect(() => {
     if (step !== 'checkout' || !payPalSubscriptionId) return;
 
@@ -117,64 +93,10 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
         },
       },
     );
-
-    setCardEntry(prev =>
-      prev.cardNumber.length
-        ? prev
-        : {
-            cardNumber: PAYPAL_RETURN_CARD.cardNumber,
-            cardholderName: PAYPAL_RETURN_CARD.cardHolderName,
-            expiry: `${PAYPAL_RETURN_CARD.expiryMonth}/${PAYPAL_RETURN_CARD.expiryYear}`,
-            cvv: PAYPAL_RETURN_CARD.cvv,
-          },
-    );
-
-    if (autoConfirmAttemptedRef.current) return;
-    autoConfirmAttemptedRef.current = true;
-
-    const confirm = async () => {
-      const [rawMonth = '', rawYear = ''] = cardEntry.expiry
-        .split('/')
-        .map(part => part.trim());
-      const expiryMonth = rawMonth || PAYPAL_RETURN_CARD.expiryMonth;
-      const expiryYear = rawYear || PAYPAL_RETURN_CARD.expiryYear;
-
-      try {
-        await processPayment({
-          planId: plan.id,
-          subscriptionId: payPalSubscriptionId,
-          cardHolderName:
-            cardEntry.cardholderName || PAYPAL_RETURN_CARD.cardHolderName,
-          cardNumber: cardEntry.cardNumber || PAYPAL_RETURN_CARD.cardNumber,
-          expiryMonth,
-          expiryYear,
-          cvv: cardEntry.cvv || PAYPAL_RETURN_CARD.cvv,
-          billingCycle,
-          saveCard: false,
-        }).unwrap();
-
-        onComplete();
-      } catch (err) {
-        setPaymentError(
-          getErrorMessage(
-            err,
-            'Payment confirmation failed. Click “Pay Now” to retry.',
-          ),
-        );
-        autoConfirmAttemptedRef.current = false;
-      }
-    };
-
-    confirm();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, payPalSubscriptionId, plan.id, billingCycle, onComplete]);
 
-  /**
-   * Creates the checkout session. Branching follows the API response:
-   *  – free plan  → activated immediately, finish the flow
-   *  – `approveUrl` → send the user to PayPal for approval
-   *  – `requiresCardEntry` → open the in-app card form, then `processPayment`
-   */
+
   const handleProceedToCheckout = async () => {
     setPaymentError(null);
 
@@ -221,15 +143,28 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
       .split('/')
       .map(part => part.trim());
 
+    if (
+      !cardEntry.cardNumber.trim() ||
+      !cardEntry.cardholderName.trim() ||
+      !expiryMonth ||
+      !expiryYear ||
+      !cardEntry.cvv.trim()
+    ) {
+      setPaymentError(
+        'Please enter all your card details to complete the payment.',
+      );
+      return;
+    }
+
     try {
       await processPayment({
         planId: plan.id,
         subscriptionId: session.subscriptionId,
-        cardHolderName: cardEntry.cardholderName,
-        cardNumber: cardEntry.cardNumber,
+        cardHolderName: cardEntry.cardholderName.trim(),
+        cardNumber: cardEntry.cardNumber.replace(/\s+/g, ''),
         expiryMonth,
         expiryYear,
-        cvv: cardEntry.cvv,
+        cvv: cardEntry.cvv.trim(),
         billingCycle,
         saveCard: false,
       }).unwrap();

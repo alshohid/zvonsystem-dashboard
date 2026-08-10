@@ -69,7 +69,7 @@ export default function CheckoutStep({
 
       {!plan.isFree && requiresCardEntry && (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {savedCards.map(card => (
               <SavedCardOption
                 key={card.id}
@@ -78,7 +78,7 @@ export default function CheckoutStep({
                 onSelect={onSelectCard}
               />
             ))}
-          </div>
+          </div> */}
 
           <CardEntryForm values={cardEntry} onChange={onCardEntryChange} />
         </>

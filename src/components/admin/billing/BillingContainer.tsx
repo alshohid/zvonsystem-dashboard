@@ -21,7 +21,7 @@ import {
   useGetMySubscriptionQuery,
   useGetPlansQuery,
 } from '@/src/redux/features/subscription/subscriptionApi';
-import PaymentMethodSummary from './PaymentMethodSummary';
+// import PaymentMethodSummary from './PaymentMethodSummary';
 import PaymentSuccessScreen from './PaymentSuccessScreen';
 import PlanBillingToggle from './PlanBillingToggle';
 import PricingCard from './PricingCard';

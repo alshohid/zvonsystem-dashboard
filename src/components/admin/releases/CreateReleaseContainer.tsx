@@ -172,25 +172,24 @@ export default function CreateReleaseContainer({
     else router.push(releasesListPath);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<{ success: boolean; error?: string }> => {
     for (const key of RELEASE_STEP_KEYS) {
       const validationError = getStepValidationError(form, key);
       if (validationError) {
         toast.error(validationError);
         setStep(key);
-        return false;
+        return { success: false, error: validationError };
       }
     }
 
     try {
       await persist('IN_MODERATION', RELEASE_STEP_KEYS.length);
       clearFormSession();
-      return true;
+      return { success: true };
     } catch (submitError) {
-      toast.error(
-        getErrorMessage(submitError, 'Could not submit the release.'),
-      );
-      return false;
+      const message = getErrorMessage(submitError, 'Could not submit the release.');
+      toast.error(message);
+      return { success: false, error: message };
     }
   };
 

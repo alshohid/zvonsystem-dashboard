@@ -12,7 +12,7 @@ type ScheduleSubmitStepProps = {
   onChange: (patch: Partial<ReleaseFormState>) => void;
   onBack: () => void;
   onSaveDraft: () => void;
-  onSubmit: () => Promise<boolean>;
+  onSubmit: () => Promise<{ success: boolean; error?: string }>;
   onDone: () => void;
   isSaving: boolean;
 };
@@ -28,12 +28,17 @@ export default function ScheduleSubmitStep({
 }: ScheduleSubmitStepProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const releaseTitle = form.releaseName || 'this release';
 
   const handleConfirm = async () => {
-    const succeeded = await onSubmit();
-    if (!succeeded) return;
+    setSubmitError(null);
+    const result = await onSubmit();
+    if (!result.success) {
+      setSubmitError(result.error ?? 'Could not submit the release. Please try again.');
+      return;
+    }
 
     setConfirmOpen(false);
     setSubmitted(true);
@@ -188,10 +193,19 @@ export default function ScheduleSubmitStep({
             request changes.
           </p>
 
+          {submitError && (
+            <div className="mt-4 rounded-xl border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-[13px] text-[#B42318]">
+              {submitError}
+            </div>
+          )}
+
           <div className="mt-6 flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setConfirmOpen(false)}
+              onClick={() => {
+                setConfirmOpen(false);
+                setSubmitError(null);
+              }}
               disabled={isSaving}
               className="flex-1 rounded-xl bg-[#F2F4F7] px-4 py-2.5 text-[13px] font-semibold text-[#344054] hover:bg-[#E4E7EC] disabled:opacity-60"
             >

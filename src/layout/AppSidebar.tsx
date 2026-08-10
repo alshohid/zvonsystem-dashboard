@@ -118,8 +118,9 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
 
   return (
     <aside
+      translate="no"
       className={[
-        "fixed left-0 top-0 z-[600] flex h-[100dvh] flex-col overflow-hidden border-r border-[#EEF2ED] bg-[#FDFDFD] px-3 py-4 shadow-[0_18px_50px_rgba(15,23,42,0.04)] transition-all duration-300 ease-in-out lg:px-3.5",
+        "notranslate fixed left-0 top-0 z-[600] flex h-[100dvh] flex-col overflow-hidden border-r border-[#EEF2ED] bg-[#FDFDFD] px-3 py-4 shadow-[0_18px_50px_rgba(15,23,42,0.04)] transition-all duration-300 ease-in-out lg:px-3.5",
         sidebarWidth,
         isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
       ].join(" ")}

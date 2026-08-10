@@ -104,11 +104,11 @@ export default function CreateReleaseContainer({
 
     const saved = form.releaseId
       ? (
-          await updateRelease({
-            id: form.releaseId,
-            body,
-          }).unwrap()
-        ).data
+        await updateRelease({
+          id: form.releaseId,
+          body,
+        }).unwrap()
+      ).data
       : (await createRelease(body).unwrap()).data;
 
     // After upload the local File is gone; switch the preview to cover_url.full_url.

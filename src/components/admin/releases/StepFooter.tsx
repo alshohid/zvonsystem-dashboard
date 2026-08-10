@@ -36,11 +36,13 @@ export default function StepFooter({
           disabled={isSaving}
           className="inline-flex items-center gap-1.5 rounded-xl border border-[#D0D5DD] px-5 py-2.5 text-[13px] font-semibold text-[#344054] transition-colors hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSaving ? (
-            <Loader2 size={16} className="animate-spin" />
-          ) : (
-            <Save size={16} />
-          )}
+          <span key={isSaving ? 'saving' : 'idle'}>
+            {isSaving ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <Save size={16} />
+            )}
+          </span>
           Save Draft
         </button>
 

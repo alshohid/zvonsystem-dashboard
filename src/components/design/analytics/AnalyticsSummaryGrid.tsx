@@ -2,33 +2,65 @@
 
 import type { ElementType } from "react";
 import { TrendingDown, TrendingUp } from "lucide-react";
-import type {
-  AnalyticsStatId,
-  IAnalyticsSummaryStat,
-} from "@/src/types/analyticsTypes";
+import type { IAnalyticsStats } from "@/src/types/analyticsTypes";
 import { DASHBOARD_COLORS } from "@/src/components/design/dashboard/dashboardTheme";
-import { HeadPhoneIcon, RefreshIcon, ShootingStarIcon } from "@/src/icons";
+import {
+  HeadPhoneIcon,
+  ProgressIcon,
+  PublishedIcon,
+  ReleaseIcon,
+} from "@/src/icons";
 
 // Card icons are a fixed, UI-only concern — never sourced from the API response.
-const STAT_ICON_BY_ID: Record<AnalyticsStatId, ElementType> = {
-  "total-streams": HeadPhoneIcon,
-  "avg-daily-streams": TrendingUp,
-  "save-rate": ShootingStarIcon,
-  "skip-rate": RefreshIcon,
+type SummaryStatCard = {
+  id: string;
+  title: string;
+  value: string;
+  /** Only `totalReleases` ships a change delta from the API. */
+  change?: number;
+  Icon: ElementType;
 };
 
+const buildSummaryStatCards = (stats: IAnalyticsStats): SummaryStatCard[] => [
+  {
+    id: "total-releases",
+    title: "Total Releases",
+    value: String(stats.totalReleases),
+    change: stats.totalReleasesChange,
+    Icon: ReleaseIcon,
+  },
+  {
+    id: "in-progress",
+    title: "In Progress",
+    value: String(stats.inProgress),
+    Icon: ProgressIcon,
+  },
+  {
+    id: "total-published",
+    title: "Total Published",
+    value: String(stats.totalPublished),
+    Icon: PublishedIcon,
+  },
+  {
+    id: "active-releases",
+    title: "Active Releases",
+    value: String(stats.activeReleases),
+    Icon: HeadPhoneIcon,
+  },
+];
+
 type AnalyticsSummaryGridProps = {
-  stats: IAnalyticsSummaryStat[];
+  stats: IAnalyticsStats;
 };
 
 export default function AnalyticsSummaryGrid({ stats }: AnalyticsSummaryGridProps) {
+  const cards = buildSummaryStatCards(stats);
+
   return (
     <div className="grid gap-4 md:gap-8 sm:grid-cols-2 xl:grid-cols-4">
-      {stats.map((stat) => {
-        const Icon = STAT_ICON_BY_ID[stat.id];
-        const TrendIcon = stat.trend.direction === "up" ? TrendingUp : TrendingDown;
-        const trendColor =
-          stat.trend.direction === "up" ? DASHBOARD_COLORS.success : DASHBOARD_COLORS.danger;
+      {cards.map((stat) => {
+        const Icon = stat.Icon;
+        const hasChange = typeof stat.change === "number";
 
         return (
           <div
@@ -46,16 +78,29 @@ export default function AnalyticsSummaryGrid({ stats }: AnalyticsSummaryGridProp
 
             <p className="mt-4 text-3xl font-semibold text-[#101828]">{stat.value}</p>
 
-            <p
-              className="mt-2 inline-flex items-center gap-1 text-xs font-medium"
-              style={{ color: trendColor }}
-            >
-              <TrendIcon size={14} />
-              {stat.trend.label}
-            </p>
+            {hasChange && (
+              <p
+                className="mt-2 inline-flex items-center gap-1 text-xs font-medium"
+                style={{
+                  color:
+                    stat.change! >= 0
+                      ? DASHBOARD_COLORS.success
+                      : DASHBOARD_COLORS.danger,
+                }}
+              >
+                {stat.change! >= 0 ? (
+                  <TrendingUp size={14} />
+                ) : (
+                  <TrendingDown size={14} />
+                )}
+                {`${stat.change! > 0 ? "+" : ""}${stat.change}%`}
+              </p>
+            )}
           </div>
         );
       })}
     </div>
   );
 }
+
+

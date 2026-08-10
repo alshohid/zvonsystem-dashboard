@@ -1,35 +1,70 @@
 import type { IBaseResponse } from "@/src/types/dashboardTypes";
-import type { ITopTrack, ITrend } from "@/src/types/dashboardOverviewTypes";
 
-export type AnalyticsStatId =
-  | "total-streams"
-  | "avg-daily-streams"
-  | "save-rate"
-  | "skip-rate";
+/**
+ * Analytics overview (`GET /revenue/analytics/artist`) DTOs.
+ *
+ * These mirror the actual API response exactly:
+ *
+ * ```json
+ * {
+ *   "success": true,
+ *   "data": {
+ *     "stats": { "totalReleases": 24, "totalReleasesChange": 0, ... },
+ *     "platformTrend": [ { "platform": "Spotify", "count": 15 }, ... ],
+ *     "topCountries": [ { "country": "KZ", "count": 2 }, ... ],
+ *     "trackPerformance": [ { "name", "releaseName", "change", "streams", "duration" }, ... ]
+ *   }
+ * }
+ * ```
+ */
 
-export interface IAnalyticsSummaryStat {
-  id: AnalyticsStatId;
-  title: string;
-  value: string;
-  trend: ITrend;
+/** The release status breakdown inside `stats.statusCounts`. */
+export interface IAnalyticsStatusCounts {
+  draft: number;
+  inModeration: number;
+  approved: number;
+  live: number;
+  scheduled: number;
+  rejected: number;
 }
 
-export interface IStreamTrendPoint {
-  month: string;
-  streams: number;
+/** The `stats` section – release-centric overview metrics. */
+export interface IAnalyticsStats {
+  totalReleases: number;
+  totalReleasesChange: number;
+  inProgress: number;
+  totalPublished: number;
+  activeReleases: number;
+  todayPublished: number;
+  weekPublished: number;
+  monthPublished: number;
+  statusCounts: IAnalyticsStatusCounts;
 }
 
+/** A single entry in the `platformTrend` list. */
+export interface IPlatformTrendItem {
+  platform: string;
+  count: number;
+}
+
+/** A single entry in the `topCountries` list. */
 export interface ITopCountry {
-  id: string;
   country: string;
-  streams: number;
+  count: number;
 }
 
-export type ITrackPerformanceItem = ITopTrack;
+/** A single entry in the `trackPerformance` list. */
+export interface ITrackPerformanceItem {
+  name: string;
+  releaseName: string;
+  change: string;
+  streams: string;
+  duration: string;
+}
 
 export interface IAnalyticsOverviewData {
-  summaryStats: IAnalyticsSummaryStat[];
-  streamTrend: IStreamTrendPoint[];
+  stats: IAnalyticsStats;
+  platformTrend: IPlatformTrendItem[];
   topCountries: ITopCountry[];
   trackPerformance: ITrackPerformanceItem[];
 }
@@ -37,3 +72,4 @@ export interface IAnalyticsOverviewData {
 export interface IAnalyticsOverviewResponse extends IBaseResponse {
   data: IAnalyticsOverviewData;
 }
+

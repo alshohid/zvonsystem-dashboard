@@ -1,13 +1,29 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
-import type { ITopTrack } from "@/src/types/dashboardOverviewTypes";
+import type { ITrackPerformanceItem } from "@/src/types/analyticsTypes";
 import { DASHBOARD_COLORS } from "@/src/components/design/dashboard/dashboardTheme";
 import { formatCompactNumber } from "@/src/components/design/dashboard/dashboardFormat";
 
 type TrackPerformanceCardProps = {
-  tracks: ITopTrack[];
+  tracks: ITrackPerformanceItem[];
   title?: string;
   onViewAll?: () => void;
 };
+
+type ChangeInfo = {
+  direction: "up" | "down" | "flat";
+  label: string;
+};
+
+function resolveChange(change?: string): ChangeInfo {
+  const trimmed = change?.trim();
+  if (!trimmed) return { direction: "flat", label: "0%" };
+  if (trimmed.startsWith("-")) return { direction: "down", label: trimmed };
+  if (trimmed === "0" || trimmed === "0%") return { direction: "flat", label: trimmed };
+  return {
+    direction: "up",
+    label: trimmed.startsWith("+") ? trimmed : `+${trimmed}`,
+  };
+}
 
 export default function TrackPerformanceCard({
   tracks,
@@ -30,26 +46,29 @@ export default function TrackPerformanceCard({
       </div>
 
       <div className="mt-4 flex flex-col">
-        {tracks.map((track) => {
+        {tracks.map((track, index) => {
+          const { direction, label } = resolveChange(track.change);
           const TrendIcon =
-            track.trend.direction === "up" ? TrendingUp : TrendingDown;
+            direction === "up" ? TrendingUp : direction === "down" ? TrendingDown : null;
           const trendColor =
-            track.trend.direction === "up"
+            direction === "up"
               ? DASHBOARD_COLORS.success
-              : DASHBOARD_COLORS.danger;
+              : direction === "down"
+                ? DASHBOARD_COLORS.danger
+                : DASHBOARD_COLORS.muted;
 
           return (
             <div
-              key={track.id}
+              key={`${index}-${track.name}`}
               className="flex flex-col gap-2 border-b border-[#F1F3F9] py-3.5 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <span className="w-4 shrink-0 text-sm font-medium text-[#98A2B3]">
-                  {track.rank}
+                  {index + 1}
                 </span>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-[#101828]">{track.title}</p>
-                  <p className="truncate text-xs text-[#98A2B3]">{track.releaseTitle}</p>
+                  <p className="truncate text-sm font-medium text-[#101828]">{track.name}</p>
+                  <p className="truncate text-xs text-[#98A2B3]">{track.releaseName}</p>
                 </div>
               </div>
 
@@ -58,11 +77,11 @@ export default function TrackPerformanceCard({
                   className="inline-flex items-center gap-1 font-medium"
                   style={{ color: trendColor }}
                 >
-                  <TrendIcon size={14} />
-                  {track.trend.label}
+                  {TrendIcon && <TrendIcon size={14} />}
+                  {label}
                 </span>
                 <span className="w-12 text-right text-[#475467]">
-                  {formatCompactNumber(track.streams)}
+                  {formatCompactNumber(Number(track.streams))}
                 </span>
                 <span className="w-10 text-right text-[#98A2B3]">{track.duration}</span>
               </div>

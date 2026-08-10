@@ -6,7 +6,7 @@ import {
     AnalyticsPageHeader,
     AnalyticsSkeleton,
     AnalyticsSummaryGrid,
-    StreamTrendChart,
+    PlatformTrendChart,
     TopCountriesCard,
     TrackPerformanceCard,
 } from "@/src/components/design/analytics";
@@ -29,10 +29,10 @@ export default function AnalyticsContainer() {
         <div className="space-y-6">
             <AnalyticsPageHeader />
 
-            <AnalyticsSummaryGrid stats={overview.summaryStats} />
+            <AnalyticsSummaryGrid stats={overview.stats} />
 
             <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                <StreamTrendChart data={overview.streamTrend} />
+                <PlatformTrendChart data={overview.platformTrend} />
                 <TopCountriesCard countries={overview.topCountries} />
             </div>
 

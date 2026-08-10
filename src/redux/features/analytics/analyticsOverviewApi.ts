@@ -1,11 +1,11 @@
 import { baseApi } from "@/src/redux/api/baseApi";
-import { IAnalyticsOverviewResponse } from "@/src/types/analyticsTypes";
+import type { IAnalyticsOverviewResponse } from "@/src/types/analyticsTypes";
 
 const AnalyticsOverviewApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAnalyticsOverview: builder.query<IAnalyticsOverviewResponse, void>({
       query: () => ({
-        url: "/analytics/overview",
+        url: "/revenue/analytics/artist",
         method: "GET",
       }),
       providesTags: ["AnalyticsOverview"],

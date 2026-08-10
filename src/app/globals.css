@@ -230,7 +230,38 @@
   font-style: normal;
 }
  
+body {
 
+  color: #161a1e;
+  top: 0 !important;
+  transition: opacity 0.3s ease-in-out;
+}
+body > .skiptranslate {
+  display: none !important;
+}
+body.translating {
+  opacity: 0.5;
+}
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+.google-hide {
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+/* Hide the Google Translate button */
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf-ti6hGc {
+  display: none !important;
+}
+
+.notranslate {
+  translate: no !important;
+}
 body {
   background: #f5f7fb;
   color: #101828;

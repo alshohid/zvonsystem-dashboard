@@ -1,60 +1,19 @@
 "use client";
 
-import { Bell } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useNotifications } from "@/src/context/NotificationContext";
 import { NotificationIcon } from "@/src/icons";
-
-type HeaderNotification = {
-  id: string;
-  title: string;
-  message: string;
-  actionLabel: string;
-  time: string;
-  unread: boolean;
-};
-
-const INITIAL_NOTIFICATIONS: HeaderNotification[] = [
-  {
-    id: "notification-1",
-    title: "New User Registration",
-    message: "A new user registered as Driver",
-    actionLabel: "View",
-    time: "2m ago",
-    unread: true,
-  },
-  {
-    id: "notification-2",
-    title: "CDL Expiration alert",
-    message:
-      "The CDL for driver John Doe has reached its expiration date. Please ensure renewal and upload the updated document.",
-    actionLabel: "View Driver Profile",
-    time: "2m ago",
-    unread: false,
-  },
-  {
-    id: "notification-3",
-    title: "Document Verification (Driver)",
-    message: "A new document submitted by John Doe is pending for your review.",
-    actionLabel: "View",
-    time: "2m ago",
-    unread: false,
-  },
-  {
-    id: "notification-4",
-    title: "Document Verification (Dispatcher)",
-    message:
-      "A new document submitted by Rock Millar is pending for your review.",
-    actionLabel: "View",
-    time: "2m ago",
-    unread: false,
-  },
-];
+import { formatRelativeTime } from "@/src/lib/notification/helpers";
+import type { NotificationType, INotificationItem } from "@/src/types/notificationTypes";
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const hasUnread = notifications.some((notification) => notification.unread);
+  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+
+  const displayNotifications = notifications?.slice(0, 5) || [];
+  const hasUnread = unreadCount > 0;
 
   useEffect(() => {
     if (!isOpen) {
@@ -82,26 +41,12 @@ export default function NotificationDropdown() {
     };
   }, [isOpen]);
 
-  const markAllAsRead = () => {
-    setNotifications((currentNotifications) =>
-      currentNotifications.map((notification) => ({
-        ...notification,
-        unread: false,
-      })),
-    );
+  const handleMarkAsRead = async (id: string) => {
+    await markRead(id);
   };
 
-  const markAsRead = (id: string) => {
-    setNotifications((currentNotifications) =>
-      currentNotifications.map((notification) =>
-        notification.id === id
-          ? {
-            ...notification,
-            unread: false,
-          }
-          : notification,
-      ),
-    );
+  const handleMarkAllRead = async () => {
+    await markAllRead();
   };
 
   return (
@@ -139,7 +84,7 @@ export default function NotificationDropdown() {
 
               <button
                 type="button"
-                onClick={markAllAsRead}
+                onClick={handleMarkAllRead}
                 disabled={!hasUnread}
                 className="text-base text-[#98A2B3] underline-offset-2 transition hover:text-[#667085] hover:underline disabled:cursor-default disabled:text-[#D0D5DD] disabled:no-underline"
               >
@@ -148,7 +93,7 @@ export default function NotificationDropdown() {
             </div>
 
             <ul className="min-h-0 overflow-y-auto pr-1 custom-scrollbar">
-              {notifications.map((notification) => (
+              {displayNotifications.map((notification) => (
                 <li
                   key={notification.id}
                   className="border-b border-[#EAECF0] py-5 last:border-b-0 last:pb-0 first:pt-0 sm:py-6"
@@ -165,8 +110,8 @@ export default function NotificationDropdown() {
                         </h3>
 
                         <div className="ml-auto flex shrink-0 items-center gap-2 text-sm text-[#98A2B3]">
-                          <span>{notification.time}</span>
-                          {notification.unread && (
+                          <span>{formatRelativeTime(notification.createdAt)}</span>
+                          {!notification.isRead && (
                             <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]" />
                           )}
                         </div>
@@ -174,19 +119,39 @@ export default function NotificationDropdown() {
 
                       <p className="mt-2 text-base leading-7 text-[#667085] sm:text-[1.0625rem]">
                         {notification.message}
-                        <button
-                          type="button"
-                          onClick={() => markAsRead(notification.id)}
-                          className="ml-1 inline whitespace-nowrap text-[#0D6EFD] underline-offset-2 transition hover:underline"
-                        >
-                          {notification.actionLabel}
-                        </button>
+                        {!notification.isRead && (
+                          <button
+                            type="button"
+                            onClick={() => handleMarkAsRead(notification.id)}
+                            className="ml-1 inline whitespace-nowrap text-[#0D6EFD] underline-offset-2 transition hover:underline"
+                          >
+                            Mark read
+                          </button>
+                        )}
                       </p>
                     </div>
                   </article>
                 </li>
               ))}
+
+              {displayNotifications.length === 0 && (
+                <li className="py-8 text-center text-sm text-[#667085]">
+                  No notifications yet.
+                </li>
+              )}
             </ul>
+
+            {notifications?.length > 5 && (
+              <div className="mt-4 border-t border-[#EAECF0] pt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="text-sm font-medium text-[#3B82F6] hover:underline"
+                >
+                  View all notifications
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

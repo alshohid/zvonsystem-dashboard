@@ -1,26 +1,56 @@
-import type { IBaseResponse } from "@/src/types/dashboardTypes";
+export enum NotificationType {
+  // Release related
+  RELEASE_STATUS_UPDATE = "RELEASE_STATUS_UPDATE",
+  MODERATION_FEEDBACK = "MODERATION_FEEDBACK",
+  RELEASE_SCHEDULED = "RELEASE_SCHEDULED",
 
-export type NotificationKind =
-  | "milestone"
-  | "follower"
-  | "playlist"
-  | "royalty"
-  | "changes"
-  | "collaboration";
+  // Subscription & Payment related
+  PAYMENT_RECEIVED = "PAYMENT_RECEIVED",
+  SUBSCRIPTION_ACTIVATED = "SUBSCRIPTION_ACTIVATED",
+  SUBSCRIPTION_CANCELLED = "SUBSCRIPTION_CANCELLED",
+  SUBSCRIPTION_EXPIRED = "SUBSCRIPTION_EXPIRED",
+  SUBSCRIPTION_RENEWED = "SUBSCRIPTION_RENEWED",
+  PAYMENT_FAILED = "PAYMENT_FAILED",
+
+  // System
+  SYSTEM = "SYSTEM",
+
+  // Feature related
+  FEATURE_ANNOUNCEMENT = "FEATURE_ANNOUNCEMENT",
+  WEEKLY_DIGEST = "WEEKLY_DIGEST",
+}
+
+export interface INotificationData {
+  [key: string]: unknown;
+}
 
 export interface INotificationItem {
   id: string;
-  kind: NotificationKind;
+  type: NotificationType;
   title: string;
   message: string;
-  occurredAgo: string;
+  data: INotificationData;
   isRead: boolean;
+  readAt: string | null;
+  createdAt: string;
 }
 
-export interface INotificationsOverviewData {
-  notifications: INotificationItem[];
+export interface INotificationsMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  unreadCount: number;
 }
 
-export interface INotificationsOverviewResponse extends IBaseResponse {
-  data: INotificationsOverviewData;
+export interface INotificationsResponse {
+  success: boolean;
+  message: string;
+  data: INotificationItem[];
+  meta: INotificationsMeta;
+}
+
+export interface INotificationUnreadCountResponse {
+  success: boolean;
+  data: { unreadCount: number };
 }

@@ -11,7 +11,7 @@ export default function NotificationsPageHeader({
     <div className="flex items-start justify-between gap-4">
       <div>
         <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#98A2B3]">
-          Releases
+          Inbox
         </p>
         <h1 className="mt-1 text-2xl font-semibold text-[#101828]">Notifications</h1>
       </div>

@@ -1,0 +1,140 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+import { io, type Socket } from "socket.io-client";
+import Cookies from "js-cookie";
+import { notificationConfig } from "./config";
+import { authCookieNames } from "@/src/lib/auth/config";
+
+let socket: Socket | null = null;
+
+export const getNotificationSocket = () => {
+  if (!notificationConfig.socketUrl) {
+    return null;
+  }
+
+  if (!socket) {
+    socket = io(notificationConfig.socketUrl, {
+      withCredentials: true,
+      transports: ["websocket", "polling"],
+      auth: (setAuth) => {
+        const token =
+          (typeof window !== "undefined"
+            ? Cookies.get(authCookieNames.token)
+            : undefined) ?? "";
+        setAuth(token ? { token } : {});
+      },
+    });
+  }
+
+  return socket;
+};
+
+export const disconnectNotificationSocket = () => {
+  if (!socket) return;
+
+  socket.disconnect();
+  socket = null;
+};
+
+class NotificationService {
+  private listeners: Map<string, Function[]> = new Map();
+  private socketListenersAttached = false;
+
+  private attachSocketListeners() {
+    if (this.socketListenersAttached) return;
+
+    const s = getNotificationSocket();
+    if (!s) return;
+
+    s.on("notification:new", (data: unknown) => {
+      console.log("🔔 New notification:", data);
+      this.emit("notification:new", data);
+    });
+
+    s.on("notification:unread:updated", (data: unknown) => {
+      console.log("📊 Unread count updated:", data);
+      this.emit("notification:unread:updated", data);
+    });
+
+    s.on("connect", () => {
+      console.log("🔌 Connected to notification server");
+    });
+
+    s.on("disconnect", () => {
+      console.log("🔌 Disconnected from notification server");
+    });
+
+    s.on("connect_error", (error: unknown) => {
+      console.error("❌ Connection error:", error);
+    });
+
+    this.socketListenersAttached = true;
+  }
+
+  connect() {
+    const s = getNotificationSocket();
+    if (s) {
+      this.attachSocketListeners();
+    }
+  }
+
+  disconnect() {
+    this.socketListenersAttached = false;
+    disconnectNotificationSocket();
+  }
+
+  /**
+   * Register event listener
+   */
+  on(event: string, callback: Function) {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event)!.push(callback);
+  }
+
+  /**
+   * Remove event listener
+   */
+  off(event: string, callback: Function) {
+    if (this.listeners.has(event)) {
+      const callbacks = this.listeners.get(event)!;
+      const index = callbacks.indexOf(callback);
+      if (index !== -1) {
+        callbacks.splice(index, 1);
+      }
+    }
+  }
+
+  /**
+   * Emit event to listeners
+   */
+  private emit(event: string, data: unknown) {
+    if (this.listeners.has(event)) {
+      this.listeners.get(event)!.forEach((callback) => {
+        callback(data);
+      });
+    }
+  }
+
+  /**
+   * Mark notification as read via socket
+   */
+  markAsRead(notificationId: string) {
+    const s = getNotificationSocket();
+    if (s) {
+      s.emit("notification:read", { notificationId });
+    }
+  }
+
+  /**
+   * Mark all notifications as read via socket
+   */
+  markAllAsRead() {
+    const s = getNotificationSocket();
+    if (s) {
+      s.emit("notification:read:all");
+    }
+  }
+}
+
+export const notificationService = new NotificationService();

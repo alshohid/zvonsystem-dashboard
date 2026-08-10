@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import { SidebarProvider } from "@/src/context/SidebarContext";
 import { ThemeProvider } from "@/src/context/ThemeContext";
+import { NotificationProvider } from "@/src/context/NotificationContext";
 // import { TwScreenSize } from "../components/TwScreenSize";
 import ReduxProvider from "@/src/redux/ReduxProvider";
 
@@ -25,7 +26,9 @@ export default function RootLayout({
       >
         <ReduxProvider>
           <ThemeProvider>
-            <SidebarProvider>{children}</SidebarProvider>
+            <NotificationProvider>
+              <SidebarProvider>{children}</SidebarProvider>
+            </NotificationProvider>
             <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
             {/* <TwScreenSize /> */}
           </ThemeProvider>

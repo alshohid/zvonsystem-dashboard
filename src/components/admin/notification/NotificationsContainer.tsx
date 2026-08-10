@@ -9,17 +9,23 @@ import {
   NotificationsPageHeader,
   NotificationsSkeleton,
 } from "@/src/components/design/notifications";
-import type { INotificationItem } from "@/src/types/notificationTypes";
+import type { INotificationItem, INotificationsResponse } from "@/src/types/notificationTypes";
 
 export default function NotificationsContainer() {
   const { data, isLoading, isFetching, isError, refetch } =
     useGetNotificationsOverviewQuery();
 
   const [notifications, setNotifications] = useState<INotificationItem[]>([]);
-
+  const [unreadCount, setUnreadCount] = useState(0);
+  console.log(data, 'data');
   useEffect(() => {
     if (data) {
-      setNotifications(data.data.notifications);
+      const mappedNotifications: INotificationItem[] = data.data?.map((item) => ({
+        ...item,
+        isRead: item.isRead,
+      }));
+      setNotifications(mappedNotifications);
+      setUnreadCount(data.meta.unreadCount);
     }
   }, [data]);
 
@@ -31,12 +37,11 @@ export default function NotificationsContainer() {
     return <NotificationsError onRetry={refetch} />;
   }
 
-  const unreadCount = notifications.filter((notification) => !notification.isRead).length;
-
   const handleMarkAllRead = () => {
     setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, isRead: true })),
+      prev.map((notification) => ({ ...notification, isRead: true, readAt: new Date().toISOString() })),
     );
+    setUnreadCount(0);
   };
 
   return (

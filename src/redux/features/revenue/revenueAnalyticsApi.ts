@@ -5,7 +5,7 @@ const revenueAnalyticsApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getRevenueAnalytics: builder.query<RevenueAnalyticsResponse, void>({
       query: () => ({
-        url: "/revenue/analytics",
+        url: "/revenue/analytics/admin",
         method: "GET",
       }),
       providesTags: ["RevenueAnalytics"],

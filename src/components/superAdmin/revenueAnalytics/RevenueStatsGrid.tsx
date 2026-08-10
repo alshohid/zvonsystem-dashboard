@@ -3,7 +3,7 @@ import { CreditCard, DollarSign, TrendingDown, TrendingUp, Users } from "lucide-
 import type { RevenueStat, RevenueStatId } from "./types";
 
 const STAT_ICON_BY_ID: Record<RevenueStatId, ElementType> = {
-  "total-streams": DollarSign,
+  "total-releases": DollarSign,
   "total-revenue": TrendingUp,
   "active-subs": Users,
   arpu: CreditCard,

@@ -2,6 +2,7 @@
 
 import { FIELD_INPUT_CLASSNAME } from '@/src/components/admin/releases/formControls';
 import TextInputField from '@/src/components/ui/input/TextInputField';
+import ExpiryDatePicker from './ExpiryDatePicker';
 import type { CardEntryValues } from './types';
 
 type CardEntryFormProps = {
@@ -29,11 +30,9 @@ export default function CardEntryForm({ values, onChange }: CardEntryFormProps) 
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <TextInputField
-          label="Expiry Date"
-          placeholder="MM/YY"
+        <ExpiryDatePicker
           value={values.expiry}
-          onChange={e => onChange({ expiry: e.target.value })}
+          onChange={expiry => onChange({ expiry })}
           inputClassName={FIELD_INPUT_CLASSNAME}
         />
         <TextInputField

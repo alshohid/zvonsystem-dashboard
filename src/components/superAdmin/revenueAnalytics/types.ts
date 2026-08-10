@@ -1,6 +1,10 @@
 import type { PricingPlanId } from "@/src/components/superAdmin/pricingManagement/types";
 
-export type RevenueStatId = "total-streams" | "total-revenue" | "active-subs" | "arpu";
+export type RevenueStatId =
+  | "total-releases"
+  | "total-revenue"
+  | "active-subs"
+  | "arpu";
 
 export type RevenueStat = {
   id: RevenueStatId;

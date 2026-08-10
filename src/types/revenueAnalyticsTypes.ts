@@ -8,8 +8,8 @@ import type {
 } from "@/src/components/superAdmin/revenueAnalytics/types";
 
 export type RevenueAnalyticsStats = {
-  totalStreams: number;
-  totalStreamsChange: number;
+  totalReleases: number;
+  totalReleasesChange: number;
   totalRevenue: number;
   totalRevenueChange: number;
   activeSubs: number;
@@ -64,7 +64,7 @@ export type RevenueAnalyticsViewModel = {
 };
 
 const formatCurrency = (value: number) =>
-  `$${value.toLocaleString("en-US", {
+  `${value.toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -80,7 +80,10 @@ const toTrend = (change: number): RevenueStat["trend"] => ({
 });
 
 export const normalizePlanId = (plan: string): PricingPlanId => {
-  const normalized = plan.trim().toLowerCase().replace(/[\s_]+/g, "-");
+  const normalized = plan
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_]+/g, "-");
 
   if (normalized === "pro") return "pro";
   if (
@@ -102,10 +105,10 @@ export function mapRevenueAnalytics(
   return {
     stats: [
       {
-        id: "total-streams",
-        label: "Total Streams",
-        value: formatCurrency(stats.totalStreams),
-        trend: toTrend(stats.totalStreamsChange),
+        id: "total-releases",
+        label: "Total Releases",
+        value: formatCurrency(stats.totalReleases),
+        trend: toTrend(stats.totalReleasesChange),
       },
       {
         id: "total-revenue",

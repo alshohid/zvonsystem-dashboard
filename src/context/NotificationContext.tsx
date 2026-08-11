@@ -35,6 +35,10 @@ interface NotificationContextValue {
   isInitialLoading: boolean;
   isFetchingMore: boolean;
   isError: boolean;
+  isDeletingAllNotifications: boolean;
+  isDeletingNotifications: boolean;
+  isMarkingAllRead: boolean;
+  isMarkingRead: boolean;
   refresh: () => Promise<void>;
   loadMore: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
@@ -98,10 +102,16 @@ export function NotificationProvider({
     refetchUnreadCountRef.current = refetchUnreadCount;
   }, [refetchUnreadCount]);
 
-  const [markNotificationRead] = useMarkNotificationReadMutation();
-  const [markAllNotificationsRead] = useMarkAllNotificationsReadMutation();
-  const [deleteNotification] = useDeleteNotificationMutation();
-  const [deleteAllNotifications] = useDeleteAllNotificationsMutation();
+  const [markNotificationRead, { isLoading: isMarkingRead }] =
+    useMarkNotificationReadMutation();
+  const [markAllNotificationsRead, { isLoading: isMarkingAllRead }] =
+    useMarkAllNotificationsReadMutation();
+  const [deleteNotification, { isLoading: isDeletingNotifications }] =
+    useDeleteNotificationMutation();
+  const [
+    deleteAllNotifications,
+    { isLoading: isDeletingAllNotifications },
+  ] = useDeleteAllNotificationsMutation();
 
   useEffect(() => {
     if (data) {
@@ -264,6 +274,10 @@ export function NotificationProvider({
       isInitialLoading: isLoading,
       isFetchingMore: isFetching || isLoadingMore,
       isError,
+      isDeletingAllNotifications,
+      isDeletingNotifications,
+      isMarkingAllRead,
+      isMarkingRead,
       refresh,
       loadMore,
       markRead,
@@ -277,6 +291,10 @@ export function NotificationProvider({
       isLoading,
       isLoadingMore,
       isError,
+      isDeletingAllNotifications,
+      isDeletingNotifications,
+      isMarkingAllRead,
+      isMarkingRead,
       loadMore,
       markAllRead,
       markRead,

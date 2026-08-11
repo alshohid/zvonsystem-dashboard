@@ -31,7 +31,7 @@ const AppHeader = () => {
     return ["Overview", ...derivedCrumbs];
   }, [pathname]);
   if (isLoading) {
-    return <div className="h-20 w-20 bg-red-500"></div>;
+    return <div> Loading...</div>;
   }
   return (
     <header className="sticky top-0 z-50 border-b border-[#E7EBF7] bg-[#FFFFFF] backdrop-blur">

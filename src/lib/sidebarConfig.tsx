@@ -70,6 +70,12 @@ const buildSuperAdminOnlyNavItems = (root: string, isSuperAdmin: boolean): NavIt
   },
   {
     section: "Admin",
+    icon: <Bell size={18} />,
+    name: "Notifications",
+    path: `${root}/notifications`,
+  },
+  {
+    section: "Admin",
     icon: <User size={18} />,
     name: "User Management",
     path: `${root}/user-management`,

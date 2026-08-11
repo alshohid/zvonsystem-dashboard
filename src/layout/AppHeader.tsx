@@ -9,10 +9,17 @@ import NotificationDropdown from "@/src/components/header/NotificationDropdown";
 import { useSidebar } from "@/src/context/SidebarContext";
 import { buildCrumbs } from "@/src/lib/helper/breadcrumbs";
 import { RightGoingArrow } from "../icons";
+import { useGetMeQuery } from "../redux/features/auth/authapi";
+import { getInitials } from "../lib/nameHandling";
 
 const AppHeader = () => {
   const pathname = usePathname();
   const { toggleMobileSidebar } = useSidebar();
+  const { data: userInfo, isLoading } = useGetMeQuery()
+  const user = userInfo?.data;
+
+  const role = user?.type;
+  const initials = user?.name ? getInitials(user.name) : "Name";
 
   const crumbs = useMemo(() => {
     const derivedCrumbs = buildCrumbs(pathname || "/");
@@ -23,7 +30,9 @@ const AppHeader = () => {
 
     return ["Overview", ...derivedCrumbs];
   }, [pathname]);
-
+  if (isLoading) {
+    return <div className="h-20 w-20 bg-red-500"></div>;
+  }
   return (
     <header className="sticky top-0 z-50 border-b border-[#E7EBF7] bg-[#FFFFFF] backdrop-blur">
       <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
@@ -62,15 +71,21 @@ const AppHeader = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <NotificationDropdown />
+          <NotificationDropdown role={role} />
 
           <div className="flex items-center gap-3 rounded-full border border-[#E7EBF7] bg-[#FBFCFF] px-2 py-1.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EDFFE7] text-sm font-semibold text-[#2E3A83]">
-              WR
+              {initials}
             </div>
+
             <div className="hidden pr-2 sm:block">
-              <p className="text-sm font-semibold text-[#101828]">Wisely Reed</p>
-              {/* <p className="text-xs text-[#667085]">Admin</p> */}
+              <p className="text-sm font-semibold text-[#101828]">
+                {user?.name ?? ""}
+              </p>
+
+              <p className="text-xs text-[#667085]">
+                {role}
+              </p>
             </div>
           </div>
         </div>

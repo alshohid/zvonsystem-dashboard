@@ -1,3 +1,6 @@
+
+"use client";
+
 const shimmer = "animate-pulse rounded-2xl bg-[#EEF1F7]";
 
 export default function NotificationsSkeleton() {

@@ -15,6 +15,10 @@ export default function NotificationsContainer() {
     unreadCount,
     hasMore,
     isInitialLoading,
+    isDeletingAllNotifications,
+    isDeletingNotification,
+    isMarkingAllRead,
+    isMarkingRead,
     isFetchingMore,
     isError,
     refresh,
@@ -45,6 +49,8 @@ export default function NotificationsContainer() {
         unreadCount={unreadCount}
         onMarkAllRead={markAllRead}
         onDeleteAll={deleteAllNotifications}
+        isDeletingAllNotifications={isDeletingAllNotifications}
+        isMarkingAllRead={isMarkingAllRead}
       />
       <NotificationsList
         notifications={notifications}
@@ -54,6 +60,8 @@ export default function NotificationsContainer() {
         hasMore={hasMore}
         isLoadingMore={isFetchingMore}
         onLoadMore={loadMore}
+        isDeletingNotification={isDeletingNotification}
+        isMarkingRead={isMarkingRead}
       />
     </div>
   );

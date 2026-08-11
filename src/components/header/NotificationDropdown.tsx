@@ -5,12 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { NotificationIcon } from "@/src/icons";
 import { formatRelativeTime } from "@/src/lib/notification/helpers";
-import { useAuth } from "@/src/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 
-export default function NotificationDropdown() {
-  const { role } = useAuth();
+export default function NotificationDropdown({ role }: { role: "ADMIN" | "CLIENT" | undefined }) {
+
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -30,13 +29,11 @@ export default function NotificationDropdown() {
     if (!isOpen) {
       return;
     }
-
     const handlePointerDown = (event: MouseEvent) => {
       if (!wrapperRef.current?.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
-
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsOpen(false);
@@ -65,7 +62,7 @@ export default function NotificationDropdown() {
   };
 
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className="relative ">
       <button
         type="button"
         onClick={() => setIsOpen((open) => !open)}
@@ -169,7 +166,7 @@ export default function NotificationDropdown() {
               )}
             </ul>
 
-            {notifications?.length > 10 && (
+            {notifications?.length > 7 && (
               <div className="mt-4 border-t border-[#EAECF0] pt-4 text-center">
                 {role === "CLIENT" && (
                   <button

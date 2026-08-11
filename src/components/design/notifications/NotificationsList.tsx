@@ -10,16 +10,22 @@ type NotificationsListProps = {
   hasMore?: boolean;
   isLoadingMore?: boolean;
   onLoadMore?: () => void;
+  isDeletingNotification: boolean;
+  isMarkingRead: boolean;
 };
 
 function NotificationItem({
   notification,
   onMarkRead,
   onDelete,
+  isDeletingNotification,
+  isMarkingRead,
 }: {
   notification: INotificationItem;
   onMarkRead?: (id: string) => void;
   onDelete?: (id: string) => void;
+  isDeletingNotification: boolean;
+  isMarkingRead: boolean;
 }) {
   const isUnread = !notification.isRead;
 
@@ -62,6 +68,7 @@ function NotificationItem({
           <button
             type="button"
             onClick={() => onMarkRead(notification.id)}
+            disabled={isMarkingRead}
             title="Mark as read"
             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[#16A34A] transition hover:bg-[#ECFDF3]"
           >
@@ -72,6 +79,7 @@ function NotificationItem({
           <button
             type="button"
             onClick={() => onDelete(notification.id)}
+            disabled={isDeletingNotification}
             title="Delete notification"
             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[#EF4444] transition hover:bg-[#FEF2F2]"
           >
@@ -109,6 +117,8 @@ export default function NotificationsList({
   hasMore,
   isLoadingMore,
   onLoadMore,
+  isDeletingNotification,
+  isMarkingRead,
 }: NotificationsListProps) {
   const renderItems = () => {
     if (grouped) {
@@ -123,6 +133,8 @@ export default function NotificationsList({
               notification={notification}
               onMarkRead={onMarkRead}
               onDelete={onDelete}
+              isDeletingNotification={isDeletingNotification}
+              isMarkingRead={isMarkingRead}
             />
           ))}
         </div>
@@ -135,6 +147,8 @@ export default function NotificationsList({
         notification={notification}
         onMarkRead={onMarkRead}
         onDelete={onDelete}
+        isDeletingNotification={isDeletingNotification}
+        isMarkingRead={isMarkingRead}
       />
     ));
   };

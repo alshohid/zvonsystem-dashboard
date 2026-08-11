@@ -25,3 +25,22 @@ export interface RefreshTokenResponse {
   data?: AuthTokenPayload;
   type?: AuthRole | string;
 }
+export type UserType = "CLIENT" | "ADMIN";
+
+export interface IUserProfile {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  email: string;
+  avatar: string;
+  address: string | null;
+  type: UserType;
+  avatarUrl: string;
+}
+
+export interface IApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+export type IProfileResponse = IApiResponse<IUserProfile>;

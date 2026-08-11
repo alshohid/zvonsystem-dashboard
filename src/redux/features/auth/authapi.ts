@@ -1,4 +1,5 @@
 import { baseApi } from "@/src/redux/api/baseApi";
+import { IProfileResponse } from "@/src/types/auth";
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,6 +12,13 @@ const authApi = baseApi.injectEndpoints({
         invalidatesTags: ["User"],
       },
     ),
+    getMe: builder.query<IProfileResponse, void>({
+      query: () => ({
+        url: "/auth/me",
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
     forgotPassword: builder.mutation<
       { success?: boolean; message?: string },
       { email: string }
@@ -71,6 +79,7 @@ const authApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetMeQuery,
   useLogoutUserMutation,
   useSignUpMutation,
   useForgotPasswordMutation,

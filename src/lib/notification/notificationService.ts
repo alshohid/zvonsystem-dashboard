@@ -1,39 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import { io, type Socket } from "socket.io-client";
-import Cookies from "js-cookie";
-import { notificationConfig } from "./config";
-import { authCookieNames } from "@/src/lib/auth/config";
 
-let socket: Socket | null = null;
-
-export const getNotificationSocket = () => {
-  if (!notificationConfig.socketUrl) {
-    return null;
-  }
-
-  if (!socket) {
-    socket = io(notificationConfig.socketUrl, {
-      withCredentials: true,
-      transports: ["websocket", "polling"],
-      auth: (setAuth) => {
-        const token =
-          (typeof window !== "undefined"
-            ? Cookies.get(authCookieNames.token)
-            : undefined) ?? "";
-        setAuth(token ? { token } : {});
-      },
-    });
-  }
-
-  return socket;
-};
-
-export const disconnectNotificationSocket = () => {
-  if (!socket) return;
-
-  socket.disconnect();
-  socket = null;
-};
+import { disconnectNotificationSocket, getNotificationSocket } from "../socket";
 
 class NotificationService {
   private listeners: Map<string, Function[]> = new Map();
@@ -44,7 +12,10 @@ class NotificationService {
 
     const s = getNotificationSocket();
     if (!s) return;
-
+    s.onAny((event: string, ...args: any[]) => {
+      console.log(event);
+      console.log(args);
+    });
     s.on("notification:new", (data: unknown) => {
       console.log("🔔 New notification:", data);
       this.emit("notification:new", data);
@@ -56,15 +27,15 @@ class NotificationService {
     });
 
     s.on("connect", () => {
-      console.log("🔌 Connected to notification server");
+      console.log("Connected to notification server");
     });
 
     s.on("disconnect", () => {
-      console.log("🔌 Disconnected from notification server");
+      console.log("Disconnected from notification server");
     });
 
     s.on("connect_error", (error: unknown) => {
-      console.error("❌ Connection error:", error);
+      console.error("Connection error:", error);
     });
 
     this.socketListenersAttached = true;

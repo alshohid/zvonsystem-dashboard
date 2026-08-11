@@ -17,6 +17,7 @@ export const env = {
   // Uploads come back as storage paths, so a public base is needed to show them.
   mediaBaseUrl: trimTrailingSlash(process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? ""),
   designMode: toBoolean(process.env.NEXT_PUBLIC_DESIGN_MODE, false),
+  socketUrl: process.env.NEXT_PUBLIC_SOCKET_URL,
 };
 
 

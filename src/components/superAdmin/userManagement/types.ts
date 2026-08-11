@@ -5,12 +5,17 @@ export type ManagedUser = {
   userId: string;
   name: string;
   email: string;
-  role: UserRole;
+  releaseCount: number;
+  role?: UserRole;
   joinedDate: string;
   lastUpdatedDate: string;
 };
 
-export type UserManagementStatId = "total-users" | "admins" | "artists" | "new-this-month";
+export type UserManagementStatId =
+  | "total-users"
+  | "admins"
+  | "artists"
+  | "new-this-month";
 
 export type UserManagementStat = {
   id: UserManagementStatId;

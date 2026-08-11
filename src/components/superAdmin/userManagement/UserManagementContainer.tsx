@@ -38,7 +38,7 @@ function mapApiUserToManagedUser(apiUser: IUser): ManagedUser {
     userId: apiUser.id,
     name: apiUser.name,
     email: apiUser.email,
-    role: apiUser.type.toLowerCase() as ManagedUser['role'],
+    releaseCount: apiUser.releaseCount,
     joinedDate: formattedDate,
     lastUpdatedDate: formattedDate,
   };

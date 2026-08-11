@@ -1,8 +1,7 @@
 import InitialAvatar from "@/src/components/superAdmin/dashboard/InitialAvatar";
-import UserRoleBadge from "./UserRoleBadge";
 import type { ManagedUser } from "./types";
 
-const TABLE_HEADERS = ["Artist", "Role", "Joined", "Actions"];
+const TABLE_HEADERS = ["Artist", "Releases", "Joined", "Actions"];
 
 type UserManagementTableProps = {
   users: ManagedUser[];
@@ -51,7 +50,7 @@ export default function UserManagementTable({
                 </td>
 
                 <td className="px-5 py-4">
-                  <UserRoleBadge role={user.role} />
+                  {user.releaseCount}
                 </td>
 
                 <td className="px-5 py-4 text-[14px] text-[#475467]">{user.joinedDate}</td>

@@ -1,14 +1,9 @@
 import InitialAvatar from "@/src/components/superAdmin/dashboard/InitialAvatar";
 import ReadOnlyField from "@/src/components/superAdmin/common/ReadOnlyField";
 import { Modal } from "@/src/components/ui/modal";
-import UserRoleBadge from "./UserRoleBadge";
 import type { ManagedUser } from "./types";
 
-const ROLE_LABEL: Record<ManagedUser["role"], string> = {
-  admin: "Admin",
-  user: "User",
-  artist: "Artist",
-};
+
 
 type UserProfileModalProps = {
   user: ManagedUser | null;
@@ -34,16 +29,16 @@ export default function UserProfileModal({ user, onClose }: UserProfileModalProp
               <p className="truncate text-[14px] font-semibold text-[#101828]">{user.name}</p>
               <p className="truncate text-xs text-[#98A2B3]">{user.email}</p>
               <div className="mt-1.5">
-                <UserRoleBadge role={user.role} />
+                <p>{user.releaseCount}</p>
               </div>
             </div>
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-4">
-            <ReadOnlyField label="User ID" value={user.userId} />
+            <ReadOnlyField label="Release Count" value={user.releaseCount} />
             <ReadOnlyField label="Joined" value={user.joinedDate} />
             <ReadOnlyField label="Last Updated" value={user.lastUpdatedDate} />
-            <ReadOnlyField label="Role" value={ROLE_LABEL[user.role]} />
+            {/* <ReadOnlyField label="Role" value={ROLE_LABEL[user.role]} /> */}
           </div>
 
           <button

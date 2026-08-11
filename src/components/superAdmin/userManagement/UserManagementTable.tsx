@@ -7,9 +7,14 @@ const TABLE_HEADERS = ["Artist", "Role", "Joined", "Actions"];
 type UserManagementTableProps = {
   users: ManagedUser[];
   onViewProfile: (id: string) => void;
+  isLoading?: boolean;
 };
 
-export default function UserManagementTable({ users, onViewProfile }: UserManagementTableProps) {
+export default function UserManagementTable({
+  users,
+  onViewProfile,
+  isLoading = false,
+}: UserManagementTableProps) {
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E9EDF5] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
       <div className="w-full overflow-x-auto">
@@ -63,7 +68,7 @@ export default function UserManagementTable({ users, onViewProfile }: UserManage
               </tr>
             ))}
 
-            {users.length === 0 ? (
+            {users.length === 0 && !isLoading ? (
               <tr>
                 <td colSpan={TABLE_HEADERS.length} className="px-5 py-12 text-center text-sm text-[#98A2B3]">
                   No users match this filter.

@@ -1,5 +1,5 @@
 import { baseApi } from "@/src/redux/api/baseApi";
-import { IProfileResponse } from "@/src/types/auth";
+import { IProfileResponse, IUsersResponse } from "@/src/types/auth";
 
 const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -16,6 +16,21 @@ const authApi = baseApi.injectEndpoints({
       query: () => ({
         url: "/auth/me",
         method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
+    getAllArtists: builder.query<
+      IUsersResponse,
+      { search?: string; limit?: number; page?: number }
+    >({
+      query: (data) => ({
+        url: "/auth",
+        method: "GET",
+        params: {
+          search: data?.search,
+          limit: data?.limit,
+          page: data?.page,
+        },
       }),
       providesTags: ["User"],
     }),
@@ -80,6 +95,7 @@ const authApi = baseApi.injectEndpoints({
 
 export const {
   useGetMeQuery,
+  useGetAllArtistsQuery,
   useLogoutUserMutation,
   useSignUpMutation,
   useForgotPasswordMutation,

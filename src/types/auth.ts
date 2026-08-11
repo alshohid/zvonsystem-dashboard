@@ -44,3 +44,28 @@ export interface IApiResponse<T> {
 }
 
 export type IProfileResponse = IApiResponse<IUserProfile>;
+
+export interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  type: UserType;
+  avatar: string;
+  releaseCount: number;
+  joinedAt: string;
+}
+
+export interface IPaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
+export interface IUsersResponse {
+  success: boolean;
+  message: string;
+  data: IUser[];
+  meta: IPaginationMeta;
+}

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/refs */
 "use client";
 
@@ -35,16 +36,16 @@ interface NotificationContextValue {
   isInitialLoading: boolean;
   isFetchingMore: boolean;
   isError: boolean;
-  isDeletingAllNotifications: boolean;
-  isDeletingNotifications: boolean;
-  isMarkingAllRead: boolean;
-  isMarkingRead: boolean;
   refresh: () => Promise<void>;
   loadMore: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
   markAllRead: () => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
   deleteAllNotifications: () => Promise<void>;
+  isDeletingAllNotifications: boolean;
+  isDeletingNotifications: boolean;
+  isMarkingAllRead: boolean;
+  isMarkingRead: boolean;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(
@@ -83,7 +84,7 @@ export function NotificationProvider({
     refetch,
   } = useGetNotificationsOverviewQuery({
     page: 1,
-    limit: 10,
+    limit: 20,
   }, {
     skip: !isAuthenticated,
   });
@@ -95,23 +96,16 @@ export function NotificationProvider({
     refetch: refetchUnreadCount,
   } = useNotificationUnreadCountQuery();
 
-  console.log(unreadCountData, "unreadCountData")
   const refetchUnreadCountRef = useRef(refetchUnreadCount);
 
   useEffect(() => {
     refetchUnreadCountRef.current = refetchUnreadCount;
   }, [refetchUnreadCount]);
 
-  const [markNotificationRead, { isLoading: isMarkingRead }] =
-    useMarkNotificationReadMutation();
-  const [markAllNotificationsRead, { isLoading: isMarkingAllRead }] =
-    useMarkAllNotificationsReadMutation();
-  const [deleteNotification, { isLoading: isDeletingNotifications }] =
-    useDeleteNotificationMutation();
-  const [
-    deleteAllNotifications,
-    { isLoading: isDeletingAllNotifications },
-  ] = useDeleteAllNotificationsMutation();
+  const [markNotificationRead, { isLoading: isMarkingRead }] = useMarkNotificationReadMutation();
+  const [markAllNotificationsRead, { isLoading: isMarkingAllRead }] = useMarkAllNotificationsReadMutation();
+  const [deleteNotification, { isLoading: isDeletingNotifications }] = useDeleteNotificationMutation();
+  const [deleteAllNotifications, { isLoading: isDeletingAllNotifications }] = useDeleteAllNotificationsMutation();
 
   useEffect(() => {
     if (data) {
@@ -126,11 +120,9 @@ export function NotificationProvider({
     }
   }, [data]);
 
-  const unreadCountValue = unreadCountData?.data?.unreadCount ?? 0;
-
   useEffect(() => {
-    setUnreadCount(unreadCountValue);
-  }, [unreadCountValue]);
+    setUnreadCount(unreadCountData?.data?.unreadCount ?? 0);
+  }, [unreadCountData?.data?.unreadCount]);
 
   const refresh = useCallback(async () => {
     await refetch();
@@ -271,13 +263,13 @@ export function NotificationProvider({
       unreadCount,
       total,
       hasMore,
-      isInitialLoading: isLoading,
-      isFetchingMore: isFetching || isLoadingMore,
-      isError,
       isDeletingAllNotifications,
       isDeletingNotifications,
       isMarkingAllRead,
       isMarkingRead,
+      isInitialLoading: isLoading,
+      isFetchingMore: isFetching || isLoadingMore,
+      isError,
       refresh,
       loadMore,
       markRead,
@@ -287,14 +279,12 @@ export function NotificationProvider({
     }),
     [
       hasMore,
+      isDeletingAllNotifications,
+      isDeletingNotifications,
       isFetching,
       isLoading,
       isLoadingMore,
       isError,
-      isDeletingAllNotifications,
-      isDeletingNotifications,
-      isMarkingAllRead,
-      isMarkingRead,
       loadMore,
       markAllRead,
       markRead,

@@ -12,30 +12,19 @@ class NotificationService {
 
     const s = getNotificationSocket();
     if (!s) return;
+
     s.onAny((event: string, ...args: any[]) => {
-      console.log(event);
-      console.log(args);
+      console.log("[notification] event:", event, args);
     });
+
     s.on("notification:new", (data: unknown) => {
-      console.log("🔔 New notification:", data);
+      console.log("[notification] new:", data);
       this.emit("notification:new", data);
     });
 
     s.on("notification:unread:updated", (data: unknown) => {
-      console.log("📊 Unread count updated:", data);
+      console.log("[notification] unread:", data);
       this.emit("notification:unread:updated", data);
-    });
-
-    s.on("connect", () => {
-      console.log("Connected to notification server");
-    });
-
-    s.on("disconnect", () => {
-      console.log("Disconnected from notification server");
-    });
-
-    s.on("connect_error", (error: unknown) => {
-      console.error("Connection error:", error);
     });
 
     this.socketListenersAttached = true;
@@ -43,7 +32,12 @@ class NotificationService {
 
   connect() {
     const s = getNotificationSocket();
-    if (s) {
+    if (!s) return;
+
+    // Attach listeners only once per socket instance. If the underlying
+    // socket was recreated after a disconnect, socketListenersAttached
+    // was reset in disconnect(), so we re-register here.
+    if (!this.socketListenersAttached) {
       this.attachSocketListeners();
     }
   }

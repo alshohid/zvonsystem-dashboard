@@ -5,8 +5,13 @@ import { useEffect, useRef, useState } from "react";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { NotificationIcon } from "@/src/icons";
 import { formatRelativeTime } from "@/src/lib/notification/helpers";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useRouter } from "next/navigation";
+
 
 export default function NotificationDropdown() {
+  const { role } = useAuth();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const {
@@ -17,8 +22,9 @@ export default function NotificationDropdown() {
     deleteNotification,
   } = useNotifications();
 
-  const displayNotifications = notifications.slice(0, 5);
+  const displayNotifications = notifications;
   const hasUnread = unreadCount > 0;
+
 
   useEffect(() => {
     if (!isOpen) {
@@ -163,15 +169,26 @@ export default function NotificationDropdown() {
               )}
             </ul>
 
-            {notifications?.length > 5 && (
+            {notifications?.length > 10 && (
               <div className="mt-4 border-t border-[#EAECF0] pt-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="text-sm font-medium text-[#3B82F6] hover:underline"
-                >
-                  View all notifications
-                </button>
+                {role === "CLIENT" && (
+                  <button
+                    type="button"
+                    onClick={() => router.push("/admin/dashboard/notifications")}
+                    className="text-sm font-medium text-[#3B82F6] hover:underline"
+                  >
+                    View all notifications
+                  </button>
+                )}
+                {role === "ADMIN" && (
+                  <button
+                    type="button"
+                    onClick={() => router.push("/super-admin/dashboard/notifications")}
+                    className="text-sm font-medium text-[#3B82F6] hover:underline"
+                  >
+                    View all notifications
+                  </button>
+                )}
               </div>
             )}
           </div>

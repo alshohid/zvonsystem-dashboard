@@ -3,6 +3,8 @@ import type {
   CancelSubscriptionResponse,
   CheckoutSessionResponse,
   CreateCheckoutSessionRequest,
+  IEditTransactionPlanRequest,
+  ITransactionHistoryResponse,
   PlanResponse,
   PlanStatsResponse,
   PlansListResponse,
@@ -46,7 +48,28 @@ const subscriptionApi = baseApi.injectEndpoints({
       }),
       providesTags: ["SubscriptionStats"],
     }),
-
+    subscriptionPaymentTransactionList: builder.query<
+      ITransactionHistoryResponse,
+      { page: number; limit: number; search?: string }
+    >({
+      query: ({ page, limit, search }) => ({
+        url: "/subscription-payment/transactions",
+        method: "GET",
+        params: { page, limit, search },
+      }),
+      providesTags: ["SubscriptionStats"],
+    }),
+    editSingleSubscriptionPaymentTransaction: builder.mutation<
+      ITransactionHistoryResponse,
+      { planId: string; data: IEditTransactionPlanRequest }
+    >({
+      query: ({ planId, data }) => ({
+        url: `/subscription-payment/transaction/${planId}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["SubscriptionStats"],
+    }),
     cancelSubscription: builder.mutation<CancelSubscriptionResponse, string>({
       query: (subscriptionId) => ({
         url: `/subscription/cancel/${subscriptionId}`,
@@ -94,6 +117,8 @@ export const {
   useCancelSubscriptionMutation,
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
+  useEditSingleSubscriptionPaymentTransactionMutation,
+  useSubscriptionPaymentTransactionListQuery,
 } = subscriptionApi;
 
 export default subscriptionApi;

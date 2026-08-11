@@ -17,15 +17,22 @@ type SubscriptionTableProps = {
   subscriptions: ArtistSubscription[];
   onViewDetails: (id: string) => void;
   onEditPlan: (id: string) => void;
+  isLoading?: boolean;
 };
 
 export default function SubscriptionTable({
   subscriptions,
   onViewDetails,
   onEditPlan,
+  isLoading = false,
 }: SubscriptionTableProps) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#E9EDF5] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+    <div
+      className={[
+        'overflow-hidden rounded-2xl border border-[#E9EDF5] bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]',
+        isLoading ? 'opacity-60' : '',
+      ].join(' ')}
+    >
       <div className="w-full overflow-x-auto">
         <table className="w-full min-w-[820px] border-collapse">
           <thead>
@@ -88,7 +95,7 @@ export default function SubscriptionTable({
               </tr>
             ))}
 
-            {subscriptions.length === 0 ? (
+            {subscriptions.length === 0 && !isLoading ? (
               <tr>
                 <td colSpan={TABLE_HEADERS.length} className="px-5 py-12 text-center text-sm text-[#98A2B3]">
                   No subscriptions match your search.

@@ -194,3 +194,66 @@ export interface ProcessPaymentResponse {
     alreadyActive: boolean;
   };
 }
+export type TransactionStatus = "completed" | "pending";
+
+export type BillingPeriod = "MONTHLY" | "YEARLY" | "PER_RELEASE";
+
+export interface ITransactionPlan {
+  id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  price: string;
+  currency: string;
+  billingPeriod: BillingPeriod;
+  features: string[];
+  max_releases_per_year: number | null;
+  max_releases_per_month: number | null;
+  has_priority_moderation: boolean;
+  has_advanced_analytics: boolean;
+  has_soundcloud_distribution: boolean;
+  has_tidal_distribution: boolean;
+  has_dedicated_support: boolean;
+  early_access_features: boolean;
+  paypal_plan_id: string;
+  paypal_product_id: string;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ITransaction {
+  id: string;
+  planName: string;
+  amount: number;
+  currency: string;
+  status: TransactionStatus;
+  referenceNumber: string;
+  billingPeriod: BillingPeriod;
+  createdAt: string;
+  plan: ITransactionPlan;
+  cardLastFour: string | null;
+  cardBrand: string | null;
+}
+
+export interface IPaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ITransactionHistoryResponse {
+  success: boolean;
+  message: string;
+  data: ITransaction[];
+  meta: IPaginationMeta;
+}
+export interface IEditTransactionPlanRequest {
+  displayName: string;
+  price: number;
+  billingPeriod: BillingPeriod;
+  maxReleasesPerYear: number;
+  isActive: boolean;
+}

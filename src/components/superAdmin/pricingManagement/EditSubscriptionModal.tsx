@@ -29,12 +29,14 @@ type EditSubscriptionModalProps = {
   subscription: ArtistSubscription | null;
   onClose: () => void;
   onSave: (id: string, values: SubscriptionEditValues) => void;
+  isLoading?: boolean;
 };
 
 export default function EditSubscriptionModal({
   subscription,
   onClose,
   onSave,
+  isLoading = false,
 }: EditSubscriptionModalProps) {
   const [trackedId, setTrackedId] = useState<string | null>(null);
   const [values, setValues] = useState<SubscriptionEditValues>(EMPTY_VALUES);
@@ -111,9 +113,10 @@ export default function EditSubscriptionModal({
             <button
               type="button"
               onClick={() => onSave(subscription.id, values)}
-              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-[#101828] hover:opacity-90"
+              disabled={isLoading}
+              className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-[#101828] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Save Changes
+              {isLoading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </div>

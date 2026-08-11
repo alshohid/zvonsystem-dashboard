@@ -1,19 +1,27 @@
 "use client";
 
-import { Bell, CheckCheck } from "lucide-react";
+import { Bell, CheckCheck, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNotifications } from "@/src/context/NotificationContext";
 import { NotificationIcon } from "@/src/icons";
 import { formatRelativeTime } from "@/src/lib/notification/helpers";
-import type { NotificationType, INotificationItem } from "@/src/types/notificationTypes";
+
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    markRead,
+    markAllRead,
+    deleteNotification,
+  } = useNotifications();
 
   const displayNotifications = notifications?.slice(0, 5) || [];
-  const hasUnread = unreadCount > 0;
+  const hasUnread = unreadCount?.data?.unreadCount > 0;
+  console.log(displayNotifications);
+
 
   useEffect(() => {
     if (!isOpen) {
@@ -49,6 +57,10 @@ export default function NotificationDropdown() {
     await markAllRead();
   };
 
+  const handleDelete = async (id: string) => {
+    await deleteNotification(id);
+  };
+
   return (
     <div ref={wrapperRef} className="relative">
       <button
@@ -64,7 +76,9 @@ export default function NotificationDropdown() {
         aria-controls="app-header-notifications"
       >
         {hasUnread && (
-          <span className="absolute right-[0.4rem] top-[0.38rem] h-2.5 w-2.5 rounded-full bg-[#EF4444] ring-2 ring-white" />
+          <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[11px] font-semibold leading-none text-white ring-2 ring-white">
+            {unreadCount?.data?.unreadCount > 99 ? "99+" : unreadCount?.data?.unreadCount ?? 0}
+          </span>
         )}
         <NotificationIcon />
       </button>
@@ -119,15 +133,26 @@ export default function NotificationDropdown() {
 
                       <p className="mt-2 text-base leading-7 text-[#667085] sm:text-[1.0625rem]">
                         {notification.message}
-                        {!notification.isRead && (
+                        <span className="ml-2 inline-flex items-center gap-1">
+                          {!notification.isRead && (
+                            <button
+                              type="button"
+                              onClick={() => handleMarkAsRead(notification.id)}
+                              className="inline whitespace-nowrap text-[#0D6EFD] underline-offset-2 transition hover:underline"
+                              title="Mark as read"
+                            >
+                              <CheckCheck size={14} />
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => handleMarkAsRead(notification.id)}
-                            className="ml-1 inline whitespace-nowrap text-[#0D6EFD] underline-offset-2 transition hover:underline"
+                            onClick={() => handleDelete(notification.id)}
+                            className="inline text-[#EF4444] transition hover:text-[#DC2626]"
+                            title="Delete"
                           >
-                            Mark read
+                            <Trash2 size={14} />
                           </button>
-                        )}
+                        </span>
                       </p>
                     </div>
                   </article>

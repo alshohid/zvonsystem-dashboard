@@ -1,11 +1,13 @@
 type NotificationsPageHeaderProps = {
   unreadCount: number;
   onMarkAllRead: () => void;
+  onDeleteAll?: () => void;
 };
 
 export default function NotificationsPageHeader({
   unreadCount,
   onMarkAllRead,
+  onDeleteAll,
 }: NotificationsPageHeaderProps) {
   return (
     <div className="flex items-start justify-between gap-4">
@@ -13,7 +15,9 @@ export default function NotificationsPageHeader({
         <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#98A2B3]">
           Inbox
         </p>
-        <h1 className="mt-1 text-2xl font-semibold text-[#101828]">Notifications</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-[#101828]">
+          Notifications
+        </h1>
       </div>
 
       <div className="flex items-center gap-3">
@@ -30,6 +34,16 @@ export default function NotificationsPageHeader({
         >
           Mark all read
         </button>
+        {onDeleteAll && (
+          <button
+            type="button"
+            onClick={onDeleteAll}
+            disabled={unreadCount === 0}
+            className="text-sm font-semibold text-[#EF4444] transition hover:text-[#DC2626] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Delete all
+          </button>
+        )}
       </div>
     </div>
   );

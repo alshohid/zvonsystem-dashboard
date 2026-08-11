@@ -21,6 +21,7 @@ import {
   useMarkAllNotificationsReadMutation,
 } from "@/src/redux/features/notifications/notificationsOverviewApi";
 import type { NotificationType, INotificationItem } from "@/src/types/notificationTypes";
+import { getErrorMessage } from "../lib/getErrorMessage";
 
 
 
@@ -31,6 +32,7 @@ interface NotificationContextValue {
   hasMore: boolean;
   isInitialLoading: boolean;
   isFetchingMore: boolean;
+  isError: boolean;
   refresh: () => Promise<void>;
   loadMore: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
@@ -69,18 +71,21 @@ export function NotificationProvider({
     data,
     isLoading,
     isFetching,
+    isError,
     refetch,
-  } = useGetNotificationsOverviewQuery();
+  } = useGetNotificationsOverviewQuery({
+    page: 1,
+    limit: 20,
+  }, {
+    skip: !isAuthenticated,
+  });
 
   const {
     data: unreadCountData = 0,
     refetch: refetchUnreadCount,
   } = useNotificationUnreadCountQuery();
 
-  // RTK Query's `refetch` is not referentially stable, so we keep the
-  // latest version in a ref. The notification handlers below call
-  // refetchUnreadCountRef.current to avoid tearing down / re-creating
-  // socket listeners on every render.
+
   const refetchUnreadCountRef = useRef(refetchUnreadCount);
 
   useEffect(() => {
@@ -120,12 +125,6 @@ export function NotificationProvider({
   }, []);
 
   useEffect(() => {
-    // Connect to socket for real-time notifications via cookie-based auth.
-    //
-    // IMPORTANT: use [isAuthenticated] instead of [token].
-    // The token selector returns a new string reference on every token
-    // refresh, which previously triggered disconnect/reconnect here.
-    // isAuthenticated only changes on actual login/logout transitions.
     if (isAuthenticated) {
       notificationService.connect();
     }
@@ -137,12 +136,12 @@ export function NotificationProvider({
 
   useEffect(() => {
     const handleNewNotification = (payload: unknown) => {
-      const raw = payload as Record<string, unknown>;
-      const type = (raw.type as string) || "SYSTEM";
-      const title = (raw.title as string) || "New notification";
-      const message = (raw.message as string) || title;
-      const rawId = (raw.id as string) || `socket-${Date.now()}-${Math.random()}`;
-      const createdAt = (raw.createdAt as string) || new Date().toISOString();
+      const raw = payload?.notification as Record<string, unknown>;
+      const type = (raw?.type as string) || "SYSTEM";
+      const title = (raw?.title as string) || "New notification";
+      const message = (raw?.message as string) || title;
+      const rawId = (raw?.id as string) || `socket-${Date.now()}-${Math.random()}`;
+      const createdAt = (raw?.createdAt as string) || new Date().toISOString();
 
       const notification: INotificationItem = {
         id: rawId,
@@ -181,24 +180,40 @@ export function NotificationProvider({
 
   const markRead = useCallback(
     async (id: string) => {
-      await markNotificationRead(id).unwrap();
+      try {
+        await markNotificationRead(id).unwrap();
+      } catch (error) {
+        getErrorMessage(error);
+      }
     },
     [markNotificationRead],
   );
 
   const markAllRead = useCallback(async () => {
-    await markAllNotificationsRead().unwrap();
+    try {
+      await markAllNotificationsRead().unwrap();
+    } catch (error) {
+      getErrorMessage(error);
+    }
   }, [markAllNotificationsRead]);
 
   const handleDeleteNotification = useCallback(
     async (id: string) => {
-      await deleteNotification(id).unwrap();
+      try {
+        await deleteNotification(id).unwrap();
+      } catch (error) {
+        getErrorMessage(error);
+      }
     },
     [deleteNotification],
   );
 
   const handleDeleteAllNotifications = useCallback(async () => {
-    await deleteAllNotifications().unwrap();
+    try {
+      await deleteAllNotifications().unwrap();
+    } catch (error) {
+      getErrorMessage(error);
+    }
   }, [deleteAllNotifications]);
 
   const hasMore = false; // Simplified for now
@@ -211,6 +226,7 @@ export function NotificationProvider({
       hasMore,
       isInitialLoading: isLoading,
       isFetchingMore: isFetching,
+      isError,
       refresh,
       loadMore,
       markRead,
@@ -222,6 +238,7 @@ export function NotificationProvider({
       hasMore,
       isFetching,
       isLoading,
+      isError,
       loadMore,
       markAllRead,
       markRead,

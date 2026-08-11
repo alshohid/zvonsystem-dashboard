@@ -1,53 +1,57 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useEffect, useState } from "react";
-import { useGetNotificationsOverviewQuery } from "@/src/redux/features/notifications/notificationsOverviewApi";
+import { useEffect } from "react";
+import { useNotifications } from "@/src/context/NotificationContext";
 import {
   NotificationsError,
   NotificationsList,
   NotificationsPageHeader,
   NotificationsSkeleton,
 } from "@/src/components/design/notifications";
-import type { INotificationItem, INotificationsResponse } from "@/src/types/notificationTypes";
 
 export default function NotificationsContainer() {
-  const { data, isLoading, isFetching, isError, refetch } =
-    useGetNotificationsOverviewQuery();
+  const {
+    notifications,
+    unreadCount,
+    isInitialLoading,
+    isFetchingMore,
+    isError,
+    refresh,
+    markRead,
+    markAllRead,
+    deleteNotification,
+    deleteAllNotifications,
+  } = useNotifications();
 
-  const [notifications, setNotifications] = useState<INotificationItem[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  console.log(data, 'data');
+  // Fetch initial data from API when the page loads / refreshes.
+  // After that, real-time socket events keep the list in sync via
+  // NotificationContext.
   useEffect(() => {
-    if (data) {
-      const mappedNotifications: INotificationItem[] = data.data?.map((item) => ({
-        ...item,
-        isRead: item.isRead,
-      }));
-      setNotifications(mappedNotifications);
-      setUnreadCount(data.meta.unreadCount);
-    }
-  }, [data]);
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  if (isLoading || (isFetching && !data)) {
+  if (isInitialLoading || (isFetchingMore && notifications.length === 0)) {
     return <NotificationsSkeleton />;
   }
 
-  if (isError || !data) {
-    return <NotificationsError onRetry={refetch} />;
+  if (isError) {
+    return <NotificationsError onRetry={refresh} />;
   }
-
-  const handleMarkAllRead = () => {
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, isRead: true, readAt: new Date().toISOString() })),
-    );
-    setUnreadCount(0);
-  };
 
   return (
     <div className="space-y-6">
-      <NotificationsPageHeader unreadCount={unreadCount} onMarkAllRead={handleMarkAllRead} />
-      <NotificationsList notifications={notifications} />
+      <NotificationsPageHeader
+        unreadCount={unreadCount}
+        onMarkAllRead={markAllRead}
+        onDeleteAll={deleteAllNotifications}
+      />
+      <NotificationsList
+        notifications={notifications}
+        grouped
+        onMarkRead={markRead}
+        onDelete={deleteNotification}
+      />
     </div>
   );
 }

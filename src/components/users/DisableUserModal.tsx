@@ -41,13 +41,6 @@ const DisableUserModal: React.FC<DisableUserModalProps> = ({
 
   const handleConfirm = () => {
     // Handle disable logic here
-    console.log("Disabling user:", {
-      userName,
-      userId,
-      duration,
-      additionalNote,
-      notifyUser,
-    });
     onClose();
     // Reset form
     setDuration("7 days");
@@ -68,7 +61,7 @@ const DisableUserModal: React.FC<DisableUserModalProps> = ({
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-gray-500/10 flex items-center justify-center">
-                <DisableProfileIcon/>
+              <DisableProfileIcon />
             </div>
             <h3 className="text-lg font-medium text-white">Disable User</h3>
           </div>
@@ -172,7 +165,7 @@ const DisableUserModal: React.FC<DisableUserModalProps> = ({
               boxShadow: 'inset 0 0 0 1.8px rgba(255, 255, 255, 0.25)',
             }}
           >
-            <ConfirmSuspension/>  
+            <ConfirmSuspension />
             Confirm Disable
           </button>
         </div>

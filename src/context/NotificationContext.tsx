@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 
 import {
@@ -14,6 +15,7 @@ import { useAuth } from "@/src/redux/features/auth/hooks";
 import { notificationService } from "@/src/lib/notification";
 import {
   useGetNotificationsOverviewQuery,
+  useLazyGetNotificationsOverviewQuery,
   useNotificationUnreadCountQuery,
   useDeleteNotificationMutation,
   useDeleteAllNotificationsMutation,
@@ -63,7 +65,9 @@ export function NotificationProvider({
   const [notifications, setNotifications] = useState<INotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const pageRef = useRef(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const { isAuthenticated } = useAuth();
 
@@ -75,17 +79,19 @@ export function NotificationProvider({
     refetch,
   } = useGetNotificationsOverviewQuery({
     page: 1,
-    limit: 20,
+    limit: 10,
   }, {
     skip: !isAuthenticated,
   });
 
+  const [triggerLoadMore] = useLazyGetNotificationsOverviewQuery();
+
   const {
-    data: unreadCountData = 0,
+    data: unreadCountData,
     refetch: refetchUnreadCount,
   } = useNotificationUnreadCountQuery();
 
-
+  console.log(unreadCountData, "unreadCountData")
   const refetchUnreadCountRef = useRef(refetchUnreadCount);
 
   useEffect(() => {
@@ -106,12 +112,15 @@ export function NotificationProvider({
       setNotifications(mappedNotifications);
       setTotal(data.meta.total);
       pageRef.current = data.meta.page;
+      setHasMore(data.meta.page < data.meta.totalPages);
     }
   }, [data]);
 
+  const unreadCountValue = unreadCountData?.data?.unreadCount ?? 0;
+
   useEffect(() => {
-    setUnreadCount(unreadCountData);
-  }, [unreadCountData]);
+    setUnreadCount(unreadCountValue);
+  }, [unreadCountValue]);
 
   const refresh = useCallback(async () => {
     await refetch();
@@ -119,10 +128,38 @@ export function NotificationProvider({
   }, [refetch]);
 
   const loadMore = useCallback(async () => {
-    // Pagination is handled by the Redux query
-    // This is a placeholder for future infinite scroll implementation
-    console.log("Load more notifications");
-  }, []);
+    if (isLoadingMore || !hasMore) {
+      return;
+    }
+
+    const nextPage = pageRef.current + 1;
+
+    setIsLoadingMore(true);
+    try {
+      const result = await triggerLoadMore({
+        page: nextPage,
+        limit: 20,
+      }).unwrap();
+
+      if (result?.success && result.data) {
+        const newNotifications: INotificationItem[] = result.data.map(
+          (item: INotificationItem) => ({
+            ...item,
+            isRead: item.isRead,
+          }),
+        );
+
+        setNotifications((current) => [...current, ...newNotifications]);
+        pageRef.current = result.meta.page;
+        setHasMore(result.meta.page < result.meta.totalPages);
+        setTotal(result.meta.total);
+      }
+    } catch (error) {
+      getErrorMessage(error, "Failed to load more notifications.");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [isLoadingMore, hasMore, refetch]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -136,7 +173,9 @@ export function NotificationProvider({
 
   useEffect(() => {
     const handleNewNotification = (payload: unknown) => {
-      const raw = payload?.notification as Record<string, unknown>;
+      const raw = (payload as Record<string, unknown> | null | undefined)?.notification as
+        | Record<string, unknown>
+        | undefined;
       const type = (raw?.type as string) || "SYSTEM";
       const title = (raw?.title as string) || "New notification";
       const message = (raw?.message as string) || title;
@@ -148,7 +187,7 @@ export function NotificationProvider({
         type: type as NotificationType,
         title,
         message,
-        data: (raw.data as INotificationItem["data"]) || {},
+        data: (raw?.data as INotificationItem["data"]) || {},
         isRead: false,
         readAt: null,
         createdAt,
@@ -162,7 +201,7 @@ export function NotificationProvider({
 
     const handleUnreadUpdated = (payload: unknown) => {
       const raw = payload as Record<string, unknown>;
-      const count = typeof raw.count === "number" ? raw.count : undefined;
+      const count = typeof raw.unreadCount === "number" ? raw.unreadCount : undefined;
       if (count !== undefined) {
         setUnreadCount(count);
       }
@@ -216,8 +255,6 @@ export function NotificationProvider({
     }
   }, [deleteAllNotifications]);
 
-  const hasMore = false; // Simplified for now
-
   const value = useMemo<NotificationContextValue>(
     () => ({
       notifications,
@@ -225,7 +262,7 @@ export function NotificationProvider({
       total,
       hasMore,
       isInitialLoading: isLoading,
-      isFetchingMore: isFetching,
+      isFetchingMore: isFetching || isLoadingMore,
       isError,
       refresh,
       loadMore,
@@ -238,6 +275,7 @@ export function NotificationProvider({
       hasMore,
       isFetching,
       isLoading,
+      isLoadingMore,
       isError,
       loadMore,
       markAllRead,

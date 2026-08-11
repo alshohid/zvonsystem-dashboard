@@ -49,14 +49,14 @@ const SuspendUserModal: React.FC<SuspendUserModalProps> = ({
 
   const handleConfirm = () => {
     // Handle suspension logic here
-    console.log("Suspending user:", {
-      userName,
-      userId,
-      suspensionDuration,
-      reasonCategory,
-      additionalNote,
-      notifyUser,
-    });
+    // console.log("Suspending user:", {
+    //   userName,
+    //   userId,
+    //   suspensionDuration,
+    //   reasonCategory,
+    //   additionalNote,
+    //   notifyUser,
+    // });
     onClose();
     // Reset form
     setSuspensionDuration("7 days");
@@ -78,14 +78,14 @@ const SuspendUserModal: React.FC<SuspendUserModalProps> = ({
         <div className="w-full border-b border-[#26344B]">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full  flex items-center justify-center">
-              <SuspendProfileIcon/>
+              <SuspendProfileIcon />
             </div>
             <div>
               <h3 className="text-lg font-medium text-white">Suspend User</h3>
               <p className="text-sm dark:text-[#BDBDBD]">
                 This action will restrict the user&apos;s access.
               </p>
-          </div>
+            </div>
           </div>
         </div>
 
@@ -200,7 +200,7 @@ const SuspendUserModal: React.FC<SuspendUserModalProps> = ({
               boxShadow: 'inset 0 0 0 1.8px rgba(255, 255, 255, 0.25)',
             }}
           >
-            <ConfirmSuspension/>
+            <ConfirmSuspension />
             Confirm Suspension
           </button>
         </div>

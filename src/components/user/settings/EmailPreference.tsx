@@ -22,7 +22,6 @@ export default function EmailPreference() {
         DocumentCertificationExpirationAlert: true,
     });
     const handleSubmit = () => {
-        console.log("submit");
     }
     const handleChange = (key: PrefKey, value: boolean) => {
         setPrefs(prev => ({ ...prev, [key]: value }))

@@ -6,7 +6,6 @@ import { useNotifications } from "@/src/context/NotificationContext";
 import { NotificationIcon } from "@/src/icons";
 import { formatRelativeTime } from "@/src/lib/notification/helpers";
 
-
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -18,10 +17,8 @@ export default function NotificationDropdown() {
     deleteNotification,
   } = useNotifications();
 
-  const displayNotifications = notifications?.slice(0, 5) || [];
-  const hasUnread = unreadCount?.data?.unreadCount > 0;
-  console.log(displayNotifications);
-
+  const displayNotifications = notifications.slice(0, 5);
+  const hasUnread = unreadCount > 0;
 
   useEffect(() => {
     if (!isOpen) {
@@ -77,7 +74,7 @@ export default function NotificationDropdown() {
       >
         {hasUnread && (
           <span className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#EF4444] px-1 text-[11px] font-semibold leading-none text-white ring-2 ring-white">
-            {unreadCount?.data?.unreadCount > 99 ? "99+" : unreadCount?.data?.unreadCount ?? 0}
+            {unreadCount > 99 ? "99+" : unreadCount ?? 0}
           </span>
         )}
         <NotificationIcon />

@@ -13,17 +13,17 @@ class NotificationService {
     const s = getNotificationSocket();
     if (!s) return;
 
-    s.onAny((event: string, ...args: any[]) => {
-      console.log("[notification] event:", event, args);
-    });
+    // s.onAny((event: string, ...args: any[]) => {
+    //   console.log("[notification] event:", event, args);
+    // });
 
     s.on("notification:new", (data: unknown) => {
-      console.log("[notification] new:", data);
+      // console.log("[notification] new:", data);
       this.emit("notification:new", data);
     });
 
     s.on("notification:unread:updated", (data: unknown) => {
-      console.log("[notification] unread:", data);
+      // console.log("[notification] unread:", data);
       this.emit("notification:unread:updated", data);
     });
 

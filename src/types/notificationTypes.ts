@@ -52,5 +52,5 @@ export interface INotificationsResponse {
 
 export interface INotificationUnreadCountResponse {
   success: boolean;
-  data: { unreadCount: number };
+  data?: { unreadCount: number } | undefined;
 }

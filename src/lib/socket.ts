@@ -36,14 +36,14 @@ export const getNotificationSocket = () => {
     });
 
     socket.on("connect", () => {
-      console.log(
-        "[notification] socket connected",
-        socket?.id ? `id=${socket.id}` : "",
-      );
+      //   console.log(
+      //     "[notification] socket connected",
+      //     socket?.id ? `id=${socket.id}` : "",
+      //   );
     });
 
     socket.on("disconnect", (reason) => {
-      console.log("[notification] socket disconnected:", reason);
+      //   console.log("[notification] socket disconnected:", reason);
     });
 
     socket.on("connect_error", (error) => {

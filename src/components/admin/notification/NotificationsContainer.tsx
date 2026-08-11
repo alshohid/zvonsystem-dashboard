@@ -13,19 +13,19 @@ export default function NotificationsContainer() {
   const {
     notifications,
     unreadCount,
+    hasMore,
     isInitialLoading,
     isFetchingMore,
     isError,
     refresh,
+    loadMore,
     markRead,
     markAllRead,
     deleteNotification,
     deleteAllNotifications,
   } = useNotifications();
 
-  // Fetch initial data from API when the page loads / refreshes.
-  // After that, real-time socket events keep the list in sync via
-  // NotificationContext.
+
   useEffect(() => {
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -51,6 +51,9 @@ export default function NotificationsContainer() {
         grouped
         onMarkRead={markRead}
         onDelete={deleteNotification}
+        hasMore={hasMore}
+        isLoadingMore={isFetchingMore}
+        onLoadMore={loadMore}
       />
     </div>
   );

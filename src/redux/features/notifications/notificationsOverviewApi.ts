@@ -1,5 +1,8 @@
 import { baseApi } from "@/src/redux/api/baseApi";
-import type { INotificationsResponse } from "@/src/types/notificationTypes";
+import type {
+  INotificationUnreadCountResponse,
+  INotificationsResponse,
+} from "@/src/types/notificationTypes";
 const SOURCE_OF_NOTIFICATION = "notifications";
 
 const NotificationsOverviewApi = baseApi.injectEndpoints({
@@ -46,7 +49,10 @@ const NotificationsOverviewApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["NotificationsOverview"],
     }),
-    notificationUnreadCount: builder.query<number, void>({
+    notificationUnreadCount: builder.query<
+      INotificationUnreadCountResponse,
+      void
+    >({
       query: () => `${SOURCE_OF_NOTIFICATION}/unread/count`,
       providesTags: ["NotificationsOverview"],
     }),
@@ -57,6 +63,7 @@ const NotificationsOverviewApi = baseApi.injectEndpoints({
 
 export const {
   useGetNotificationsOverviewQuery,
+  useLazyGetNotificationsOverviewQuery,
   useNotificationUnreadCountQuery,
   useDeleteNotificationMutation,
   useDeleteAllNotificationsMutation,

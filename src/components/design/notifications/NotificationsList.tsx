@@ -1,4 +1,4 @@
-import { Bell, CheckCheck, Trash2 } from "lucide-react";
+import { Bell, CheckCheck, ChevronDown, Trash2 } from "lucide-react";
 import type { INotificationItem, NotificationType } from "@/src/types/notificationTypes";
 import { getNotificationTypeConfig, getNotificationGroups } from "@/src/lib/notification/helpers";
 
@@ -7,6 +7,9 @@ type NotificationsListProps = {
   grouped?: boolean;
   onMarkRead?: (id: string) => void;
   onDelete?: (id: string) => void;
+  hasMore?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
 };
 
 function NotificationItem({
@@ -103,51 +106,68 @@ export default function NotificationsList({
   grouped,
   onMarkRead,
   onDelete,
+  hasMore,
+  isLoadingMore,
+  onLoadMore,
 }: NotificationsListProps) {
-  if (grouped) {
-    const groups = getNotificationGroups(notifications);
+  const renderItems = () => {
+    if (grouped) {
+      const groups = getNotificationGroups(notifications);
 
-    return (
-      <section className="rounded-[24px] border border-[#E7EBF7] bg-white shadow-[0_18px_45px_rgba(46,58,131,0.06)]">
-        {groups.map((group) => (
-          <div key={group.type}>
-            <GroupHeader type={group.type} />
-            {group.items.map((notification) => (
-              <NotificationItem
-                key={notification.id}
-                notification={notification}
-                onMarkRead={onMarkRead}
-                onDelete={onDelete}
-              />
-            ))}
-          </div>
-        ))}
+      return groups.map((group) => (
+        <div key={group.type}>
+          <GroupHeader type={group.type} />
+          {group.items.map((notification) => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkRead={onMarkRead}
+              onDelete={onDelete}
+            />
+          ))}
+        </div>
+      ));
+    }
 
-        {notifications?.length === 0 && (
-          <p className="p-6 text-center text-sm text-[#667085]">
-            No notifications yet.
-          </p>
-        )}
-      </section>
-    );
-  }
+    return notifications?.map((notification) => (
+      <NotificationItem
+        key={notification.id}
+        notification={notification}
+        onMarkRead={onMarkRead}
+        onDelete={onDelete}
+      />
+    ));
+  };
 
   return (
-    <section className="rounded-[24px] border border-[#E7EBF7] bg-white shadow-[0_18px_45px_rgba(46,58,131,0.06)]">
-      {notifications?.map((notification) => (
-        <NotificationItem
-          key={notification.id}
-          notification={notification}
-          onMarkRead={onMarkRead}
-          onDelete={onDelete}
-        />
-      ))}
-
-      {notifications?.length === 0 && (
+    <div className="rounded-[24px] border border-[#E7EBF7] bg-white shadow-[0_18px_45px_rgba(46,58,131,0.06)]">
+      {notifications?.length === 0 ? (
         <p className="p-6 text-center text-sm text-[#667085]">
           No notifications yet.
         </p>
+      ) : (
+        <div>{renderItems()}</div>
       )}
-    </section>
+
+      {hasMore && onLoadMore && (
+        <div className="border-t border-[#F1F3F9] px-5 py-4 text-center sm:px-6">
+          <button
+            type="button"
+            onClick={onLoadMore}
+            disabled={isLoadingMore}
+            className="inline-flex items-center gap-2 rounded-xl border border-[#E7EBF7] bg-white px-4 py-2 text-sm font-semibold text-[#2E3A83] transition hover:bg-[#F5F7FF] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoadingMore ? (
+              "Loading..."
+            ) : (
+              <>
+                Load more
+                <ChevronDown size={16} />
+              </>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

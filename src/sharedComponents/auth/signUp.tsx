@@ -60,6 +60,7 @@ export default function SignUp() {
         router.push(authRoutes.login);
       }
     } catch (error: any) {
+      console.log(error);
       setNotice(error?.data?.message);
     }
   };
@@ -244,7 +245,7 @@ export default function SignUp() {
                 </label>
 
                 {notice && (
-                  <p className="rounded-[14px] border border-[#D5E0FF] bg-[#F5F8FF] px-4 py-3 text-sm text-[#395094]">
+                  <p className="rounded-[14px] border border-red-500  px-4 py-3 text-sm text-[#ea4214]">
                     {notice}
                   </p>
                 )}

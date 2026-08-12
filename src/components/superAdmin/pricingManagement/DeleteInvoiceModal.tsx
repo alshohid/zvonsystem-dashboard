@@ -10,6 +10,7 @@ type DeleteInvoiceModalProps = {
   isDeleting: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  error?: string | null;
 };
 
 export default function DeleteInvoiceModal({
@@ -18,6 +19,7 @@ export default function DeleteInvoiceModal({
   isDeleting,
   onClose,
   onConfirm,
+  error = null,
 }: DeleteInvoiceModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} className="max-w-md p-6">
@@ -36,6 +38,12 @@ export default function DeleteInvoiceModal({
         for <span className="font-medium text-[#101828]">{invoice?.artist_name ?? 'this artist'}</span>.
         This action cannot be undone.
       </p>
+
+      {error ? (
+        <div className="mt-3 rounded-lg border border-[#FECDD3] bg-[#FEF2F2] px-4 py-3 text-[13px] leading-relaxed text-[#B42318]">
+          {error}
+        </div>
+      ) : null}
 
       <div className="mt-6 flex justify-end gap-3">
         <button

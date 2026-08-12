@@ -21,6 +21,7 @@ type InvoiceDetailsModalProps = {
   onClose: () => void;
   onEdit: (id: string) => void;
   isLoading?: boolean;
+  error?: string | null;
 };
 
 export default function InvoiceDetailsModal({
@@ -28,6 +29,7 @@ export default function InvoiceDetailsModal({
   onClose,
   onEdit,
   isLoading = false,
+  error = null,
 }: InvoiceDetailsModalProps) {
   const amount = invoice
     ? `${invoice.currency ?? "USD"} ${Number(invoice.amount).toFixed(2)}`
@@ -49,6 +51,12 @@ export default function InvoiceDetailsModal({
           <h3 className="text-[16px] font-semibold text-[#101828]">
             Invoice Details
           </h3>
+
+          {error ? (
+            <div className="mt-3 rounded-lg border border-[#FECDD3] bg-[#FEF2F2] px-4 py-3 text-[13px] leading-relaxed text-[#B42318]">
+              {error}
+            </div>
+          ) : null}
 
           <div className="mt-4 flex items-center gap-3">
             <InitialAvatar name={invoice.artist_name} size={36} />

@@ -136,6 +136,8 @@ export default function PaymentControlContainer() {
   const [deletingInvoiceId, setDeletingInvoiceId] = useState<string | null>(null);
   const [createInvoiceOpen, setCreateInvoiceOpen] = useState(false);
   const [createInvoiceError, setCreateInvoiceError] = useState<string | null>(null);
+  const [editInvoiceError, setEditInvoiceError] = useState<string | null>(null);
+  const [deleteInvoiceError, setDeleteInvoiceError] = useState<string | null>(null);
   const [debouncedSearch] = useDebouncedValue(query, 500);
 
 
@@ -163,8 +165,11 @@ export default function PaymentControlContainer() {
     search: debouncedSearch,
   });
   const { data: noticeStatsData } = useGetNoticeStatsQuery();
-  const { data: viewingInvoiceData, isLoading: isViewingInvoiceLoading } =
-    useGetInvoiceByIdQuery(viewingInvoiceId ?? '', { skip: !viewingInvoiceId });
+  const {
+    data: viewingInvoiceData,
+    isLoading: isViewingInvoiceLoading,
+    error: viewingInvoiceQueryError,
+  } = useGetInvoiceByIdQuery(viewingInvoiceId ?? '', { skip: !viewingInvoiceId });
 
   const [postInvoice, { isLoading: isCreatingInvoice }] = usePostNoticeMutation();
   const [updateInvoice, { isLoading: isUpdatingInvoice }] = useUpdateInvoiceMutation();
@@ -200,7 +205,11 @@ export default function PaymentControlContainer() {
   const viewingSubscription = subscriptions.find(s => s.id === viewingId) ?? null;
   const editingSubscription = subscriptions.find(s => s.id === editingId) ?? null;
 
-  const viewingInvoice = viewingInvoiceData?.data ?? null;
+  const viewingInvoice =
+    viewingInvoiceId && viewingInvoiceData?.data ? viewingInvoiceData.data : null;
+  const viewingInvoiceError = viewingInvoiceId && viewingInvoiceQueryError
+    ? getErrorMessage(viewingInvoiceQueryError, 'Failed to load invoice.')
+    : null;
   const editingInvoice = apiInvoices.find(i => i.id === editingInvoiceId) ?? null;
   const deletingInvoice = apiInvoices.find(i => i.id === deletingInvoiceId) ?? null;
 
@@ -286,10 +295,12 @@ export default function PaymentControlContainer() {
     try {
       await updateInvoice({ id, data: request }).unwrap();
       setEditingInvoiceId(null);
+      setEditInvoiceError(null);
       setViewingInvoiceId(null);
       toast.success('Invoice updated successfully.');
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to update invoice.'));
+      // Keep the modal open and surface the API error(s) inside the form.
+      setEditInvoiceError(getErrorMessage(err, 'Failed to update invoice.'));
     }
   };
 
@@ -299,9 +310,11 @@ export default function PaymentControlContainer() {
     try {
       await deleteInvoice(deletingInvoiceId).unwrap();
       setDeletingInvoiceId(null);
+      setDeleteInvoiceError(null);
       toast.success('Invoice deleted successfully.');
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Failed to delete invoice.'));
+      // Keep the modal open and surface the API error(s) inside the modal.
+      setDeleteInvoiceError(getErrorMessage(err, 'Failed to delete invoice.'));
     }
   };
 
@@ -398,8 +411,14 @@ export default function PaymentControlContainer() {
             <InvoiceTable
               invoices={invoices}
               onViewDetails={setViewingInvoiceId}
-              onEdit={setEditingInvoiceId}
-              onDelete={setDeletingInvoiceId}
+              onEdit={id => {
+                setEditInvoiceError(null);
+                setEditingInvoiceId(id);
+              }}
+              onDelete={id => {
+                setDeleteInvoiceError(null);
+                setDeletingInvoiceId(id);
+              }}
               onMarkAsPaid={handleMarkAsPaid}
               isLoading={isInvoicesFetching && invoices.length > 0}
             />
@@ -440,24 +459,34 @@ export default function PaymentControlContainer() {
         onClose={() => setViewingInvoiceId(null)}
         onEdit={id => {
           setViewingInvoiceId(null);
+          setEditInvoiceError(null);
           setEditingInvoiceId(id);
         }}
         isLoading={isViewingInvoiceLoading}
+        error={viewingInvoiceError}
       />
 
       <EditInvoiceModal
         invoice={editingInvoice}
-        onClose={() => setEditingInvoiceId(null)}
+        onClose={() => {
+          setEditingInvoiceId(null);
+          setEditInvoiceError(null);
+        }}
         onSave={handleSaveInvoice}
         isLoading={isUpdatingInvoice}
+        error={editInvoiceError}
       />
 
       <DeleteInvoiceModal
         invoice={deletingInvoice}
         isOpen={!!deletingInvoiceId}
         isDeleting={isDeletingInvoice}
-        onClose={() => setDeletingInvoiceId(null)}
+        onClose={() => {
+          setDeletingInvoiceId(null);
+          setDeleteInvoiceError(null);
+        }}
         onConfirm={handleDeleteInvoice}
+        error={deleteInvoiceError}
       />
 
       <CreateInvoiceModal

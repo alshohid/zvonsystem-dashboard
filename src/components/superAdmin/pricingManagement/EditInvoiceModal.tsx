@@ -64,6 +64,7 @@ type EditInvoiceModalProps = {
   onClose: () => void;
   onSave: (id: string, request: InvoiceEditRequest) => void;
   isLoading?: boolean;
+  error?: string | null;
 };
 
 export default function EditInvoiceModal({
@@ -71,6 +72,7 @@ export default function EditInvoiceModal({
   onClose,
   onSave,
   isLoading = false,
+  error = null,
 }: EditInvoiceModalProps) {
   const [trackedId, setTrackedId] = useState<string | null>(null);
   const [values, setValues] = useState<InvoiceEditValues>(EMPTY_VALUES);
@@ -97,6 +99,12 @@ export default function EditInvoiceModal({
           <h3 className="text-[16px] font-semibold text-[#101828]">
             Edit Invoice – {invoice.invoice_number}
           </h3>
+
+          {error ? (
+            <div className="rounded-lg border border-[#FECDD3] bg-[#FEF2F2] px-4 py-3 text-[13px] leading-relaxed text-[#B42318]">
+              {error}
+            </div>
+          ) : null}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <TextInputField

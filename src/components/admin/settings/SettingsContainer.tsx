@@ -20,7 +20,7 @@ export default function SettingsContainer() {
     const [tab, setTab] = useTabsQueryState<SettingsTabKey>('tab', 'profile');
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" data-tour="page-settings">
             <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#98A2B3]">
                     General

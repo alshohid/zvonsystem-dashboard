@@ -13,6 +13,7 @@ import {
 import { useAuth } from "@/src/redux/features/auth/hooks";
 import Image from "next/image";
 import { LayoutRightArrow } from "../icons";
+import { tourElementId } from "@/src/lib/onboarding/ids";
 
 interface AppSidebarProps {
   role?: DashboardRole;
@@ -188,6 +189,7 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
                         key={item.name}
                         href={fallbackPath}
                         onClick={handleItemClick}
+                        data-tour={tourElementId(fallbackPath)}
                         className={itemClasses}
                       >
                         <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
@@ -203,6 +205,9 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
                         <button
                           type="button"
                           onClick={() => toggleSubmenu(item.name)}
+                          data-tour={tourElementId(
+                            item.path ?? item.subItems?.[0]?.path ?? "",
+                          )}
                           className={itemClasses}
                         >
                           <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">
@@ -230,6 +235,7 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
                                   key={sub.path}
                                   href={sub.path}
                                   onClick={handleItemClick}
+                                  data-tour={tourElementId(sub.path)}
                                   className={[
                                     "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[0.875rem] font-medium transition",
                                     subActive
@@ -256,6 +262,7 @@ const AppSidebar = ({ role = "admin" }: AppSidebarProps) => {
                       key={item.name}
                       href={item.path ?? "#"}
                       onClick={handleItemClick}
+                      data-tour={item.path ? tourElementId(item.path) : undefined}
                       className={itemClasses}
                     >
                       <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center">

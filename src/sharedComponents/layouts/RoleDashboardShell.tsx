@@ -8,6 +8,7 @@ import { env } from "@/src/lib/env";
 import AppHeader from "@/src/layout/AppHeader";
 import AppSidebar from "@/src/layout/AppSidebar";
 import Backdrop from "@/src/layout/Backdrop";
+import TourHost from "@/src/components/onboarding/TourHost";
 import type { DashboardRole } from "@/src/lib/sidebarConfig";
 
 type RoleDashboardShellProps = {
@@ -43,6 +44,7 @@ export default function RoleDashboardShell({
     <div className="min-h-screen overflow-x-hidden bg-[#FFFFFF]">
       <AppSidebar role={role} />
       <Backdrop />
+      <TourHost role={role} />
 
       <div
         className={`flex-1 overflow-x-hidden transition-all duration-300 ease-in-out ${mainContentMargin}`}

@@ -71,9 +71,14 @@ const AppHeader = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          <NotificationDropdown role={role} />
+          <div data-tour="header-notifications">
+            <NotificationDropdown role={role} />
+          </div>
 
-          <div className="flex items-center gap-3 rounded-full border border-[#E7EBF7] bg-[#FBFCFF] px-2 py-1.5">
+          <div
+            data-tour="header-user"
+            className="flex items-center gap-3 rounded-full border border-[#E7EBF7] bg-[#FBFCFF] px-2 py-1.5"
+          >
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#EDFFE7] text-sm font-semibold text-[#2E3A83]">
               {initials}
             </div>

@@ -8,6 +8,7 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/src/redux/features/auth/hooks";
 import { getErrorMessage } from "@/src/lib/getErrorMessage";
+import { setPendingTour } from "@/src/lib/onboarding/storage";
 import {
   authRoutes,
   normalizeAuthRole,
@@ -58,6 +59,9 @@ export default function Login() {
       if (!response.success || !responseRole) {
         throw new Error("Login response did not include a valid user role.");
       }
+
+      // Flag the onboarding tour that should auto-start on the landing page.
+      setPendingTour(responseRole === "ADMIN" ? "super-admin" : "admin");
 
       router.replace(resolvePostLoginPath(responseRole, redirectPath));
     } catch (error) {

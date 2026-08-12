@@ -24,7 +24,7 @@ export default function GuideContainer() {
   const overview = guideFaqData;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-tour="page-guide">
       <GuidePageHeader />
       <FaqAccordion faqs={overview.faqs} />
     </div>

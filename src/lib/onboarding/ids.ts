@@ -9,13 +9,14 @@ export const tourElementId = (path: string): string => {
 };
 
 export const tourIds = {
-  // Sidebar navigation (derived from routes).
+  // Sidebar navigation (derived from routes) — stable even when Tailwind
+  // classes change.
   adminDashboard: tourElementId("/admin/dashboard"),
   createRelease: tourElementId("/admin/dashboard/releases/create"),
   analytics: tourElementId("/admin/dashboard/analytics"),
   guideNav: tourElementId("/admin/dashboard/guide"),
   notificationsNav: tourElementId("/admin/dashboard/notifications"),
-  billing: tourElementId("admin/dashboard/billing"),
+  billing: tourElementId("/admin/dashboard/billing"),
   settingsNav: tourElementId("/admin/dashboard/settings"),
 
   // Super admin sidebar.
@@ -31,6 +32,9 @@ export const tourIds = {
   headerUser: "header-user",
 
   // Page bodies.
+  pageCreateRelease: "page-create-release",
   pageGuide: "page-guide",
+  pageBilling: "page-billing",
   pageSettings: "page-settings",
+  settingsTabNotifications: "settings-tab-notifications",
 } as const;

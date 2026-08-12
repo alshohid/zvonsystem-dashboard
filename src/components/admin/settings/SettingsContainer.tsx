@@ -37,6 +37,11 @@ export default function SettingsContainer() {
                             key={key}
                             type="button"
                             onClick={() => setTab(key)}
+                            data-tour={
+                                key === 'notifications'
+                                    ? 'settings-tab-notifications'
+                                    : undefined
+                            }
                             className={[
                                 'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                                 active ? 'bg-primary text-[#101828]' : 'text-[#667085] hover:text-[#344054]',

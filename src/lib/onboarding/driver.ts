@@ -42,14 +42,8 @@ export const createTourDriver = ({
     prevBtnText: "← Back",
     doneBtnText: "Finish",
 
-    // Fires the moment a step is highlighted — lets consumers sync external
-    // UI (e.g. hide the "Resume" button) without calling setState in an effect.
     onHighlightStarted: () => onStart?.(),
 
-    // Intercept "Next" clicks. NOTE: supplying a config-level `onNextClick`
-    // replaces Driver.js's built-in advance handler, so for every normal step
-    // we must advance manually with `moveNext()`. Only a step tagged with
-    // `nextRoute` breaks out to navigate to another page instead (multipage).
     onNextClick: () => {
       const index = driverObj.getActiveIndex();
       const step = index != null ? steps[index] : undefined;
@@ -62,7 +56,18 @@ export const createTourDriver = ({
       driverObj.moveNext();
     },
 
-    // Inject a "Skip tour" button into every popover's footer.
+    onPrevClick: () => {
+      const index = driverObj.getActiveIndex();
+      const step = index != null ? steps[index] : undefined;
+
+      if (step?.prevRoute) {
+        onNavigate(step.prevRoute);
+        return;
+      }
+
+      driverObj.movePrevious();
+    },
+
     onPopoverRender: (popover) => {
       if (popover.footer.querySelector(`.${SKIP_BUTTON_CLASS}`)) {
         return;

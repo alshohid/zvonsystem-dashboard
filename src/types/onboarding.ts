@@ -18,6 +18,12 @@ export type TourDriveStep = DriveStep & {
    * final step of its segment.
    */
   nextRoute?: string;
+  /**
+   * When present, pressing "Back" navigates back to this route (the previous
+   * page of a multipage tour). Useful on the first step of a segment so the
+   * user can always go back one page.
+   */
+  prevRoute?: string;
 };
 
 /**

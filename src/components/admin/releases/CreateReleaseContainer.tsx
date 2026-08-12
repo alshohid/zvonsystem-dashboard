@@ -196,7 +196,7 @@ export default function CreateReleaseContainer({
   const isLoadingDraft = Boolean(requestedReleaseId) && isFetching && !data;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-tour="page-create-release">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#98A2B3]">
           Releases

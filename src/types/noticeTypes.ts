@@ -1,12 +1,20 @@
+export type InvoiceRequestStatus =
+  | "DRAFT"
+  | "PAID"
+  | "PENDING"
+  | "FAILED"
+  | "CANCELLED"
+  | "OVERDUE";
+
 export interface CreateInvoiceRequest {
-  artistName: string;
+  artist_name: string;
   email: string;
   amount: number;
-  status: string;
-  billingDate: string;
+  status: InvoiceRequestStatus;
+  billing_date: string;
   description: string;
   currency: string;
-  paymentMethod: string;
+  payment_method: string;
 }
 export interface Invoice {
   id: string;

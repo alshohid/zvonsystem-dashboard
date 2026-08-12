@@ -1,12 +1,19 @@
 import type { ElementType } from "react";
-import { CreditCard, DollarSign, TrendingUp, Users } from "lucide-react";
+import {
+  Clock,
+  CreditCard,
+  DollarSign,
+  FileText,
+  TrendingUp,
+} from "lucide-react";
 import type { PaymentControlStat, PaymentControlStatId } from "./types";
 
 const STAT_ICON_BY_ID: Record<PaymentControlStatId, ElementType> = {
-  "monthly-revenue": DollarSign,
+  "total-revenue": DollarSign,
+  "total-invoices": FileText,
   "active-pro-subs": CreditCard,
-  "total-artists": Users,
   "paid-invoices": TrendingUp,
+  "pending-invoices": Clock,
 };
 
 type PaymentControlStatsGridProps = {

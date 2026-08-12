@@ -4,7 +4,12 @@ export type SubscriptionStatus = "active" | "cancelled" | "suspended" | "trial";
 
 export type BillingCycle = "monthly" | "annual";
 
-export type InvoiceStatus = "paid" | "pending" | "pay-per-release";
+export type InvoiceStatus =
+  | "paid"
+  | "pending"
+  | "pay-per-release"
+  | "draft"
+  | "cancelled";
 
 export type ArtistSubscription = {
   id: string;
@@ -23,17 +28,20 @@ export type PricingInvoice = {
   invoiceNumber: string;
   artistName: string;
   email: string;
-  plan: PricingPlanId;
+  plan?: PricingPlanId;
   amount: number;
   date: string;
   status: InvoiceStatus;
+  paymentMethod?: string;
+  description?: string;
 };
 
 export type PaymentControlStatId =
-  | "monthly-revenue"
+  | "total-revenue"
+  | "total-invoices"
   | "active-pro-subs"
-  | "total-artists"
-  | "paid-invoices";
+  | "paid-invoices"
+  | "pending-invoices";
 
 export type PaymentControlStat = {
   id: PaymentControlStatId;
@@ -59,6 +67,9 @@ export type CreateInvoiceValues = {
   artistName: string;
   email: string;
   amount: string;
-  billingCycle: BillingCycle;
+  status: string;
   billingDate: string;
+  description: string;
+  currency: string;
+  paymentMethod: string;
 };

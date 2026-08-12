@@ -5,24 +5,39 @@ import ReleaseSelectField from '@/src/components/admin/releases/ReleaseSelectFie
 import { FIELD_INPUT_CLASSNAME } from '@/src/components/admin/releases/formControls';
 import TextInputField from '@/src/components/ui/input/TextInputField';
 import { Modal } from '@/src/components/ui/modal';
-import { BILLING_CYCLE_OPTIONS } from './mockPricingManagementData';
+import {
+  CURRENCY_OPTIONS,
+  INVOICE_STATUS_OPTIONS,
+  PAYMENT_METHOD_OPTIONS,
+} from './mockPricingManagementData';
 import type { CreateInvoiceValues } from './types';
 
 const EMPTY_VALUES: CreateInvoiceValues = {
   artistName: '',
   email: '',
   amount: '',
-  billingCycle: 'monthly',
+  status: 'pending',
   billingDate: '',
+  description: '',
+  currency: 'USD',
+  paymentMethod: 'paypal',
 };
 
 type CreateInvoiceModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onCreate: (values: CreateInvoiceValues) => void;
+  isLoading?: boolean;
+  error?: string | null;
 };
 
-export default function CreateInvoiceModal({ isOpen, onClose, onCreate }: CreateInvoiceModalProps) {
+export default function CreateInvoiceModal({
+  isOpen,
+  onClose,
+  onCreate,
+  isLoading = false,
+  error = null,
+}: CreateInvoiceModalProps) {
   const [wasOpen, setWasOpen] = useState(false);
   const [values, setValues] = useState<CreateInvoiceValues>(EMPTY_VALUES);
 
@@ -41,55 +56,86 @@ export default function CreateInvoiceModal({ isOpen, onClose, onCreate }: Create
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className="w-full max-w-md p-0"
+      className="w-full max-w-lg p-0"
       contentBgClassName="bg-white"
       textClassName="text-[#101828]"
     >
       <div className="space-y-4 rounded-2xl p-6">
         <h3 className="text-[16px] font-semibold text-[#101828]">Create Invoice</h3>
 
-        <TextInputField
-          label="Artist Name"
-          placeholder="Enter Artist Name"
-          value={values.artistName}
-          onChange={e => updateValues({ artistName: e.target.value })}
-          inputClassName={FIELD_INPUT_CLASSNAME}
-        />
+        {error ? (
+          <div className="rounded-lg border border-[#FECDD3] bg-[#FEF2F2] px-4 py-3 text-[13px] leading-relaxed text-[#B42318]">
+            {error}
+          </div>
+        ) : null}
 
-        <TextInputField
-          label="Email"
-          placeholder="artist@gmail.com"
-          type="email"
-          value={values.email}
-          onChange={e => updateValues({ email: e.target.value })}
-          inputClassName={FIELD_INPUT_CLASSNAME}
-        />
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextInputField
-            label="Amount ($)"
+            label="Artist Name"
+            placeholder="Enter Artist Name"
+            value={values.artistName}
+            onChange={e => updateValues({ artistName: e.target.value })}
+            inputClassName={FIELD_INPUT_CLASSNAME}
+          />
+          <TextInputField
+            label="Email"
+            placeholder="artist@gmail.com"
+            type="email"
+            value={values.email}
+            onChange={e => updateValues({ email: e.target.value })}
+            inputClassName={FIELD_INPUT_CLASSNAME}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <TextInputField
+            label="Amount"
             type="number"
-            placeholder="$2.99"
+            placeholder="0.00"
             value={values.amount}
             onChange={e => updateValues({ amount: e.target.value })}
             inputClassName={FIELD_INPUT_CLASSNAME}
           />
-          <ReleaseSelectField
-            label="Billing Cycle"
-            value={values.billingCycle}
-            onChange={billingCycle =>
-              updateValues({ billingCycle: billingCycle as CreateInvoiceValues['billingCycle'] })
-            }
-            options={BILLING_CYCLE_OPTIONS}
-            placeholder="Select Billing Cycle"
+          <TextInputField
+            label="Billing Date"
+            type="date"
+            value={values.billingDate}
+            onChange={e => updateValues({ billingDate: e.target.value })}
+            inputClassName={FIELD_INPUT_CLASSNAME}
           />
         </div>
 
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <ReleaseSelectField
+            label="Status"
+            value={values.status}
+            onChange={status => updateValues({ status })}
+            options={INVOICE_STATUS_OPTIONS}
+            placeholder="Select Status"
+          />
+          <ReleaseSelectField
+            label="Currency"
+            value={values.currency}
+            onChange={currency => updateValues({ currency })}
+            options={CURRENCY_OPTIONS}
+            placeholder="Select Currency"
+          />
+        </div>
+
+        <ReleaseSelectField
+          label="Payment Method"
+          value={values.paymentMethod}
+          onChange={paymentMethod => updateValues({ paymentMethod })}
+          options={PAYMENT_METHOD_OPTIONS}
+          placeholder="Select Payment Method"
+        />
+
         <TextInputField
-          label="Billing Date"
-          type="date"
-          value={values.billingDate}
-          onChange={e => updateValues({ billingDate: e.target.value })}
+          label="Description"
+          placeholder="Enter description"
+          value={values.description}
+          onChange={e => updateValues({ description: e.target.value })}
           inputClassName={FIELD_INPUT_CLASSNAME}
         />
 
@@ -104,9 +150,10 @@ export default function CreateInvoiceModal({ isOpen, onClose, onCreate }: Create
           <button
             type="button"
             onClick={() => onCreate(values)}
-            className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-[#101828] hover:opacity-90"
+            disabled={isLoading}
+            className="flex-1 rounded-xl bg-primary px-4 py-2.5 text-[13px] font-semibold text-[#101828] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Create Invoice
+            {isLoading ? 'Creating...' : 'Create Invoice'}
           </button>
         </div>
       </div>

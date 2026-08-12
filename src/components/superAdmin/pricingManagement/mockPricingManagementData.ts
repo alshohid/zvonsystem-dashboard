@@ -7,16 +7,20 @@ import type {
 } from "./types";
 
 export const PAYMENT_CONTROL_STATS: PaymentControlStat[] = [
-  { id: "monthly-revenue", label: "Monthly Revenue", value: "$106.86" },
-  { id: "active-pro-subs", label: "Active Pro Subs", value: "2" },
-  { id: "total-artists", label: "Total Artists", value: "6" },
+  { id: "total-revenue", label: "Total Revenue", value: "$106.86" },
+  { id: "total-invoices", label: "Total Invoices", value: "6" },
   { id: "paid-invoices", label: "Paid Invoices", value: "$114.86" },
+  { id: "pending-invoices", label: "Pending Invoices", value: "1" },
 ];
 
 export const PRICING_PLAN_OPTIONS: PricingPlanOption[] = [
   { id: "free", name: "Free", priceLabel: "$0/mo" },
   { id: "pro", name: "Pro", priceLabel: "$7.99/mo" },
-  { id: "pay-per-release", name: "Pay Per Release", priceLabel: "$2.99/release" },
+  {
+    id: "pay-per-release",
+    name: "Pay Per Release",
+    priceLabel: "$2.99/release",
+  },
 ];
 
 export const SUBSCRIPTION_STATUS_OPTIONS: SelectOption[] = [
@@ -29,6 +33,28 @@ export const SUBSCRIPTION_STATUS_OPTIONS: SelectOption[] = [
 export const BILLING_CYCLE_OPTIONS: SelectOption[] = [
   { value: "monthly", label: "Monthly" },
   { value: "annual", label: "Annual" },
+];
+
+export const INVOICE_STATUS_OPTIONS: SelectOption[] = [
+  { value: "PAID", label: "Paid" },
+  { value: "PENDING", label: "Pending" },
+  { value: "DRAFT", label: "Draft" },
+  { value: "OVERDUE", label: "Overdue" },
+];
+
+export const PAYMENT_METHOD_OPTIONS: SelectOption[] = [
+  { value: "paypal", label: "PayPal" },
+  { value: "stripe", label: "Stripe" },
+  { value: "card", label: "Card" },
+  { value: "bank", label: "Bank Transfer" },
+  { value: "manual", label: "Manual" },
+];
+
+export const CURRENCY_OPTIONS: SelectOption[] = [
+  { value: "USD", label: "USD ($)" },
+  { value: "EUR", label: "EUR (€)" },
+  { value: "GBP", label: "GBP (£)" },
+  { value: "BDT", label: "BDT (৳)" },
 ];
 
 export const MOCK_SUBSCRIPTIONS: ArtistSubscription[] = [

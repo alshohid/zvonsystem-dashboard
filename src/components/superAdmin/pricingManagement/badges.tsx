@@ -56,12 +56,16 @@ const INVOICE_STATUS_LABEL: Record<InvoiceStatus, string> = {
   paid: "Paid",
   pending: "Pending",
   "pay-per-release": "Pay Per Release",
+  draft: "Draft",
+  cancelled: "Cancelled",
 };
 
 const INVOICE_STATUS_CLASSNAME: Record<InvoiceStatus, string> = {
   paid: "border border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D]",
   pending: "border border-[#FDE68A] bg-[#FFFBEB] text-[#B45309]",
   "pay-per-release": "border border-[#E9D5FF] bg-[#FAF5FF] text-[#7C3AED]",
+  draft: "border border-[#E5E7EB] bg-[#F9FAFB] text-[#667085]",
+  cancelled: "border border-[#FECACA] bg-[#FEF2F2] text-[#DC2626]",
 };
 
 export function InvoiceStatusBadge({ status }: { status: InvoiceStatus }) {

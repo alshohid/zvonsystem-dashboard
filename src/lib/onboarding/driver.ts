@@ -2,23 +2,12 @@ import { driver, type Driver } from "driver.js";
 import "driver.js/dist/driver.css";
 import type { TourDriveStep } from "@/src/types/onboarding";
 
-/**
- * Shared Driver.js factory.
- *
- * Every tour runs through here so all the common configuration — progress
- * text, button labels, animation, overlay, the "Skip tour" control and the
- * multi-page navigation hook — live in exactly one place.
- */
-
 const SKIP_BUTTON_CLASS = "zvn-tour-skip";
 
 type CreateTourDriverParams = {
   steps: TourDriveStep[];
-  /** Called when the user presses "Next" on a step that has `nextRoute`. */
   onNavigate: (nextRoute: string) => void;
-  /** Called when the driver is destroyed (finished, skipped or closed). */
   onComplete: () => void;
-  /** Called the moment the first step becomes visible (used to sync UI state). */
   onStart?: () => void;
 };
 

@@ -12,7 +12,6 @@ export const authRoutes = {
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
   signUp: "/sign-up",
-  // dispatcherDashboard: "/dispatcher/dashboard",
   adminDashboard: "/admin/dashboard",
   superAdminDashboard: "/super-admin/dashboard",
 } as const;

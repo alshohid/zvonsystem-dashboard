@@ -204,7 +204,7 @@ export default function TourHost({ role }: TourHostProps) {
 
   return (
     <>
-      {(
+      {showResume && (
         <button
           type="button"
           onClick={handleResume}

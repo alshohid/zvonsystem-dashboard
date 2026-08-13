@@ -22,10 +22,6 @@ import {
   setPendingTour,
 } from "@/src/lib/onboarding/storage";
 
-/**
- * Maps each dashboard role to the tour it should run. Roles without an
- * onboarding tour simply map to nothing.
- */
 const ROLE_TO_TOUR: Partial<Record<DashboardRole, TourKey>> = {
   admin: "admin",
   "super-admin": "super-admin",
@@ -147,13 +143,10 @@ export default function TourHost({ role }: TourHostProps) {
     clearPendingTour();
   }, [pathname, refreshToken, router, tourKey]);
 
-  // Clean up the driver if the shell ever unmounts.
   useEffect(() => {
     return stopDriver;
   }, [stopDriver]);
 
-  // `useOnboardingTour` (and the resume button) dispatch this event to force
-  // the effect to re-run even when the pathname hasn't changed.
   useEffect(() => {
     const onTrigger = () => setRefreshToken((token) => token + 1);
     window.addEventListener("zvn:tour-trigger", onTrigger);
@@ -163,7 +156,6 @@ export default function TourHost({ role }: TourHostProps) {
   const handleResume = useCallback(() => {
     if (!tourKey) return;
 
-    // Clear any previous "completed" flag so the tour can be re-watched.
     clearCompletedTour(tourKey);
 
     const definition = getTourDefinition(tourKey);
@@ -171,21 +163,18 @@ export default function TourHost({ role }: TourHostProps) {
 
     const session = getActiveTourSession();
 
-    // Can we resume from a valid, in-progress session?
     if (
       session &&
       session.tourKey === tourKey &&
       session.nextSegmentIndex >= 0 &&
       session.nextSegmentIndex < definition.segments.length
     ) {
-      // Resume from the saved segment — navigate there if we're not already.
       const segment = definition.segments[session.nextSegmentIndex];
       if (segment && pathname !== segment.route) {
         router.replace(segment.route);
         return;
       }
     } else {
-      // No valid session — start fresh from the beginning.
       clearActiveTourSession();
       saveActiveTourSession({
         tourKey,
@@ -198,8 +187,6 @@ export default function TourHost({ role }: TourHostProps) {
       }
     }
 
-    // Already on the correct route — force the effect to re-run even
-    // when the pathname hasn't changed.
     setPendingTour(tourKey);
     window.dispatchEvent(new CustomEvent("zvn:tour-trigger"));
   }, [tourKey, router, pathname]);
@@ -214,10 +201,10 @@ export default function TourHost({ role }: TourHostProps) {
         <button
           type="button"
           onClick={handleResume}
-          className="fixed items-center bottom-0 right-5 z-[900] inline-flex items-center gap-2 rounded-full bg-[#3d415d] px-[.67rem] py-[.4rem] text-sm font-semibold text-white shadow-lg transition hover:bg-[#535875]"
+          className="fixed items-center bottom-1 right-5 z-[900] inline-flex items-center gap-2 rounded-full bg-[#3d415d] px-[.67rem] py-[.4rem] text-xs font-semibold text-white shadow-lg transition hover:bg-[#535875]"
           aria-label="Resume onboarding tour"
         >
-          <span aria-hidden className="text-sm w-3 h-3 ">🚀</span> Resume tour
+          <span aria-hidden className="text-xs w-3 h-3 ">🚀</span> Resume tour
         </button>
       )}
     </>

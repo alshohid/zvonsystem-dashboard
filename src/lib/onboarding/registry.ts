@@ -2,7 +2,6 @@ import type { TourDefinition, TourKey } from "@/src/types/onboarding";
 import { adminTour } from "@/src/components/onboarding/tours/adminTour";
 import { superAdminTour } from "@/src/components/onboarding/tours/superAdminTour";
 
-/** Maps a logical tour key to its full definition. */
 export const tourRegistry: Record<TourKey, TourDefinition> = {
   admin: adminTour,
   "super-admin": superAdminTour,

@@ -38,7 +38,6 @@ export function proxy(request: NextRequest) {
     pathname === authRoutes.forgotPassword ||
     pathname === authRoutes.signUp;
 
-  //   const isDispatcherRoute = pathname.startsWith(authRoutes.superAdminDashboard);
   const isAdminRoute = pathname.startsWith(authRoutes.adminDashboard);
   const isSuperAdminRoute = pathname.startsWith(authRoutes.superAdminDashboard);
 

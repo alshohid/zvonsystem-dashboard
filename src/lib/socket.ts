@@ -5,13 +5,6 @@ import { authCookieNames } from "@/src/lib/auth/config";
 
 let socket: Socket | null = null;
 
-/**
- * Returns the singleton notification socket, creating it if needed.
- *
- * Socket.IO v4 defaults to infinite reconnection attempts, which causes
- * a tight connect/disconnect loop when the server rejects auth or drops
- * the connection. We cap attempts and add backoff so the client settles.
- */
 export const getNotificationSocket = () => {
   if (!notificationConfig.socketUrl) {
     return null;
@@ -42,9 +35,7 @@ export const getNotificationSocket = () => {
       //   );
     });
 
-    socket.on("disconnect", (reason) => {
-      //   console.log("[notification] socket disconnected:", reason);
-    });
+    socket.on("disconnect", (reason) => {});
 
     socket.on("connect_error", (error) => {
       console.error("[notification] socket connect_error:", error);
@@ -54,15 +45,9 @@ export const getNotificationSocket = () => {
   return socket;
 };
 
-/**
- * Tears down the singleton notification socket and resets the module-level
- * reference so a subsequent call to getNotificationSocket() starts fresh.
- */
 export const disconnectNotificationSocket = () => {
   if (!socket) return;
 
-  // Remove all listeners before disconnecting so stale callbacks cannot
-  // trigger against a freshly created socket after reconnect.
   socket.removeAllListeners();
   socket.disconnect();
   socket = null;

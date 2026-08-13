@@ -9,8 +9,6 @@ export const tourElementId = (path: string): string => {
 };
 
 export const tourIds = {
-  // Sidebar navigation (derived from routes) — stable even when Tailwind
-  // classes change.
   adminDashboard: tourElementId("/admin/dashboard"),
   createRelease: tourElementId("/admin/dashboard/releases/create"),
   analytics: tourElementId("/admin/dashboard/analytics"),

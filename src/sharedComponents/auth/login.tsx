@@ -60,7 +60,6 @@ export default function Login() {
         throw new Error("Login response did not include a valid user role.");
       }
 
-      // Flag the onboarding tour that should auto-start on the landing page.
       setPendingTour(responseRole === "ADMIN" ? "super-admin" : "admin");
 
       router.replace(resolvePostLoginPath(responseRole, redirectPath));

@@ -13,7 +13,7 @@ export const adminTour: TourDefinition = {
           popover: {
             title: "Welcome, Artist 👋",
             description:
-              "This is your Dashboard — a quick overview of releases, recent activity and key stats for your workspace.",
+              "This is your Dashboard — a complete overview of your workspace, featuring key stats, release status, platform performance, top tracks, recent activity, latest albums, and upcoming releases.",
             side: "right",
             align: "start",
           },
@@ -29,7 +29,7 @@ export const adminTour: TourDefinition = {
           popover: {
             title: "Create a new release",
             description:
-              "The release wizard takes you from upload all the way to moderation.",
+              "The release wizard guides you through the complete release creation process — from entering release information and uploading tracks to selecting distribution platforms, setting a release schedule, and submitting your release for moderation. Free plan users can create up to 3 releases. Upgrade to the Pro plan to create more releases.",
             side: "right",
             disableButtons: [],
           },
@@ -62,7 +62,8 @@ export const adminTour: TourDefinition = {
           element: `[data-tour="${tourIds.billing}"]`,
           popover: {
             title: "Billing 💳",
-            description: "Manage your subscription, plan and invoices from here.",
+            description:
+              "Manage your subscription, plan and invoices from here.",
             side: "right",
             disableButtons: [],
           },

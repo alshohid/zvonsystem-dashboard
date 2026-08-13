@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/src/context/ThemeContext";
 import { NotificationProvider } from "@/src/context/NotificationContext";
 // import { TwScreenSize } from "../components/TwScreenSize";
 import ReduxProvider from "@/src/redux/ReduxProvider";
+import TopLoader from "../context/TopLoader";
 
 
 
@@ -24,9 +25,11 @@ export default function RootLayout({
       <body
         className={` antialiased bg-gray-50 text-gray-900`}
       >
+
         <ReduxProvider>
           <ThemeProvider>
             <NotificationProvider>
+              <TopLoader />
               <SidebarProvider>{children}</SidebarProvider>
             </NotificationProvider>
             <Toaster position="top-right" toastOptions={{ duration: 4000 }} />

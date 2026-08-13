@@ -4,7 +4,8 @@ import type { ActiveTourSession, TourKey } from "@/src/types/onboarding";
  * Small, framework-agnostic persistence layer for tour state.
  *
  * - `completed` lives in **localStorage**, so it survives full restarts and
- *   never re-runs once the user finishes (or explicitly skips) the tour.
+ *   prevents the tour from auto-starting again. It can be cleared on demand
+ *   (e.g. via the "Resume tour" button) to let the user re-watch the tour.
  * - `pending` lives in **sessionStorage**, so a hard refresh keeps it (tour
  *   survives a refresh right after login) but a fresh browser session clears
  *   it automatically.
@@ -26,6 +27,12 @@ export const hasCompletedTour = (tourKey: TourKey): boolean =>
 export const markTourCompleted = (tourKey: TourKey): void => {
   if (!isBrowser()) return;
   window.localStorage.setItem(`${COMPLETED_PREFIX}:${tourKey}`, "true");
+};
+
+/** Clears the "completed" flag so the tour can be re-watched on demand. */
+export const clearCompletedTour = (tourKey: TourKey): void => {
+  if (!isBrowser()) return;
+  window.localStorage.removeItem(`${COMPLETED_PREFIX}:${tourKey}`);
 };
 
 export const getActiveTourSession = (): ActiveTourSession | null => {

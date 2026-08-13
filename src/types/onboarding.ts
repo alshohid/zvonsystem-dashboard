@@ -2,7 +2,8 @@ import type { DriveStep } from "driver.js";
 
 /**
  * Logical name of a multi-page onboarding tour. Keys match the "completed"
- * storage flag so each tour only ever runs until the user finishes or skips it.
+ * storage flag so each tour only auto-runs until the user finishes or skips it;
+ * the "completed" flag can be cleared later to allow re-watching.
  */
 export type TourKey = "admin" | "super-admin";
 

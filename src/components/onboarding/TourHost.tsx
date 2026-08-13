@@ -12,6 +12,7 @@ import {
 } from "@/src/lib/onboarding/registry";
 import {
   clearActiveTourSession,
+  clearCompletedTour,
   clearPendingTour,
   getActiveTourSession,
   getPendingTour,
@@ -34,33 +35,19 @@ type TourHostProps = {
   role: DashboardRole;
 };
 
-/**
- * Mounts inside `RoleDashboardShell`, which lives in the `(admin)` /
- * `(super-admin)` route group layouts. Because Next.js keeps the layout (and
- * therefore this component) mounted while you navigate between pages, it can
- * run one segment per route and hand off to the next page — a true multi-page
- * tour.
- */
+
 export default function TourHost({ role }: TourHostProps) {
   const router = useRouter();
   const pathname = usePathname() ?? "";
-
   const driverRef = useRef<Driver | null>(null);
-  /** True while we are destroying the driver to navigate to another page. */
   const navigatingRef = useRef(false);
-
-  // A state token that forces the effect to re-run on demand (e.g. the
-  // "Resume tour" button when you're already on the start route).
-  const [refreshToken, setRefreshToken] = useState(0);
-  // Tracks whether a driver is on screen — used to hide the Resume button.
+  const [refreshToken, setRefreshToken] = useState(0)
   const [isRunning, setIsRunning] = useState(false);
 
   const tourKey = ROLE_TO_TOUR[role];
 
   const stopDriver = useCallback(() => {
     if (!driverRef.current) return;
-    // Suppress the completion callback: tearing down because the shell is
-    // unmounting (e.g. logout) should not mark the tour as "completed".
     navigatingRef.current = true;
     driverRef.current.destroy();
     navigatingRef.current = false;
@@ -69,8 +56,6 @@ export default function TourHost({ role }: TourHostProps) {
 
   useEffect(() => {
     if (!tourKey) return;
-
-    // Already finished (or explicitly skipped) — never bother this user again.
     if (hasCompletedTour(tourKey)) {
       clearActiveTourSession();
       clearPendingTour();
@@ -81,13 +66,8 @@ export default function TourHost({ role }: TourHostProps) {
 
     if (!definition) return;
 
-    // A driver is already on screen; don't double-start on re-renders.
     if (driverRef.current?.isActive()) return;
 
-    // Decide whether this route should start (or resume) the tour.
-    // The tour auto-shows on its own start route for anyone who hasn't
-    // finished it yet, on a fresh login (pending flag), or when a multi-page
-    // session is mid-flight.
     const pending = getPendingTour();
     const session = getActiveTourSession();
     const sessionNextIndex =
@@ -100,9 +80,6 @@ export default function TourHost({ role }: TourHostProps) {
 
     if (!shouldStart) return;
 
-    // On the start route (fresh login or visiting again) always begin at the
-    // segment that belongs to the current page; otherwise continue a multi-page
-    // tour exactly where it left off.
     const segmentIndex =
       resumeFromSession && !isOnStartRoute
         ? sessionNextIndex
@@ -111,13 +88,11 @@ export default function TourHost({ role }: TourHostProps) {
     const segment = definition.segments[segmentIndex];
 
     if (!segment) {
-      // Current page is not part of the tour — drop stale flags and wait.
       clearActiveTourSession();
       clearPendingTour();
       return;
     }
 
-    // Only run a segment on its own route (wait for navigation first).
     if (pathname !== segment.route && !pathname.startsWith(`${segment.route}/`)) {
       return;
     }
@@ -129,8 +104,6 @@ export default function TourHost({ role }: TourHostProps) {
         const nextSegmentIndex = resolveSegmentIndexForPath(definition, nextRoute);
 
         if (nextSegmentIndex < 0) {
-          // The "next" target isn't part of this tour — finish the tour and
-          // still take the user to the requested page.
           navigatingRef.current = true;
           driverObj.destroy();
           navigatingRef.current = false;
@@ -148,7 +121,6 @@ export default function TourHost({ role }: TourHostProps) {
           startedAt: Date.now(),
         });
 
-        // Destroy before navigating; guard so completion isn't double-counted.
         navigatingRef.current = true;
         driverObj.destroy();
         navigatingRef.current = false;
@@ -161,8 +133,6 @@ export default function TourHost({ role }: TourHostProps) {
         driverRef.current = null;
         setIsRunning(false);
 
-        // We destroyed this driver purely to jump to the next page — the tour
-        // is still alive, so don't mark it completed here.
         if (navigatingRef.current) return;
 
         markTourCompleted(tourKey);
@@ -173,7 +143,7 @@ export default function TourHost({ role }: TourHostProps) {
     driverRef.current = driverObj;
     driverObj.drive();
 
-    // The pending flag is consumed the moment the tour actually starts.
+
     clearPendingTour();
   }, [pathname, refreshToken, router, tourKey]);
 
@@ -191,16 +161,52 @@ export default function TourHost({ role }: TourHostProps) {
   }, []);
 
   const handleResume = useCallback(() => {
-    if (!tourKey || hasCompletedTour(tourKey)) return;
+    if (!tourKey) return;
 
-    // Ensure the effect's start condition holds on this route, then kick it.
+    // Clear any previous "completed" flag so the tour can be re-watched.
+    clearCompletedTour(tourKey);
+
+    const definition = getTourDefinition(tourKey);
+    if (!definition) return;
+
+    const session = getActiveTourSession();
+
+    // Can we resume from a valid, in-progress session?
+    if (
+      session &&
+      session.tourKey === tourKey &&
+      session.nextSegmentIndex >= 0 &&
+      session.nextSegmentIndex < definition.segments.length
+    ) {
+      // Resume from the saved segment — navigate there if we're not already.
+      const segment = definition.segments[session.nextSegmentIndex];
+      if (segment && pathname !== segment.route) {
+        router.replace(segment.route);
+        return;
+      }
+    } else {
+      // No valid session — start fresh from the beginning.
+      clearActiveTourSession();
+      saveActiveTourSession({
+        tourKey,
+        nextSegmentIndex: 0,
+        startedAt: Date.now(),
+      });
+      if (pathname !== definition.startRoute) {
+        router.replace(definition.startRoute);
+        return;
+      }
+    }
+
+    // Already on the correct route — force the effect to re-run even
+    // when the pathname hasn't changed.
     setPendingTour(tourKey);
     window.dispatchEvent(new CustomEvent("zvn:tour-trigger"));
-  }, [tourKey]);
+  }, [tourKey, router, pathname]);
 
   if (!tourKey) return null;
 
-  const showResume = !hasCompletedTour(tourKey) && !isRunning;
+  const showResume = !isRunning;
 
   return (
     <>
@@ -208,10 +214,10 @@ export default function TourHost({ role }: TourHostProps) {
         <button
           type="button"
           onClick={handleResume}
-          className="fixed bottom-5 right-5 z-[900] inline-flex items-center gap-2 rounded-full bg-[#2E3A83] px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition hover:bg-[#24306C]"
+          className="fixed items-center bottom-0 right-5 z-[900] inline-flex items-center gap-2 rounded-full bg-[#3d415d] px-[.67rem] py-[.4rem] text-sm font-semibold text-white shadow-lg transition hover:bg-[#535875]"
           aria-label="Resume onboarding tour"
         >
-          <span aria-hidden>🚀</span> Resume tour
+          <span aria-hidden className="text-sm w-3 h-3 ">🚀</span> Resume tour
         </button>
       )}
     </>

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "node init && next dev",
+    "build": "node init && next build",
+    "start": "node init && next start",
     "lint": "eslint"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "jspdf": "^4.2.1",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
+    "nextjs-toploader": "^3.9.17",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-chartjs-2": "^5.3.1",

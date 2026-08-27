@@ -2,18 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { CalendarDays } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/src/sharedComponents/shared/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/sharedComponents/shared/ui/select';
+
+
 
 type ExpiryDatePickerProps = {
   /** The selected expiry as `MM/YY` (e.g. `"12/29"`). */
@@ -81,9 +73,8 @@ export default function ExpiryDatePicker({
 
   const hasValue = Boolean(valueMonth && valueYear);
 
-  const fieldClass = `flex w-full cursor-pointer items-center justify-between gap-2 text-[13px] outline-none transition focus:border-[#8FA17E] focus:ring-2 focus:ring-[#8FA17E]/15 ${
-    hasValue ? 'text-[#161721]' : 'text-[#A1A1AA]'
-  } ${inputClassName ?? DEFAULT_FIELD_CLASS}`;
+  const fieldClass = `flex w-full cursor-pointer items-center justify-between gap-2 text-[13px] outline-none transition focus:border-[#8FA17E] focus:ring-2 focus:ring-[#8FA17E]/15 ${hasValue ? 'text-[#161721]' : 'text-[#A1A1AA]'
+    } ${inputClassName ?? DEFAULT_FIELD_CLASS}`;
 
   return (
     <div className="flex w-full flex-col gap-1.5">
@@ -96,58 +87,58 @@ export default function ExpiryDatePicker({
           <CalendarDays size={16} className="shrink-0 text-[#98A2B3]" />
         </PopoverTrigger>
 
-      <PopoverContent align="start" sideOffset={8} className="w-[19rem] p-4">
-        <p className="mb-3 text-[13px] font-semibold text-[#101828]">
-          Expiry Date
-        </p>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1">
-            <span className="text-[12px] font-medium text-[#667085]">Month</span>
-            <Select value={valueMonth || undefined} onValueChange={handleMonth}>
-              <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
-                <SelectValue placeholder="Month" />
-              </SelectTrigger>
-              <SelectContent
-                position="popper"
-                className="max-h-56 w-[var(--radix-select-trigger-width)]"
-              >
-                {MONTH_OPTIONS.map(option => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="cursor-pointer text-[13px]"
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <PopoverContent align="start" sideOffset={8} className="w-[19rem] p-4">
+          <p className="mb-3 text-[13px] font-semibold text-[#101828]">
+            Expiry Date
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-1">
+              <span className="text-[12px] font-medium text-[#667085]">Month</span>
+              <Select value={valueMonth || undefined} onValueChange={handleMonth}>
+                <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
+                  <SelectValue placeholder="Month" />
+                </SelectTrigger>
+                <SelectContent
+                  position="popper"
+                  className="max-h-56 w-[var(--radix-select-trigger-width)]"
+                >
+                  {MONTH_OPTIONS.map(option => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="cursor-pointer text-[13px]"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="flex flex-col gap-1">
-            <span className="text-[12px] font-medium text-[#667085]">Year</span>
-            <Select value={valueYear || undefined} onValueChange={handleYear}>
-              <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent
-                position="popper"
-                className="max-h-56 w-[var(--radix-select-trigger-width)]"
-              >
-                {yearOptions.map(option => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="cursor-pointer text-[13px]"
-                  >
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex flex-col gap-1">
+              <span className="text-[12px] font-medium text-[#667085]">Year</span>
+              <Select value={valueYear || undefined} onValueChange={handleYear}>
+                <SelectTrigger className={SELECT_TRIGGER_CLASSNAME}>
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent
+                  position="popper"
+                  className="max-h-56 w-[var(--radix-select-trigger-width)]"
+                >
+                  {yearOptions.map(option => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      className="cursor-pointer text-[13px]"
+                    >
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
-      </PopoverContent>
+        </PopoverContent>
       </Popover>
     </div>
   );

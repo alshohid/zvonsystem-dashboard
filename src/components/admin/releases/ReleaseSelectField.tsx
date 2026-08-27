@@ -1,14 +1,15 @@
 'use client';
 
+
+import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
+import type { SelectOption } from './releaseFormOptions';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import FormFieldInput from '@/src/components/ui/input/FormFieldInput';
-import type { SelectOption } from './releaseFormOptions';
+} from '@/src/sharedComponents/shared/ui/select';
 
 type ReleaseSelectFieldProps = {
   label?: string;

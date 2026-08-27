@@ -112,11 +112,13 @@ export default function NotificationsSettingsTab() {
               <p className="mt-1 text-xs leading-5 text-[#98A2B3]">{item.description}</p>
             </div>
 
-            <Switch
-              disabled={isUpdating}
-              checked={prefs[item.key]}
-              onCheckedChange={value => handleChange(item.key, value)}
-            />
+            <div>
+              <Switch
+                disabled={isUpdating}
+                checked={prefs[item.key]}
+                onCheckedChange={value => handleChange(item.key, value)}
+              />
+            </div>
           </div>
         ))}
       </div>

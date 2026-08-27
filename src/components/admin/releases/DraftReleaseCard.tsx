@@ -38,7 +38,7 @@ export default function DraftReleaseCard({
   const coverUrl = resolveMediaUrl(release.cover_url?.path);
 
   return (
-    <div className="flex flex-col gap-4 rounded-2xl border border-[#E9EDF5] bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-5">
+    <div className="flex flex-col gap-4 rounded-2xl border border-[#E9EDF5] bg-white p-2 md:p-4 shadow-[0_1px_2px_rgba(16,24,40,0.04)] sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-5">
       <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F2F4F7]">
           {coverUrl ? (
@@ -82,7 +82,7 @@ export default function DraftReleaseCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end sm:justify-center sm:gap-2">
+      <div className="flex items-center justify-between gap-4 sm:flex-col sm:items-end sm:justify-center sm:gap-3">
         <div className="flex items-center gap-2 sm:w-32 sm:justify-end">
           <span className="text-xs font-medium text-[#667085]">{progress}%</span>
           <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[#EAECF0]">
@@ -93,7 +93,7 @@ export default function DraftReleaseCard({
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-wrap shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={() => onDiscard(release)}
@@ -106,7 +106,7 @@ export default function DraftReleaseCard({
           <button
             type="button"
             onClick={() => onContinue(release)}
-            className="rounded-xl bg-primary px-4 py-2 text-sm font-medium transition-colors hover:bg-[#16A34A]"
+            className="rounded-xl bg-primary px-4 py-2 text-xs md:text-sm font-medium transition-colors hover:bg-[#16A34A]"
           >
             Continue
           </button>

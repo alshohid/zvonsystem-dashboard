@@ -14,17 +14,17 @@ export default function NotificationsPageHeader({
   isMarkingAllRead,
 }: NotificationsPageHeaderProps) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <p className="text-xs font-medium uppercase tracking-[0.08em] text-[#98A2B3]">
           Inbox
         </p>
-        <h1 className="mt-1 text-2xl font-semibold text-[#101828]">
+        <h1 className="mt-1 text-xl font-semibold text-[#101828] sm:text-2xl">
           Notifications
         </h1>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         {unreadCount > 0 && (
           <span className="rounded-full bg-[#ECFDF3] px-3 py-1 text-xs font-semibold text-[#16A34A]">
             {unreadCount} unread

@@ -31,7 +31,7 @@ function NotificationItem({
 
   return (
     <div
-      className={`flex items-start gap-4 border-b border-[#F1F3F9] px-5 py-5 last:border-b-0 sm:px-6 ${isUnread ? "" : "opacity-75"
+      className={`flex items-start gap-2.5 border-b border-[#F1F3F9] px-4 py-4 last:border-b-0 sm:gap-4 sm:px-6 sm:py-5 ${isUnread ? "" : "opacity-75"
         }`}
     >
       <span
@@ -47,23 +47,26 @@ function NotificationItem({
       </div>
 
       <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
+          <p
+            className={`min-w-0 flex-1 break-words text-sm sm:flex-none ${isUnread ? "font-semibold text-[#101828]" : "font-medium text-[#98A2B3]"
+              }`}
+          >
+            {notification.title}
+          </p>
+          <span className="shrink-0 whitespace-nowrap text-xs text-[#98A2B3]">
+            {new Date(notification.createdAt).toLocaleDateString()}
+          </span>
+        </div>
         <p
-          className={`text-sm ${isUnread ? "font-semibold text-[#101828]" : "font-medium text-[#98A2B3]"
+          className={`mt-1 break-words text-sm ${isUnread ? "text-[#667085]" : "text-[#C0C5D0]"
             }`}
-        >
-          {notification.title}
-        </p>
-        <p
-          className={`mt-1 text-sm ${isUnread ? "text-[#667085]" : "text-[#C0C5D0]"}`}
         >
           {notification.message}
         </p>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
-        <span className="whitespace-nowrap text-xs text-[#98A2B3]">
-          {new Date(notification.createdAt).toLocaleDateString()}
-        </span>
+      <div className="flex shrink-0 items-center gap-1 sm:gap-2">
         {isUnread && onMarkRead && (
           <button
             type="button"
@@ -95,7 +98,7 @@ function GroupHeader({ type }: { type: NotificationType }) {
   const config = getNotificationTypeConfig(type);
 
   return (
-    <div className="flex items-center gap-3 border-b border-[#F1F3F9] px-5 py-3 sm:px-6">
+    <div className="flex items-center gap-3 border-b border-[#F1F3F9] px-4 py-3 sm:px-6">
       <span
         className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-bold"
         style={{ backgroundColor: config.iconBg, color: config.iconColor }}
@@ -164,7 +167,7 @@ export default function NotificationsList({
       )}
 
       {hasMore && onLoadMore && (
-        <div className="border-t border-[#F1F3F9] px-5 py-4 text-center sm:px-6">
+        <div className="border-t border-[#F1F3F9] px-4 py-4 text-center sm:px-6">
           <button
             type="button"
             onClick={onLoadMore}

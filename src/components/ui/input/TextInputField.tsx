@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Input } from "@/src/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn } from "@/src/lib/utils";
 import FormFieldInput from "./FormFieldInput";
 
 type TextInputFieldProps = {

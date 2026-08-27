@@ -20,7 +20,8 @@ import {
   getTrackVersionLabel,
 } from './releaseFormOptions';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/src/sharedComponents/shared/ui/button';
+
 
 const ALL_RELEASES_PAGE_SIZE = 12;
 
@@ -30,10 +31,10 @@ const formatDate = (value: string | null) => {
   return Number.isNaN(date.getTime())
     ? '—'
     : date.toLocaleDateString('en-US', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-      });
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
 };
 
 const formatMonthYear = (value: string | null) => {
@@ -376,10 +377,10 @@ function TracksCard({ tracks }: { tracks: ApiTrack[] }) {
         </p>
       ) : (
         <ul>
-            {sortedTracks.map((track, index) => {
+          {sortedTracks.map((track, index) => {
             const audioUrl = resolveMediaUrl(track.audioUrl?.path);
-              const isPlaying = playingTrackId === track.id;
-      
+            const isPlaying = playingTrackId === track.id;
+
             return (
               <li
                 key={track.id}

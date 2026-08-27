@@ -37,7 +37,7 @@ export default function ReleaseCard({ release, href }: ReleaseCardProps) {
         </div>
       )}
 
-      <div className="space-y-2 p-4">
+      <div className="space-y-2 p-2 md:p-4">
         <h3 className="truncate text-[15px] font-semibold text-[#101828] group-hover:text-[#16A34A]">
           {release.name || 'Untitled release'}
         </h3>
@@ -47,9 +47,9 @@ export default function ReleaseCard({ release, href }: ReleaseCardProps) {
           {mainArtist ? ` · ${mainArtist}` : ''}
         </p>
 
-        <div className="flex items-center justify-between pt-1">
+        <div className="flex flex-wrap gap-2 items-center justify-between pt-1">
           <ReleaseStatusBadge status={release.status} />
-          <span className="text-xs text-[#98A2B3]">
+          <span className="text-[0.67rem] md:text-xs text-[#98A2B3]">
             {release.genre ? release.genre.replace(/_/g, ' ') : '—'}
           </span>
         </div>

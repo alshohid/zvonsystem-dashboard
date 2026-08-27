@@ -40,7 +40,7 @@ export default function ReleaseStatusBadge({
   return (
     <span
       className={[
-        'inline-block rounded-md px-2 py-0.5 text-xs font-medium',
+        'inline-block rounded-md px-2 py-0.5 text-[0.67rem] md:text-xs font-medium truncate',
         meta.className,
       ].join(' ')}
     >

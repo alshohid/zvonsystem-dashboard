@@ -1,7 +1,7 @@
 "use client";
 
 import FormFieldInput from "./FormFieldInput";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/sharedComponents/shared/ui/select";
 
 type Option = { value: string; label: string };
 

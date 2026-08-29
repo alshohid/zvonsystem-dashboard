@@ -2,7 +2,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // output: "standalone",
 
   images: {
     remotePatterns: [
@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
 
               // JavaScript
               // unsafe-inline/eval kept for Next.js/library compatibility
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-inline'",
 
               // Tailwind / Next.js / component inline styles
               "style-src 'self' 'unsafe-inline'",

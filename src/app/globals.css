@@ -200,11 +200,12 @@
   --sidebar-border: #e7ebf7;
   --sidebar-ring: #4cfc0f;
   --font-domine: "Domine", serif;
-  
+
 }
 
 
 @layer base {
+
   *,
   ::after,
   ::before,
@@ -212,10 +213,12 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
   }
+
   body {
     @apply relative z-1 font-normal font-outfit;
     background: #f5f7fb;
@@ -229,21 +232,23 @@
   font-weight: normal;
   font-style: normal;
 }
- 
+
 
 body {
   background: #f5f7fb;
   color: #101828;
   font-family: "Poppins", sans-serif;
 }
+
 .font-domine {
   font-family: var(--font-domine);
 }
 
-.bg-primary{
+.bg-primary {
   background-color: var(--primary);
 }
-.bg-secondary{
+
+.bg-secondary {
   background-color: var(--secondary);
 }
 
@@ -300,12 +305,16 @@ body {
 }
 
 @utility no-scrollbar {
+
   /* Chrome, Safari and Opera */
   &::-webkit-scrollbar {
     display: none;
   }
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 @utility custom-scrollbar {
@@ -331,26 +340,27 @@ body {
   .sidebar-dark-bg {
     background-color: #1A1D2B;
   }
-  
+
   .sidebar-card-bg {
     background-color: #111B23;
   }
-  
+
   .sidebar-active-bg {
     background-color: #6B38FF;
   }
-  
+
   .sidebar-text-primary {
     color: #FFFFFF;
   }
-  
+
   .sidebar-text-secondary {
     color: #98A2B3;
   }
-  
+
   .sidebar-border {
     border-color: #2C2F3F;
   }
+
   .loader {
     width: 20px;
     height: 20px;
@@ -360,11 +370,12 @@ body {
     position: absolute;
     animation: rotation 2s linear infinite;
   }
-  
+
   @keyframes rotation {
     0% {
       transform: rotate(0deg);
     }
+
     100% {
       transform: rotate(360deg);
     }
@@ -550,4 +561,16 @@ body {
     padding: 6px 12px;
     font-size: 12.5px;
   }
+}
+
+/* Completely removes the focus ring for everyone */
+.your-element-class:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.remove_outline:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+  /* Some browsers use box-shadow fallback */
 }

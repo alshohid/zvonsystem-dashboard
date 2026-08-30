@@ -27,10 +27,10 @@ export default function PlatformTrendChart({ data }: PlatformTrendChartProps) {
         </p>
       </div>
 
-      <div className="mt-6 h-[280px]">
+      <div className="mt-6 h-[280px] ">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 12, right: 8, left: -20, bottom: 0 }}>
-            <defs>
+          <AreaChart className="remove_outline" accessibilityLayer={false} data={data} margin={{ top: 12, right: 8, left: -20, bottom: 0 }}>
+            <defs >
               <linearGradient id="platformTrendFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={DASHBOARD_COLORS.streamAccent} stopOpacity={0.32} />
                 <stop offset="95%" stopColor={DASHBOARD_COLORS.streamAccent} stopOpacity={0.02} />
@@ -64,6 +64,7 @@ export default function PlatformTrendChart({ data }: PlatformTrendChartProps) {
               stroke={DASHBOARD_COLORS.streamAccent}
               strokeWidth={3}
               fill="url(#platformTrendFill)"
+
             />
           </AreaChart>
         </ResponsiveContainer>

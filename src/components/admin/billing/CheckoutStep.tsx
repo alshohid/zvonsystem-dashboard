@@ -67,22 +67,22 @@ export default function CheckoutStep({
         </div>
       )}
 
-      {!plan.isFree && requiresCardEntry && (
-        <>
-          {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {savedCards.map(card => (
-              <SavedCardOption
-                key={card.id}
-                card={card}
-                selected={card.id === selectedCardId}
-                onSelect={onSelectCard}
-              />
-            ))}
-          </div> */}
+      {/* {!plan.isFree && requiresCardEntry && ( */}
+      <>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {savedCards.map(card => (
+            <SavedCardOption
+              key={card.id}
+              card={card}
+              selected={card.id === selectedCardId}
+              onSelect={onSelectCard}
+            />
+          ))}
+        </div>
 
-          <CardEntryForm values={cardEntry} onChange={onCardEntryChange} />
-        </>
-      )}
+        <CardEntryForm values={cardEntry} onChange={onCardEntryChange} />
+      </>
+      {/* )} */}
 
       {error && (
         <p className="rounded-lg border border-[#FECDCA] bg-[#FEF3F2] px-3 py-2 text-[13px] text-[#B42318]">

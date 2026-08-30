@@ -116,6 +116,7 @@ export interface PlanStatsResponse {
   message: string;
   data: PlanStats;
 }
+export type paymentGateway = "CLOUDPAYMENTS" | "PAYPAL";
 
 /** Billing cycle sent to the payment endpoints. */
 export type BillingCycle = "MONTHLY" | "YEARLY" | "PER_RELEASE";
@@ -132,6 +133,7 @@ export interface CreateCheckoutSessionRequest {
   postalCode: string;
   country: string;
   billingCycle: BillingCycle;
+  paymentGateway: paymentGateway;
 }
 
 export interface CheckoutPlanInfo {

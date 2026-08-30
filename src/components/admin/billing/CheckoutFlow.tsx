@@ -9,7 +9,7 @@ import { getErrorMessage } from '@/src/lib/getErrorMessage';
 import ChoosePlanStep from './ChoosePlanStep';
 import CheckoutStep from './CheckoutStep';
 import DetailsStep from './DetailsStep';
-import { CHECKOUT_STEP_TABS, MOCK_SAVED_CARDS } from './mockBillingData';
+import { CHECKOUT_STEP_TABS, PAYMENT_GATEWAYS } from './mockBillingData';
 import {
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
@@ -20,6 +20,7 @@ import type {
   BillingPeriod,
   CardEntryValues,
   CheckoutStepKey,
+  PaymentGateway,
   Plan,
 } from './types';
 import OrderSummaryCard from './OrderSummaryCard';
@@ -53,8 +54,8 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
   const [step, setStep] = useTabsQueryState<CheckoutStepKey>('step', 'plan');
   const [details, setDetails] = useState<BillingDetailsFormValues>(EMPTY_DETAILS);
   const [cardEntry, setCardEntry] = useState<CardEntryValues>(EMPTY_CARD_ENTRY);
-  const [selectedCardId, setSelectedCardId] = useState<string | null>(
-    MOCK_SAVED_CARDS.find(card => card.isDefault)?.id ?? null,
+  const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>(
+    PAYMENT_GATEWAYS.find(gateway => gateway.isDefault)?.gateway ?? 'PAYPAL',
   );
   const [session, setSession] = useState<CheckoutSessionResponse['data'] | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
@@ -112,6 +113,7 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
         postalCode: details.postalCode,
         country: details.country,
         billingCycle,
+        paymentGateway: selectedGateway,
       }).unwrap();
 
       const result = res.data;
@@ -134,7 +136,7 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
     }
   };
 
-  /** Completes the payment with the card entered in the in-app form. */
+
   const handlePayNow = async () => {
     if (!session) return;
     setPaymentError(null);
@@ -210,9 +212,9 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
           <CheckoutStep
             plan={plan}
-            savedCards={MOCK_SAVED_CARDS}
-            selectedCardId={selectedCardId}
-            onSelectCard={setSelectedCardId}
+            gateways={PAYMENT_GATEWAYS}
+            selectedGateway={selectedGateway}
+            onSelectGateway={setSelectedGateway}
             cardEntry={cardEntry}
             onCardEntryChange={patch => setCardEntry(prev => ({ ...prev, ...patch }))}
             totalLabel={`$${plan.priceMonthly.toFixed(2)}`}

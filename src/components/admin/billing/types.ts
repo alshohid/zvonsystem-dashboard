@@ -1,3 +1,5 @@
+import type { paymentGateway } from '@/src/types/billingTypes';
+
 export type BillingPeriod = 'monthly' | 'annual';
 
 /**
@@ -43,15 +45,16 @@ export type Invoice = {
   isFree: boolean;
 };
 
-export type CardBrand = 'visa' | 'mastercard';
+/** Payment gateways supported by the subscription checkout API. */
+export type PaymentGateway = paymentGateway;
 
-export type SavedCard = {
+/** A selectable payment method shown at checkout. */
+export type PaymentGatewayOption = {
   id: string;
-  brand: CardBrand;
-  last4: string;
-  holder: string;
-  expiry: string;
-  isDefault: boolean;
+  gateway: PaymentGateway;
+  label: string;
+  description: string;
+  isDefault?: boolean;
 };
 
 export type CheckoutStepKey = 'plan' | 'details' | 'checkout';

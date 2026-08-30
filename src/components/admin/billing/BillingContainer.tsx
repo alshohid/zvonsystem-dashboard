@@ -87,10 +87,10 @@ export default function BillingContainer() {
   };
 
   const confirmCancelSubscription = async () => {
-    if (!subscription?.paypalSubscriptionId) return;
+    if (!subscription?.subscriptionId) return;
 
     try {
-      await cancelSubscription(subscription.paypalSubscriptionId).unwrap();
+      await cancelSubscription(subscription.subscriptionId).unwrap();
       setCancelModalOpen(false);
       toast.success('Your subscription has been cancelled.');
     } catch (err) {

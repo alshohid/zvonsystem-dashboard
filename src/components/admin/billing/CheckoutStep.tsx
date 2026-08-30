@@ -1,16 +1,21 @@
 'use client';
 
-import { ArrowRight, CreditCard, Loader2 } from 'lucide-react';
+import { ArrowRight, CreditCard, Loader2, WalletCards } from 'lucide-react';
 import CardEntryForm from './CardEntryForm';
-import SavedCardOption from './SavedCardOption';
+import PaymentMethodOption from './PaymentMethodOption';
 import type { CheckoutSessionResponse } from '@/src/types/billingTypes';
-import type { CardEntryValues, Plan, SavedCard } from './types';
+import type {
+  CardEntryValues,
+  PaymentGateway,
+  PaymentGatewayOption,
+  Plan,
+} from './types';
 
 type CheckoutStepProps = {
   plan: Plan;
-  savedCards: SavedCard[];
-  selectedCardId: string | null;
-  onSelectCard: (id: string) => void;
+  gateways: PaymentGatewayOption[];
+  selectedGateway: PaymentGateway;
+  onSelectGateway: (gateway: PaymentGateway) => void;
   cardEntry: CardEntryValues;
   onCardEntryChange: (patch: Partial<CardEntryValues>) => void;
   totalLabel: string;
@@ -27,9 +32,9 @@ type CheckoutStepProps = {
 
 export default function CheckoutStep({
   plan,
-  savedCards,
-  selectedCardId,
-  onSelectCard,
+  gateways,
+  selectedGateway,
+  onSelectGateway,
   cardEntry,
   onCardEntryChange,
   totalLabel,
@@ -41,6 +46,10 @@ export default function CheckoutStep({
   onPayNow,
 }: CheckoutStepProps) {
   const requiresCardEntry = session?.requiresCardEntry ?? false;
+  const isCloudPayments = selectedGateway === 'CLOUDPAYMENTS';
+  // CloudPayments always charges a card in-app; a returned PayPal session may
+  // also require card entry (existing repeat-customer flow).
+  const showCardForm = requiresCardEntry || isCloudPayments;
 
   return (
     <div className="space-y-6 rounded-2xl border border-[#E9EDF5] bg-white p-5 shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
@@ -56,33 +65,39 @@ export default function CheckoutStep({
       ) : (
         <div className="rounded-xl border border-[#EAECF0] bg-[#F9FAFB] p-4 text-sm text-[#667085]">
           <p className="flex items-center gap-2 font-medium text-[#101828]">
-            <CreditCard size={16} />
-            Secure payment via {requiresCardEntry ? 'card' : 'PayPal'}
+            {isCloudPayments ? <CreditCard size={16} /> : <WalletCards size={16} />}
+            Secure payment via {isCloudPayments ? 'CloudPayments' : 'PayPal'}
           </p>
           <p className="mt-1">
-            {requiresCardEntry
-              ? 'Enter your card details below to complete the payment.'
+            {isCloudPayments
+              ? 'Pay securely by card. Enter your card details below and place your order.'
               : 'You will be redirected to PayPal to approve your subscription.'}
           </p>
         </div>
       )}
 
-      {/* {!plan.isFree && requiresCardEntry && ( */}
-      <>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {savedCards.map(card => (
-            <SavedCardOption
-              key={card.id}
-              card={card}
-              selected={card.id === selectedCardId}
-              onSelect={onSelectCard}
-            />
-          ))}
+      {!plan.isFree && (
+        <div>
+          <p className="mb-2 text-[13px] font-medium text-[#344054]">Select payment method</p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {gateways.map(gateway => (
+              <PaymentMethodOption
+                key={gateway.id}
+                gateway={gateway}
+                selected={gateway.gateway === selectedGateway}
+                onSelect={onSelectGateway}
+              />
+            ))}
+          </div>
         </div>
+      )}
 
-        <CardEntryForm values={cardEntry} onChange={onCardEntryChange} />
-      </>
-      {/* )} */}
+      {/* {showCardForm && (
+        <div>
+          <p className="mb-2 text-[13px] font-medium text-[#344054]">Card details</p>
+          <CardEntryForm values={cardEntry} onChange={onCardEntryChange} />
+        </div>
+      )} */}
 
       {error && (
         <p className="rounded-lg border border-[#FECDCA] bg-[#FEF3F2] px-3 py-2 text-[13px] text-[#B42318]">

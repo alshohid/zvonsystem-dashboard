@@ -1,6 +1,6 @@
 import type { TabItem } from "@/src/components/common/TopTabs";
 import type { SelectOption } from "@/src/components/admin/releases/releaseFormOptions";
-import type { CheckoutStepKey, Invoice, Plan, SavedCard } from "./types";
+import type { CheckoutStepKey, Invoice, PaymentGatewayOption, Plan } from "./types";
 
 export const CHECKOUT_STEP_TABS: TabItem<CheckoutStepKey>[] = [
   { key: "plan", label: "Choose Plan" },
@@ -139,21 +139,19 @@ export const MOCK_INVOICES: Invoice[] = [
   },
 ];
 
-export const MOCK_SAVED_CARDS: SavedCard[] = [
+export const PAYMENT_GATEWAYS: PaymentGatewayOption[] = [
   {
-    id: "card-visa",
-    brand: "visa",
-    last4: "4532",
-    holder: "Sarah Johnson",
-    expiry: "08/27",
+    id: "gateway-paypal",
+    gateway: "PAYPAL",
+    label: "PayPal",
+    description: "Pay with your PayPal account.",
     isDefault: true,
   },
   {
-    id: "card-mastercard",
-    brand: "mastercard",
-    last4: "8901",
-    holder: "Sarah Johnson",
-    expiry: "08/27",
+    id: "gateway-cloudpayments",
+    gateway: "CLOUDPAYMENTS",
+    label: "CloudPayments",
+    description: "Pay securely with your card.",
     isDefault: false,
   },
 ];

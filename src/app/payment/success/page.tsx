@@ -9,12 +9,7 @@ const POLL_INTERVAL_MS = 1500;
 const MAX_POLLS = 8;
 const REDIRECT_DELAY_MS = 2500;
 
-/**
- * PayPal approval callback: `/payment/success?subscription_id=…&ba_token=…&token=…`
- *
- * Polls `GET /subscription/my-subscription` until the backend confirms the new
- * subscription, then shows a success state and redirects to the dashboard.
- */
+
 function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();

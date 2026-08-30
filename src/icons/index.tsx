@@ -165,8 +165,12 @@ import ThumbnailAudioIcon from "./thumbnail-audio.png";
 import VisaIcon from "./visa.svg";
 import MastercardIcon from "./master_card.svg";
 import VisaActualIcon from "./visa_icon.svg"
+import PayPalIcon from "./paypal.svg";
+import CloudPaymentsIcon from "./cloudpayments.svg";
 
 export {
+  PayPalIcon,
+  CloudPaymentsIcon,
   VisaActualIcon,
   VisaIcon,
   MastercardIcon,

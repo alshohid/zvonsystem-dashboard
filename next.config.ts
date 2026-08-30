@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "localhost",
       },
+      {
+        protocol: "https",
+        hostname: "https://unlined-glacial-luridness.ngrok-free.dev",
+      },
+
     ],
   },
 

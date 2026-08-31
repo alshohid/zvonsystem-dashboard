@@ -46,6 +46,26 @@ The **ZvonSystems Dashboard** is the central web console for the ZvonSystems dig
 The frontend is fully integrated with the ZvonSystems REST API (`https://api.discovod.com/api`) through a typed RTK Query layer, consumes real-time events over Socket.IO, and ships with hardened security headers, Docker support, and an isolated **Design Mode** for rapid UI prototyping against mocked data.
 
 ---
+## 📸 Screenshots
+
+> 👉 Add your screenshots here — drop images into `public/screenshots/` and reference them below (or share them with the maintainer to embed).
+
+| Login | Admin Dashboard |
+## 📸 Screenshots
+
+### 🔐 Authentication & Dashboard
+
+<p align="center">
+  <img src="./public/screenshots/login.png" width="48%" />
+  <img src="./public/screenshots/admin-dashboard.png" width="48%" />
+</p>
+
+### 🎵 Release Management & Billing
+
+<p align="center">
+  <img src="./public/screenshots/release-creation.png" width="48%" />
+  <img src="./public/screenshots/billing.png" width="48%" />
+</p>
 
 ## ✨ Key Features
 
@@ -326,27 +346,6 @@ The app is a standard Next.js 16 application and works with any Node or serverle
 4. **Media** — uploads are relayed through the same-origin `/api/media` proxy automatically, so no extra CDN setup is required.
 
 ---
-
-## 📸 Screenshots
-
-> 👉 Add your screenshots here — drop images into `public/screenshots/` and reference them below (or share them with the maintainer to embed).
-
-| Login | Admin Dashboard |
-## 📸 Screenshots
-
-### 🔐 Authentication & Dashboard
-
-<p align="center">
-  <img src="./public/screenshots/login.png" width="48%" />
-  <img src="./public/screenshots/admin-dashboard.png" width="48%" />
-</p>
-
-### 🎵 Release Management & Billing
-
-<p align="center">
-  <img src="./public/screenshots/release-creation.png" width="48%" />
-  <img src="./public/screenshots/billing.png" width="48%" />
-</p>
 
 ## 🤝 Contributing
 

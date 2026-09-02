@@ -2,9 +2,9 @@
 
 ![ZvonSystems Logo](./public/website_logo.png)
 
-# ZvonSystems Dashboard
+# Iscovod Dashboard
 
-**A production-grade, role-based management dashboard for the ZvonSystems digital music distribution platform.**
+**A production-grade, role-based management dashboard for the Iscovod digital music distribution platform.**
 
 Built with Next.js 16 (App Router), Redux Toolkit, and Tailwind CSS — powering artist release management, subscription billing, real-time notifications, and platform administration in one cohesive web application.
 
@@ -36,14 +36,14 @@ Built with Next.js 16 (App Router), Redux Toolkit, and Tailwind CSS — powering
 
 ## Overview
 
-The **ZvonSystems Dashboard** is the central web console for the ZvonSystems digital distribution service. It serves two distinct audiences behind a single, secure application:
+The **Iscovod Dashboard** is the central web console for the Iscovod digital distribution service. It serves two distinct audiences behind a single, secure application:
 
 | Audience | Workspace | Description |
 | --- | --- | --- |
 | **Artists / Labels** (`CLIENT`) | `/admin/dashboard` | Create, moderate, and distribute music releases; manage billing, subscription plans, notifications, analytics, and account settings. |
 | **Platform Administrators** (`ADMIN`) | `/super-admin/dashboard` | Oversee users, revenue analytics, pricing/payment plans, and platform-level releases. |
 
-The frontend is fully integrated with the ZvonSystems REST API (`https://api.discovod.com/api`) through a typed RTK Query layer, consumes real-time events over Socket.IO, and ships with hardened security headers, Docker support, and an isolated **Design Mode** for rapid UI prototyping against mocked data.
+The frontend is fully integrated with the ZvonSystems REST API (`https://api.example.com/api`) through a typed RTK Query layer, consumes real-time events over Socket.IO, and ships with hardened security headers, Docker support, and an isolated **Design Mode** for rapid UI prototyping against mocked data.
 
 ---
 ## 📸 Screenshots

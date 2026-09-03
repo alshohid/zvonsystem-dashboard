@@ -205,7 +205,7 @@ export default function ReleaseInfoStep({
         </h3>
 
         <TextInputField
-          label="Upc"
+          label="UPC"
           placeholder="Optional"
           value={form.upc}
           onChange={e => onChange({ upc: e.target.value })}

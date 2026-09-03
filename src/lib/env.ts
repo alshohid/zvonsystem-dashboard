@@ -14,12 +14,12 @@ export const env = {
   apiBaseUrl: trimTrailingSlash(
     process.env.NEXT_PUBLIC_API_BASE_URL ?? defaultApiBaseUrl,
   ),
+  jwtSecret: process.env.NEXT_PUBLIC_SECRET_KEY,
   // Uploads come back as storage paths, so a public base is needed to show them.
   mediaBaseUrl: trimTrailingSlash(process.env.NEXT_PUBLIC_MEDIA_BASE_URL ?? ""),
   designMode: toBoolean(process.env.NEXT_PUBLIC_DESIGN_MODE, false),
   socketUrl: process.env.NEXT_PUBLIC_SOCKET_URL,
 };
-
 
 /** Keeps only the path part of a value, so `http://host:5050/a/b` becomes `/a/b`. */
 const toPathname = (value: string) => {
@@ -29,14 +29,7 @@ const toPathname = (value: string) => {
 
 const trimSlashes = (value: string) => value.replace(/^\/+|\/+$/g, "");
 
-/**
- * Turns an uploaded file's `path` or `full_url` into a same-origin preview URL.
- *
- * Absolute ngrok URLs cannot be used directly in `<img>` / `next/image` — the
- * free tunnel answers with an interstitial HTML page unless a special header is
- * set, which the browser cannot send. Everything is therefore relayed through
- * `/api/media`.
- */
+
 export const resolveMediaUrl = (pathOrUrl?: string | null) => {
   const raw = pathOrUrl?.trim();
   if (!raw || !env.mediaBaseUrl) return null;
@@ -44,7 +37,7 @@ export const resolveMediaUrl = (pathOrUrl?: string | null) => {
   const basePath = trimSlashes(toPathname(env.mediaBaseUrl));
   let storagePath = trimSlashes(toPathname(raw));
 
-  // Tolerate a base that already carries the storage prefix the path repeats.
+
   if (
     basePath &&
     (storagePath === basePath || storagePath.startsWith(`${basePath}/`))
@@ -57,10 +50,6 @@ export const resolveMediaUrl = (pathOrUrl?: string | null) => {
   return `/api/media?path=${encodeURIComponent(storagePath)}`;
 };
 
-/**
- * Profile/account avatars arrive as absolute URLs, storage paths, or (buggily)
- * a storage host prefixed onto another absolute URL such as ui-avatars.
- */
 export const resolveAvatarUrl = (avatar?: string | null) => {
   const raw = avatar?.trim();
   if (!raw) return null;

@@ -6,6 +6,7 @@ import {
   getDefaultRouteForRole,
   normalizeAuthRole,
 } from "@/src/lib/auth/config";
+import { verifyAccessToken } from "./lib/auth/verify-token";
 
 const buildLoginRedirect = (request: NextRequest) => {
   const loginUrl = new URL(authRoutes.login, request.url);
@@ -17,72 +18,116 @@ const buildLoginRedirect = (request: NextRequest) => {
 
   return loginUrl;
 };
-
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (env.designMode) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get(authCookieNames.token)?.value;
-  const role = normalizeAuthRole(
-    request.cookies.get(authCookieNames.role)?.value,
-  );
-
-  const isAuthenticated = Boolean(token && role);
-  const defaultAuthenticatedRoute = getDefaultRouteForRole(role);
+  const token = request.cookies.get(
+    authCookieNames.token,
+  )?.value;
 
   const isAuthPage =
     pathname === authRoutes.login ||
     pathname === authRoutes.forgotPassword ||
     pathname === authRoutes.signUp;
 
-  const isAdminRoute = pathname.startsWith(authRoutes.adminDashboard);
-  const isSuperAdminRoute = pathname.startsWith(authRoutes.superAdminDashboard);
+  const isAdminRoute = pathname.startsWith(
+    authRoutes.adminDashboard,
+  );
 
-  if (pathname === authRoutes.home) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(new URL(authRoutes.login, request.url));
+  const isSuperAdminRoute = pathname.startsWith(
+    authRoutes.superAdminDashboard,
+  );
+
+  // --------------------------------------------------
+  // Public auth pages
+  // --------------------------------------------------
+
+  if (isAuthPage) {
+    if (!token) {
+      return NextResponse.next();
     }
 
+    const payload = await verifyAccessToken(token);
+
+    if (!payload) {
+      return NextResponse.next();
+    }
+
+    const role = normalizeAuthRole(payload.type);
+
+    const defaultRoute = getDefaultRouteForRole(role);
+
     return NextResponse.redirect(
-      new URL(defaultAuthenticatedRoute, request.url),
+      new URL(defaultRoute, request.url),
     );
   }
 
-  if (isAuthPage) {
-    if (isAuthenticated) {
+  // --------------------------------------------------
+  // Home
+  // --------------------------------------------------
+
+  if (pathname === authRoutes.home) {
+    if (!token) {
       return NextResponse.redirect(
-        new URL(defaultAuthenticatedRoute, request.url),
+        new URL(authRoutes.login, request.url),
       );
     }
 
-    return NextResponse.next();
-  }
+    const payload = await verifyAccessToken(token);
 
-  if (isAdminRoute) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(buildLoginRedirect(request));
-    }
-
-    if (role !== "CLIENT") {
+    if (!payload) {
       return NextResponse.redirect(
-        new URL(defaultAuthenticatedRoute, request.url),
+        new URL(authRoutes.login, request.url),
       );
     }
 
-    return NextResponse.next();
+    const role = normalizeAuthRole(payload.type);
+
+    const defaultRoute = getDefaultRouteForRole(role);
+
+    return NextResponse.redirect(
+      new URL(defaultRoute, request.url),
+    );
   }
 
-  if (isSuperAdminRoute) {
-    if (!isAuthenticated) {
-      return NextResponse.redirect(buildLoginRedirect(request));
+  // --------------------------------------------------
+  // Protected routes
+  // --------------------------------------------------
+
+  if (isAdminRoute || isSuperAdminRoute) {
+    if (!token) {
+      return NextResponse.redirect(
+        buildLoginRedirect(request),
+      );
     }
 
-    if (role !== "ADMIN") {
+    const payload = await verifyAccessToken(token);
+
+    if (!payload) {
       return NextResponse.redirect(
-        new URL(defaultAuthenticatedRoute, request.url),
+        buildLoginRedirect(request),
+      );
+    }
+
+    const role = normalizeAuthRole(payload.type);
+
+    const defaultRoute = getDefaultRouteForRole(role);
+
+    // Admin Dashboard
+    if (isAdminRoute && role !== "CLIENT") {
+      return NextResponse.redirect(
+        new URL(defaultRoute, request.url),
+      );
+    }
+
+    // Super Admin Dashboard
+    if (isSuperAdminRoute && role !== "ADMIN") {
+      return NextResponse.redirect(
+        new URL(defaultRoute, request.url),
       );
     }
 
@@ -91,6 +136,79 @@ export function proxy(request: NextRequest) {
 
   return NextResponse.next();
 }
+// export function proxy(request: NextRequest) {
+//   const { pathname } = request.nextUrl;
+
+//   if (env.designMode) {
+//     return NextResponse.next();
+//   }
+
+//   const token = request.cookies.get(authCookieNames.token)?.value;
+//   const role = normalizeAuthRole(
+//     request.cookies.get(authCookieNames.role)?.value,
+//   );
+
+//   const isAuthenticated = Boolean(token && role);
+//   const defaultAuthenticatedRoute = getDefaultRouteForRole(role);
+
+//   const isAuthPage =
+//     pathname === authRoutes.login ||
+//     pathname === authRoutes.forgotPassword ||
+//     pathname === authRoutes.signUp;
+
+//   const isAdminRoute = pathname.startsWith(authRoutes.adminDashboard);
+//   const isSuperAdminRoute = pathname.startsWith(authRoutes.superAdminDashboard);
+
+//   if (pathname === authRoutes.home) {
+//     if (!isAuthenticated) {
+//       return NextResponse.redirect(new URL(authRoutes.login, request.url));
+//     }
+
+//     return NextResponse.redirect(
+//       new URL(defaultAuthenticatedRoute, request.url),
+//     );
+//   }
+
+//   if (isAuthPage) {
+//     if (isAuthenticated) {
+//       return NextResponse.redirect(
+//         new URL(defaultAuthenticatedRoute, request.url),
+//       );
+//     }
+
+//     return NextResponse.next();
+//   }
+
+//   if (isAdminRoute) {
+//     if (!isAuthenticated) {
+//       return NextResponse.redirect(buildLoginRedirect(request));
+//     }
+
+//     if (role !== "CLIENT") {
+//       return NextResponse.redirect(
+//         new URL(defaultAuthenticatedRoute, request.url),
+//       );
+//     }
+
+//     return NextResponse.next();
+//   }
+
+//   if (isSuperAdminRoute) {
+//     if (!isAuthenticated) {
+//       return NextResponse.redirect(buildLoginRedirect(request));
+//     }
+
+//     if (role !== "ADMIN") {
+//       return NextResponse.redirect(
+//         new URL(defaultAuthenticatedRoute, request.url),
+//       );
+//     }
+
+//     return NextResponse.next();
+//   }
+
+//   return NextResponse.next();
+// }
 
 export const config = {
   matcher: [

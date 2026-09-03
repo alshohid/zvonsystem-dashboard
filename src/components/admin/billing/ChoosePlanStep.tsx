@@ -4,6 +4,7 @@ import type { ElementType } from 'react';
 import { Building2, Coins, Music2, Zap } from 'lucide-react';
 import OrderSummaryCard from './OrderSummaryCard';
 import PricingFeatureList from './PricingFeatureList';
+import StepNavigation from './StepNavigation';
 import TrustBadgeRow from './TrustBadgeRow';
 import type { BillingPeriod, Plan } from './types';
 
@@ -18,9 +19,15 @@ type ChoosePlanStepProps = {
   plan: Plan;
   billingPeriod: BillingPeriod;
   onNext: () => void;
+  isBusy?: boolean;
 };
 
-export default function ChoosePlanStep({ plan, billingPeriod, onNext }: ChoosePlanStepProps) {
+export default function ChoosePlanStep({
+  plan,
+  billingPeriod,
+  onNext,
+  isBusy = false,
+}: ChoosePlanStepProps) {
   const Icon = PLAN_ICON[plan.icon];
 
   return (
@@ -47,6 +54,9 @@ export default function ChoosePlanStep({ plan, billingPeriod, onNext }: ChoosePl
       </div>
 
       <TrustBadgeRow />
+
+      {/* First step: no previous button, "Next" is the validated continue action. */}
+      <StepNavigation onNext={onNext} nextLabel="Continue to Details" isBusy={isBusy} />
     </div>
   );
 }

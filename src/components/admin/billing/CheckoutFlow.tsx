@@ -3,18 +3,29 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
+import toast from 'react-hot-toast';
 import TopTabs from '@/src/components/common/TopTabs';
 import { useTabsQueryState } from '@/src/lib/helper/useTabsQueryState';
 import { getErrorMessage } from '@/src/lib/getErrorMessage';
 import ChoosePlanStep from './ChoosePlanStep';
 import CheckoutStep from './CheckoutStep';
 import DetailsStep from './DetailsStep';
+import StepNavigation from './StepNavigation';
+import OrderSummaryCard from './OrderSummaryCard';
 import { CHECKOUT_STEP_TABS, PAYMENT_GATEWAYS } from './mockBillingData';
+import {
+  firstCardEntryError,
+  firstDetailsError,
+  validateCardEntry,
+  validateDetails,
+  validateDetailsField,
+} from './checkoutValidation';
 import {
   useCreateCheckoutSessionMutation,
   useProcessPaymentMutation,
 } from '@/src/redux/features/subscription/subscriptionApi';
 import type { BillingCycle, CheckoutSessionResponse } from '@/src/types/billingTypes';
+import type { DetailsFieldErrors } from './checkoutValidation';
 import type {
   BillingDetailsFormValues,
   BillingPeriod,
@@ -23,7 +34,6 @@ import type {
   PaymentGateway,
   Plan,
 } from './types';
-import OrderSummaryCard from './OrderSummaryCard';
 
 const EMPTY_DETAILS: BillingDetailsFormValues = {
   firstName: '',
@@ -53,6 +63,7 @@ type CheckoutFlowProps = {
 export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }: CheckoutFlowProps) {
   const [step, setStep] = useTabsQueryState<CheckoutStepKey>('step', 'plan');
   const [details, setDetails] = useState<BillingDetailsFormValues>(EMPTY_DETAILS);
+  const [detailsErrors, setDetailsErrors] = useState<DetailsFieldErrors>({});
   const [cardEntry, setCardEntry] = useState<CardEntryValues>(EMPTY_CARD_ENTRY);
   const [selectedGateway, setSelectedGateway] = useState<PaymentGateway>(
     PAYMENT_GATEWAYS.find(gateway => gateway.isDefault)?.gateway ?? 'PAYPAL',
@@ -65,10 +76,104 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
   const [processPayment, { isLoading: isProcessingPayment }] =
     useProcessPaymentMutation();
 
-  const stepIndex = CHECKOUT_STEP_TABS.findIndex(s => s.key === step);
-  const goToStep = (index: number) => {
+  const stepIndex = CHECKOUT_STEP_TABS.findIndex(tab => tab.key === step);
+  const isBusy = isCreatingCheckout || isProcessingPayment;
+
+  /** Moves to a step by index after bounds checks. Plain navigation - no validation. */
+  const goToStepIndex = (index: number) => {
     const target = CHECKOUT_STEP_TABS[index];
-    if (target) setStep(target.key);
+    if (!target || target.key === step) return;
+
+    setStep(target.key);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  /**
+   * Runs a step's validation. Returns `true` when the user may leave that
+   * step in the forward direction; otherwise flags the errors and toasts.
+   */
+  const ensureStepValid = (stepKey: CheckoutStepKey): boolean => {
+    if (stepKey === 'plan') {
+      if (plan?.id) return true;
+
+      toast.error('Select a plan to continue.');
+      return false;
+    }
+
+    if (stepKey === 'details') {
+      const errors = validateDetails(details);
+      const firstError = firstDetailsError(errors);
+
+      if (firstError) {
+        setDetailsErrors(errors);
+        toast.error(firstError);
+        return false;
+      }
+
+      setDetailsErrors({});
+      return true;
+    }
+
+
+    return true;
+  };
+
+  const handleNext = () => {
+    if (isBusy) return;
+    if (!ensureStepValid(step)) return;
+
+    goToStepIndex(stepIndex + 1);
+  };
+
+  const handleBack = () => {
+    if (isBusy) return;
+
+    setPaymentError(null);
+    goToStepIndex(stepIndex - 1);
+  };
+
+
+  const handleStepSelect = (key: CheckoutStepKey) => {
+    const targetIndex = CHECKOUT_STEP_TABS.findIndex(tab => tab.key === key);
+    if (targetIndex < 0 || targetIndex === stepIndex) return;
+
+    if (isBusy) {
+      toast.error('Please wait for the current action to finish.');
+      return;
+    }
+
+    if (targetIndex < stepIndex) {
+      setPaymentError(null);
+      goToStepIndex(targetIndex);
+      return;
+    }
+
+    for (let index = stepIndex; index < targetIndex; index += 1) {
+      if (!ensureStepValid(CHECKOUT_STEP_TABS[index].key)) return;
+    }
+
+    goToStepIndex(targetIndex);
+  };
+
+  /** Keeps per-field errors in sync while the user fixes them. */
+  const handleDetailsChange = (patch: Partial<BillingDetailsFormValues>) => {
+    const nextDetails = { ...details, ...patch };
+    setDetails(nextDetails);
+
+    setDetailsErrors(prevErrors => {
+      if (Object.keys(prevErrors).length === 0) return prevErrors;
+
+      const nextErrors = { ...prevErrors };
+      const changedFields = Object.keys(patch) as (keyof BillingDetailsFormValues)[];
+
+      changedFields.forEach(field => {
+        const message = validateDetailsField(field, nextDetails[field] ?? '');
+        if (message) nextErrors[field] = message;
+        else delete nextErrors[field];
+      });
+
+      return nextErrors;
+    });
   };
 
   const billingCycle = plan.billingCycle as BillingCycle;
@@ -99,7 +204,19 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
 
 
   const handleProceedToCheckout = async () => {
+    if (isBusy || !plan?.id) return;
     setPaymentError(null);
+
+    const detailErrors = validateDetails(details);
+    const firstDetailError = firstDetailsError(detailErrors);
+
+    if (firstDetailError) {
+      setDetailsErrors(detailErrors);
+      toast.error(firstDetailError);
+      setStep('details');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
 
     try {
       const res = await createCheckoutSession({
@@ -138,23 +255,24 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
 
 
   const handlePayNow = async () => {
-    if (!session) return;
+    if (isBusy) return;
+
+    if (!session) {
+      toast.error('Your checkout session has expired. Please place the order again.');
+      return;
+    }
+
     setPaymentError(null);
 
     const [expiryMonth = '', expiryYear = ''] = cardEntry.expiry
       .split('/')
       .map(part => part.trim());
 
-    if (
-      !cardEntry.cardNumber.trim() ||
-      !cardEntry.cardholderName.trim() ||
-      !expiryMonth ||
-      !expiryYear ||
-      !cardEntry.cvv.trim()
-    ) {
-      setPaymentError(
-        'Please enter all your card details to complete the payment.',
-      );
+    // Card-entry guard: shared validators replace the old ad-hoc emptiness checks.
+    const cardError = firstCardEntryError(validateCardEntry(cardEntry));
+    if (cardError) {
+      setPaymentError(cardError);
+      toast.error(cardError);
       return;
     }
 
@@ -192,10 +310,20 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
         <ChevronLeft size={14} /> Back to plan details
       </button>
 
-      <TopTabs variant="stepper" tabs={CHECKOUT_STEP_TABS} activeKey={step} onChange={setStep} />
+      <TopTabs
+        variant="stepper"
+        tabs={CHECKOUT_STEP_TABS}
+        activeKey={step}
+        onChange={handleStepSelect}
+      />
 
       {step === 'plan' && (
-        <ChoosePlanStep plan={plan} billingPeriod={billingPeriod} onNext={() => goToStep(stepIndex + 1)} />
+        <ChoosePlanStep
+          plan={plan}
+          billingPeriod={billingPeriod}
+          onNext={handleNext}
+          isBusy={isBusy}
+        />
       )}
 
       {step === 'details' && (
@@ -203,29 +331,36 @@ export default function CheckoutFlow({ plan, billingPeriod, onBack, onComplete }
           plan={plan}
           billingPeriod={billingPeriod}
           values={details}
-          onChange={patch => setDetails(prev => ({ ...prev, ...patch }))}
-          onNext={() => goToStep(stepIndex + 1)}
+          errors={detailsErrors}
+          onChange={handleDetailsChange}
+          onBack={handleBack}
+          onNext={handleNext}
+          isBusy={isBusy}
         />
       )}
 
       {step === 'checkout' && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
-          <CheckoutStep
-            plan={plan}
-            gateways={PAYMENT_GATEWAYS}
-            selectedGateway={selectedGateway}
-            onSelectGateway={setSelectedGateway}
-            cardEntry={cardEntry}
-            onCardEntryChange={patch => setCardEntry(prev => ({ ...prev, ...patch }))}
-            totalLabel={`$${plan.priceMonthly.toFixed(2)}`}
-            session={session}
-            error={paymentError}
-            isSubmitting={isCreatingCheckout}
-            isPaying={isProcessingPayment}
-            onSubmit={handleProceedToCheckout}
-            onPayNow={handlePayNow}
-          />
-          <OrderSummaryCard plan={plan} billingPeriod={billingPeriod} />
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.3fr_1fr]">
+            <CheckoutStep
+              plan={plan}
+              gateways={PAYMENT_GATEWAYS}
+              selectedGateway={selectedGateway}
+              onSelectGateway={setSelectedGateway}
+              cardEntry={cardEntry}
+              onCardEntryChange={patch => setCardEntry(prev => ({ ...prev, ...patch }))}
+              totalLabel={`$${plan.priceMonthly.toFixed(2)}`}
+              session={session}
+              error={paymentError}
+              isSubmitting={isCreatingCheckout}
+              isPaying={isProcessingPayment}
+              onSubmit={handleProceedToCheckout}
+              onPayNow={handlePayNow}
+            />
+            <OrderSummaryCard plan={plan} billingPeriod={billingPeriod} />
+          </div>
+
+          <StepNavigation onBack={handleBack} backDisabled={isBusy} />
         </div>
       )}
     </div>

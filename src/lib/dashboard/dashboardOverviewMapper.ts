@@ -22,11 +22,12 @@ const STAT_META: Array<{
   id: DashboardStatId;
   title: string;
 }> = [
-  { key: "totalReleases", id: "total-releases", title: "Total Releases" },
-  { key: "inProgress", id: "in-progress", title: "In Progress" },
-  { key: "totalPublished", id: "total-published", title: "Total Published" },
-  { key: "activeReleases", id: "active-releases", title: "Active Releases" },
-];
+    { key: "totalStreams", id: "total-streams", title: "Total Streams" },
+    // { key: "totalReleases", id: "total-releases", title: "Total Releases" },
+    { key: "inProgress", id: "in-progress", title: "In Progress" },
+    { key: "totalPublished", id: "total-published", title: "Total Published" },
+    { key: "activeReleases", id: "active-releases", title: "Active Releases" },
+  ];
 
 const PLATFORM_COLOR_CYCLE: PlatformColorToken[] = [
   "primary",
@@ -35,7 +36,7 @@ const PLATFORM_COLOR_CYCLE: PlatformColorToken[] = [
 ];
 
 export class DashboardOverviewMapper {
-  private constructor() {}
+  private constructor() { }
 
   static fromDto(dto: IArtistDashboardDto): IArtistDashboardViewModel {
     return {

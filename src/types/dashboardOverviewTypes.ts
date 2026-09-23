@@ -30,6 +30,7 @@ export interface IArtistStatsDto {
   inProgress: number;
   totalPublished: number;
   activeReleases: number;
+  totalStreams: string
 }
 
 export interface IReleaseStatusChartDto {
@@ -123,7 +124,8 @@ export interface IArtistDashboardResponse extends IBaseResponse {
 }
 
 export type DashboardStatId =
-  | "total-releases"
+  | "total-streams"
+  // | "total-releases"
   | "in-progress"
   | "total-published"
   | "active-releases";
@@ -131,7 +133,7 @@ export type DashboardStatId =
 export interface IDashboardStat {
   id: DashboardStatId;
   title: string;
-  value: number;
+  value: number | string;
 }
 
 export interface IReleaseStatusChartPoint {

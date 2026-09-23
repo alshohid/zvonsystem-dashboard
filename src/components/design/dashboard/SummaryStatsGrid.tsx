@@ -10,7 +10,8 @@ import {
 
 // Card icons are a fixed, UI-only concern — never sourced from the API response.
 const STAT_ICON_BY_ID: Record<DashboardStatId, typeof HeadPhoneIcon> = {
-  "total-releases": ReleaseIcon,
+  "total-streams": HeadPhoneIcon,
+  // "total-releases": ReleaseIcon,
   "in-progress": ProgressIcon,
   "total-published": PublishedIcon,
   "active-releases": HeadPhoneIcon,

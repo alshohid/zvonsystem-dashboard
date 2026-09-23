@@ -108,6 +108,13 @@ export interface IAlbumSpotlight {
   tracks?: IAlbumTrack[];
 }
 
+export interface IStreamingPerformanceDto {
+  month: string;
+  year: number;
+  streams: number;
+  streamsFormatted?: string;
+}
+
 export interface IArtistDashboardDto {
   stats: IArtistStatsDto;
   releaseStatusChart: IReleaseStatusChartDto[];
@@ -116,6 +123,7 @@ export interface IArtistDashboardDto {
   recentActivity: IArtistActivityDto[];
   upcomingReleases: IArtistUpcomingReleaseDto[];
   albumSpotlight?: IAlbumSpotlight[];
+  streamingPerformance?: IStreamingPerformanceDto[];
 }
 
 export interface IArtistDashboardResponse extends IBaseResponse {
@@ -183,6 +191,8 @@ export interface IArtistUpcomingRelease {
   labelName: string;
 }
 
+export type IStreamingPerformancePoint = IStreamingPerformanceDto;
+
 export interface IArtistDashboardViewModel {
   stats: IDashboardStat[];
   releaseStatusChart: IReleaseStatusChartPoint[];
@@ -192,4 +202,5 @@ export interface IArtistDashboardViewModel {
   recentActivity: IArtistActivityItem[];
   upcomingReleases: IArtistUpcomingRelease[];
   albumSpotlight?: IAlbumSpotlight[];
+  streamingPerformance?: IStreamingPerformancePoint[];
 }

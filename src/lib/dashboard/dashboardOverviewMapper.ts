@@ -48,7 +48,20 @@ export class DashboardOverviewMapper {
       recentActivity: this.mapActivity(dto.recentActivity),
       upcomingReleases: this.mapUpcomingReleases(dto.upcomingReleases),
       albumSpotlight: dto.albumSpotlight,
+      streamingPerformance: this.mapStreamingPerformance(dto.streamingPerformance),
     };
+  }
+
+  private static mapStreamingPerformance(
+    items?: IArtistDashboardDto["streamingPerformance"],
+  ) {
+    if (!items) return [];
+    return items.map(({ month, year, streams, streamsFormatted }) => ({
+      month,
+      year,
+      streams,
+      streamsFormatted,
+    }));
   }
 
   private static mapStats(stats: IArtistStatsDto): IDashboardStat[] {

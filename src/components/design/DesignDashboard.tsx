@@ -9,6 +9,7 @@ import {
   PlatformBreakdownCard,
   RecentActivityCard,
   ReleaseStatusChart,
+  StreamingPerformanceChart,
   SummaryStatsGrid,
   TopTracksCard,
   UpcomingReleasesCard,
@@ -35,7 +36,7 @@ export default function ArtistDashboardDashboard() {
       <SummaryStatsGrid stats={overview.stats} />
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <ReleaseStatusChart data={overview.releaseStatusChart} />
+        <StreamingPerformanceChart data={overview.streamingPerformance} />
         <PlatformBreakdownCard
           shares={overview.platformShares}
           totalReleases={overview.totalReleases}
@@ -43,7 +44,11 @@ export default function ArtistDashboardDashboard() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <TopTracksCard tracks={overview.topTracks} />
+        <div className="flex flex-col gap-6">
+          <ReleaseStatusChart data={overview.releaseStatusChart} />
+          <TopTracksCard tracks={overview.topTracks} />
+        </div>
+
 
         <div className="flex min-w-0 flex-col gap-6">
           {overview?.albumSpotlight && overview.albumSpotlight.length > 0 && (

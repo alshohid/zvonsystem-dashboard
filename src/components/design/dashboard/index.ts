@@ -1,6 +1,7 @@
 export { default as GreetingHeader } from "@/src/components/design/dashboard/GreetingHeader";
 export { default as SummaryStatsGrid } from "@/src/components/design/dashboard/SummaryStatsGrid";
 export { default as ReleaseStatusChart } from "@/src/components/design/dashboard/ReleaseStatusChart";
+export { default as StreamingPerformanceChart } from "@/src/components/design/dashboard/StreamingPerformanceChart";
 export { default as PlatformBreakdownCard } from "@/src/components/design/dashboard/PlatformBreakdownCard";
 export { default as TopTracksCard } from "@/src/components/design/dashboard/TopTracksCard";
 export { default as RecentActivityCard } from "@/src/components/design/dashboard/RecentActivityCard";
